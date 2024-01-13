@@ -19,9 +19,14 @@ namespace HappyPaws.Application.Services
         {
         }
 
+        public async Task<List<ProductCategorySubcategoryDto>> GetSubcategoriesForCategoryAsync(int categoryId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
+        {
+            return Mapper.Map<List<ProductCategorySubcategoryDto>>(await CurrentRepository.GetSubcategoriesForCategoryAsync(categoryId, cancellationToken));
+        }
+
         public async Task<List<int>> GetSubcategoryIdsForCategoryAsync(int categoryId, CancellationToken cancellationToken = default)
         {
-            return await CurrentRepository.GetSubcategoryIdsForCategory(categoryId, cancellationToken);
+            return await CurrentRepository.GetSubcategoryIdsForCategoryAsync(categoryId, cancellationToken);
         }
     }
 }

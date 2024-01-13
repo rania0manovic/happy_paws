@@ -22,7 +22,13 @@ namespace HappyPaws.Infrastructure.Repositories
                   .SetProperty(x => x.ModifiedAt, DateTime.Now), cancellationToken);
         }
 
-        public async Task<List<int>> GetSubcategoryIdsForCategory(int categoryId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
+        public async Task<List<ProductCategorySubcategory>> GetSubcategoriesForCategoryAsync(int categoryId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
+        {
+            return await DbSet.Include(x => x.ProductSubcategory).Where(x => x.ProductCategoryId == categoryId && (isDeletedIncluded ? true : x.IsDeleted == false)).ToListAsync(cancellationToken);
+
+        }
+
+        public async Task<List<int>> GetSubcategoryIdsForCategoryAsync(int categoryId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
         {
             return await DbSet.Where(x => x.ProductCategoryId == categoryId && (isDeletedIncluded ? true : x.IsDeleted == false)).Select(x => x.ProductSubcategoryId).ToListAsync(cancellationToken);
         }

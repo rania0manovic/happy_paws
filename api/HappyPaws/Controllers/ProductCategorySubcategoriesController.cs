@@ -26,6 +26,20 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("GetSubcategoriesForCategory")]
+        public async Task<IActionResult> GetSubcategoriesForCategory(int categoryId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.GetSubcategoriesForCategoryAsync(categoryId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resource with categoryID {0}", categoryId);
+                return BadRequest();
+            }
+        }
 
 
     }

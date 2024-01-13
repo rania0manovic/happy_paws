@@ -30,11 +30,15 @@ namespace HappyPaws.Infrastructure
         public DbSet<EmailVerificationRequest> EmailVerificationRequests { get; set; }
         public DbSet<ProductCategorySubcategory> ProductCategorySubcategories { get; set; }
 
-
-
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            ApplyConfigurations(modelBuilder);
         }
 
     }

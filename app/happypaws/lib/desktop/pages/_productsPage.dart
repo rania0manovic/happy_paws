@@ -1,16 +1,23 @@
 import 'dart:convert';
+import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
+import 'package:http/http.dart' as http;
+
+import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
+import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
+import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/ActionButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryIconButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:image_picker/image_picker.dart';
 
 @RoutePage()
 class ProductsPage extends StatefulWidget {
@@ -21,9 +28,7 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  List<Map<String, dynamic>>? productCategories;
-  List<Map<String, dynamic>>? productSubcategories;
-  List<Map<String, dynamic>>? productBrands;
+  List<Map<String, dynamic>>? products;
 
   @override
   void initState() {
@@ -32,33 +37,17 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> fetchData() async {
-    var responseCategories =
-        await ProductCategoriesService().getPaged("", 1, 999);
-    if (responseCategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseCategories.body);
+    var responseProducts = await ProductsService().getPaged("", 1, 999);
+    if (responseProducts.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(responseProducts.body);
       setState(() {
-        productCategories = List<Map<String, dynamic>>.from(jsonData['items']);
-      });
-    }
-    var responseSubcategories =
-        await ProductSubcategoriesService().getPaged("", 1, 999);
-    if (responseSubcategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseSubcategories.body);
-      setState(() {
-        productSubcategories =
-            List<Map<String, dynamic>>.from(jsonData['items']);
-      });
-    }
-    var responseBrands = await BrandsService().getPaged("", 1, 999);
-    if (responseBrands.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseBrands.body);
-      setState(() {
-        responseBrands = List<Map<String, dynamic>>.from(jsonData['items']);
+        products = List<Map<String, dynamic>>.from(jsonData['items']);
       });
     }
   }
 
-  void showAddEditProductMenu(BuildContext context) {
+  void showAddEditProductMenu(BuildContext context,
+      {Map<String, dynamic>? data}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -66,14 +55,27 @@ class _ProductsPageState extends State<ProductsPage> {
           insetPadding:
               const EdgeInsets.symmetric(vertical: 100, horizontal: 200),
           contentPadding: const EdgeInsets.all(8),
-          content: AddEditBrandOverlay(
+          content: AddEditProductMenu(
+            data: data,
+            fetchData: fetchData,
             onClose: () {
-              Navigator.of(context).pop(); 
+              Navigator.of(context).pop();
             },
           ),
         );
       },
     );
+  }
+
+  Future<void> deleteProduct(int id) async {
+    try {
+      var response = await ProductsService().delete('/$id');
+      if (response.statusCode == 200) {
+        fetchData();
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -105,7 +107,21 @@ class _ProductsPageState extends State<ProductsPage> {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                table()
+                products != null
+                    ? (products!.isEmpty
+                        ? const Center(
+                            child: Padding(
+                            padding: EdgeInsets.only(top: 32.0),
+                            child: Text(
+                              'No products added yet.',
+                              style: TextStyle(color: AppColors.primaryColor),
+                            ),
+                          ))
+                        : table())
+                    : const Expanded(
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 36.0),
+                            child: Spinner()))
               ],
             ),
           ),
@@ -127,7 +143,7 @@ class _ProductsPageState extends State<ProductsPage> {
             color: Colors.grey.withOpacity(0.1),
           ),
           children: [
-            tableHead('Item Code.'),
+            tableHead('Item Id.'),
             tableHead('Photo'),
             tableHead('Item name'),
             tableHead('Item category'),
@@ -136,50 +152,20 @@ class _ProductsPageState extends State<ProductsPage> {
             tableHead('Actions'),
           ],
         ),
-        TableRow(
-          children: [
-            tableCell("Test"),
-            tableCellPhoto("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableActions()
-          ],
-        ),
-        TableRow(
-          children: [
-            tableCell("Test"),
-            tableCellPhoto("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableActions()
-          ],
-        ),
-        TableRow(
-          children: [
-            tableCell("Test"),
-            tableCellPhoto("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableActions()
-          ],
-        ),
-        TableRow(
-          children: [
-            tableCell("Test"),
-            tableCellPhoto("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableCell("Test"),
-            tableActions()
-          ],
-        ),
+        for (var product in products!)
+          TableRow(
+            children: [
+              tableCell(product['id'].toString()),
+              tableCellPhoto(product['productImages'][0]['image']['data']),
+              tableCell(product['name']),
+              tableCell(product['productCategorySubcategory']['productCategory']
+                  ['name']),
+              tableCell(product['productCategorySubcategory']
+                  ['productSubcategory']['name']),
+              tableCell(product['inStock'].toString()),
+              tableActions(product)
+            ],
+          )
       ],
     );
   }
@@ -189,50 +175,65 @@ class _ProductsPageState extends State<ProductsPage> {
       child: Padding(
         padding: const EdgeInsets.only(top: 20, bottom: 20),
         child: Center(
-            child: Text(
-          data,
-          style: const TextStyle(
-              fontSize: 12,
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w500),
+            child: Tooltip(
+          message: data.length > 20 ? data : '',
+          child: Text(
+            data.length > 20 ? '${data.substring(0, 20)}...' : data,
+            style: const TextStyle(
+                fontSize: 12,
+                fontFamily: 'GilroyLight',
+                fontWeight: FontWeight.w500),
+          ),
         )),
       ),
     );
   }
 
   TableCell tableCellPhoto(String data) {
-    return const TableCell(
+    return TableCell(
         child: Padding(
-      padding: EdgeInsets.only(top: 0, bottom: 0.0),
-      child: Image(
-        image: AssetImage("assets/images/sample_dog_food.jpg"),
-        height: 25,
-      ),
-    ));
+            padding: const EdgeInsets.only(top: 0, bottom: 0.0),
+            child: Image.memory(
+              base64.decode(data.toString()),
+              height: 30,
+            )));
   }
 
-  TableCell tableActions() {
+  TableCell tableActions(Map<String, dynamic> data) {
     return TableCell(
       child: Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: SvgPicture.asset(
-                "assets/icons/edit (2).svg",
-                height: 18,
-                color: AppColors.gray,
-              ),
+            ActionButton(
+              onPressed: () {
+                showAddEditProductMenu(context, data: data);
+              },
+              icon: Icons.edit_outlined,
+              iconColor: AppColors.gray,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: SvgPicture.asset(
-                "assets/icons/delete.svg",
-                height: 18,
-                color: AppColors.errorColor,
-              ),
-            )
+            ActionButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return ConfirmationDialog(
+                      title: 'Confirmation',
+                      content: 'Are you sure you want to delete this product?',
+                      onYesPressed: () {
+                        Navigator.of(context).pop();
+                        deleteProduct(data['id']);
+                      },
+                      onNoPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    );
+                  },
+                );
+              },
+              icon: Icons.delete_outline_outlined,
+              iconColor: AppColors.errorColor,
+            ),
           ],
         ),
       ),
@@ -254,19 +255,23 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 }
 
-class AddEditBrandOverlay extends StatefulWidget {
+class AddEditProductMenu extends StatefulWidget {
   final VoidCallback onClose;
+  final VoidCallback fetchData;
+  final Map<String, dynamic>? data;
 
-  const AddEditBrandOverlay({
+  const AddEditProductMenu({
     Key? key,
     required this.onClose,
+    required this.fetchData,
+    this.data,
   }) : super(key: key);
 
   @override
-  _AddEditBrandOverlayState createState() => _AddEditBrandOverlayState();
+  _AddEditProductMenuState createState() => _AddEditProductMenuState();
 }
 
-class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
+class _AddEditProductMenuState extends State<AddEditProductMenu> {
   String? selectedCategory;
   String? selectedSubCategory;
   String? selectedBrand;
@@ -274,6 +279,8 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
   List<Map<String, dynamic>>? productCategories;
   List<Map<String, dynamic>>? productSubcategories;
   List<Map<String, dynamic>>? productBrands;
+  final ImagePicker _imagePicker = ImagePicker();
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -288,23 +295,65 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
       Map<String, dynamic> jsonData = json.decode(responseCategories.body);
       setState(() {
         productCategories = List<Map<String, dynamic>>.from(jsonData['items']);
+        if (widget.data != null) {
+          selectedCategory = widget.data!['productCategorySubcategory']
+                  ['productCategoryId']
+              .toString();
+          fetchSubcategories(selectedCategory);
+          selectedSubCategory =
+              widget.data!['productCategorySubcategory']['id'].toString();
+        }
       });
     }
-    var responseSubcategories =
-        await ProductSubcategoriesService().getPaged("", 1, 999);
-    if (responseSubcategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseSubcategories.body);
-      setState(() {
-        productSubcategories =
-            List<Map<String, dynamic>>.from(jsonData['items']);
-      });
-    }
+
     var responseBrands = await BrandsService().getPaged("", 1, 999);
     if (responseBrands.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(responseBrands.body);
       setState(() {
         productBrands = List<Map<String, dynamic>>.from(jsonData['items']);
+        if (widget.data != null) {
+          selectedBrand = widget.data!['brandId'].toString();
+        }
       });
+    }
+  }
+
+  Future<void> fetchSubcategories(String? newValue) async {
+    var responseSubcategories =
+        await ProductCategorySubcategoriesService().getSubcategories(newValue);
+    if (responseSubcategories.statusCode == 200) {
+      List<Map<String, dynamic>> jsonData =
+          (json.decode(responseSubcategories.body) as List)
+              .cast<Map<String, dynamic>>();
+      setState(() {
+        productSubcategories = jsonData;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? selectedImage =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (selectedImage != null) {
+      setState(() {
+        _selectedImage = File(selectedImage.path);
+        data["photoFile"] = selectedImage.path;
+      });
+    }
+  }
+
+  Future<void> addProduct() async {
+    try {
+      var response = await ProductsService().post('', data);
+      if (response.statusCode == 200) {
+        widget.onClose();
+        widget.fetchData();
+      } else {
+        throw Exception('Error occured');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -312,9 +361,7 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
-      child: (productCategories == null ||
-              productBrands == null ||
-              productSubcategories == null)
+      child: (productCategories == null || productBrands == null)
           ? const Spinner()
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,9 +373,9 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
                       onPressed: null,
                       color: AppColors.gray,
                     ),
-                    const Text(
-                      "Add new product",
-                      style: TextStyle(
+                    Text(
+                      widget.data != null ? "Edit product" : "Add new product",
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'GilroyLight',
@@ -355,9 +402,9 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
                           widthFactor: 0.33,
                           child: Column(
                             children: [
-                              inputField("Name", "name"),
-                              inputField("Price", "price"),
-                              textBox("Description", "description"),
+                              inputField("Name", "Name"),
+                              inputField("Price", "Price"),
+                              textBox("Description", "Description"),
                             ],
                           ),
                         ),
@@ -366,26 +413,40 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              inputField("In Stock", "inStock"),
+                              inputField("In Stock", "InStock"),
                               dropdownMenu(
                                   productCategories!,
                                   "Category",
-                                  (String? newValue) => setState(() {
-                                        selectedCategory = newValue;
-                                      }),
+                                  (String? newValue) async => {
+                                        setState(() {
+                                          selectedSubCategory = null;
+                                          selectedCategory = null;
+                                        }),
+                                        await fetchSubcategories(newValue),
+                                        setState(() {
+                                          selectedCategory = newValue;
+                                        })
+                                      },
                                   selectedCategory),
                               dropdownMenu(
-                                  productSubcategories!,
+                                  productSubcategories == null
+                                      ? List.empty()
+                                      : productSubcategories!,
                                   "Subcategory",
                                   (String? newValue) => setState(() {
                                         selectedSubCategory = newValue;
+                                        data['ProductCategorySubcategoryId'] =
+                                            newValue;
                                       }),
-                                  selectedSubCategory),
+                                  selectedSubCategory,
+                                  isDisabeled:
+                                      selectedCategory == null ? true : false),
                               dropdownMenu(
                                   productBrands!,
                                   "Brand",
                                   (String? newValue) => setState(() {
                                         selectedBrand = newValue;
+                                        data['BrandId'] = newValue;
                                       }),
                                   selectedBrand)
                             ],
@@ -407,26 +468,41 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
                                         color: AppColors.dimWhite,
                                         borderRadius:
                                             BorderRadius.circular(10)),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(20.0),
-                                      child: Image(
-                                          image: AssetImage(
-                                              "assets/images/gallery.png")),
-                                    ),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: _selectedImage != null
+                                            ? Image.file(_selectedImage!)
+                                            : widget.data != null
+                                                ? Image.memory(
+                                                    base64.decode(widget
+                                                        .data!['productImages']
+                                                            [0]['image']['data']
+                                                        .toString()),
+                                                    height: 25,
+                                                  )
+                                                : const Image(
+                                                    image: AssetImage(
+                                                        "assets/images/gallery.png"))),
                                   ),
                                   Positioned(
-                                      bottom: 10,
+                                      bottom: 0,
                                       right: 0,
                                       child: ActionButton(
-                                          onPressed: () {}, icon: Icons.add))
+                                        onPressed: _pickImage,
+                                        icon: Icons.add,
+                                        iconSize: 20,
+                                        iconColor: AppColors.primaryColor,
+                                      ))
                                 ],
                               ),
                               const SizedBox(
                                 height: 50,
                               ),
                               PrimaryButton(
-                                onPressed: () {},
-                                label: "Add product",
+                                onPressed: () => addProduct(),
+                                label: widget.data != null
+                                    ? "Edit product"
+                                    : "Add product",
                                 width: double.infinity,
                               )
                             ],
@@ -442,7 +518,8 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
   }
 
   Column dropdownMenu(List<Map<String, dynamic>> items, String label,
-      void Function(String? newValue) onChanged, String? selectedCategory) {
+      void Function(String? newValue) onChanged, String? selectedOption,
+      {bool isDisabeled = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -467,17 +544,20 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
                 padding: const EdgeInsets.only(left: 8.0, right: 8),
                 child: DropdownButton<String>(
                   isExpanded: true,
-                  value: selectedCategory,
+                  value: selectedOption,
                   hint: const Text('Select'),
                   underline: Container(),
                   borderRadius: BorderRadius.circular(10),
                   icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: onChanged,
+                  onChanged: isDisabeled ? null : onChanged,
+                  disabledHint: const Text("Select category first..."),
                   items: [
                     for (var item in items)
                       DropdownMenuItem<String>(
-                        value: item['name'],
-                        child: Text(item['name']),
+                        value: item['id'].toString(),
+                        child: items == productSubcategories
+                            ? Text(item['productSubcategory']['name'])
+                            : Text(item['name']),
                       ),
                   ],
                 ),
@@ -501,7 +581,14 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
         Container(
           padding: const EdgeInsets.only(top: 10),
           height: 130,
-          child: TextField(
+          child: TextFormField(
+            initialValue: widget.data != null
+                ? widget.data![key[0].toLowerCase() + key.substring(1)]
+                    .toString()
+                : '',
+            onChanged: (value) => setState(() {
+              data[key] = value;
+            }),
             minLines: 10,
             maxLines: 10,
             style: const TextStyle(
@@ -543,7 +630,11 @@ class _AddEditBrandOverlayState extends State<AddEditBrandOverlay> {
         SizedBox(
           height: 40,
           width: double.infinity,
-          child: TextField(
+          child: TextFormField(
+            initialValue: widget.data != null
+                ? widget.data![key[0].toLowerCase() + key.substring(1)]
+                    .toString()
+                : '',
             onChanged: (value) {
               setState(() {
                 data[key] = value;

@@ -59,47 +59,49 @@ class _ProductsPageState extends State<CategoriesPage> {
         fetchData();
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
   Future<List<int>?> fetchSubcategoryIds(Map<String, dynamic> data) async {
-  int categoryId = data['id'];
-  var response = await ProductCategorySubcategoriesService().getSubcategoryIds(categoryId);
+    int categoryId = data['id'];
+    var response = await ProductCategorySubcategoriesService()
+        .getSubcategoryIds(categoryId);
 
-  if (response.statusCode == 200) {
-    return json.decode(response.body).cast<int>();
-  } else {
-    return null;
+    if (response.statusCode == 200) {
+      return json.decode(response.body).cast<int>();
+    } else {
+      return null;
+    }
   }
-}
 
-void showAddEditMenu(BuildContext context, {Map<String, dynamic>? data}) {
-  List<int>? listIds;
+  Future<void> showAddEditMenu(BuildContext context,
+      {Map<String, dynamic>? data}) async {
+    List<int>? listIds;
 
-  if (data != null) {
-    fetchSubcategoryIds(data).then((result) {
-      listIds = result;
-    });};
-
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
-            content: AddEditCategoryOverlay(
-              onClose: () {
-                Navigator.of(context).pop();
-              },
-              fetchData: fetchData,
-              data: data,
-              subcategories: productSubcategories,
-              listIds: listIds,
-            ),
-          );
-        },
-      );
-   
+    if (data != null) {
+      await fetchSubcategoryIds(data).then((result) {
+        listIds = result;
+      });
+    }
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: const EdgeInsets.all(0),
+          content: AddEditCategoryOverlay(
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+            fetchData: fetchData,
+            data: data,
+            subcategories: productSubcategories,
+            listIds: listIds,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -135,9 +137,8 @@ void showAddEditMenu(BuildContext context, {Map<String, dynamic>? data}) {
                     ? table()
                     : const Expanded(
                         child: Padding(
-                        padding: EdgeInsets.only(top: 36.0),
-                        child: Spinner()
-                      ))
+                            padding: EdgeInsets.only(top: 36.0),
+                            child: Spinner()))
               ],
             ),
           ),
@@ -288,7 +289,8 @@ class AddEditCategoryOverlay extends StatefulWidget {
 }
 
 class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
-  late List<bool> isCheckedList = List.generate(widget.subcategories!.length, (index) => false);
+  late List<bool> isCheckedList =
+      List.generate(widget.subcategories!.length, (index) => false);
   final ImagePicker _imagePicker = ImagePicker();
   List<int> listIds = [];
 
@@ -305,7 +307,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
           (index) => widget.data != null && widget.listIds != null
               ? widget.listIds!.contains(widget.subcategories![index]['id'])
               : false);
-    listIds = [...widget.listIds!];
+      listIds = [...widget.listIds!];
     }
   }
 
@@ -354,7 +356,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
         widget.fetchData();
       } else {}
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -365,7 +367,9 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
     return Center(
       child: Container(
         width: 400,
-        decoration: BoxDecoration(color: Colors.transparent,),
+        decoration: const BoxDecoration(
+          color: Colors.transparent,
+        ),
         child: Card(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,8 +439,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                           : widget.data != null
                                               ? Image.memory(
                                                   base64.decode(widget
-                                                      .data!['photo']
-                                                          ['data']
+                                                      .data!['photo']['data']
                                                       .toString()),
                                                   height: 25,
                                                 )
@@ -456,7 +459,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                       ))
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 16,
                               ),
                               SizedBox(
@@ -471,34 +474,32 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                         children: List.generate(
                                           widget.subcategories!.length,
                                           (index) => Row(
-                                            mainAxisSize:
-                                                MainAxisSize.min,
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Checkbox(
-                                                activeColor: AppColors.primaryColor,
-                                                value:
-                                                    isCheckedList[index],
+                                                activeColor:
+                                                    AppColors.primaryColor,
+                                                value: isCheckedList[index],
                                                 onChanged: (bool? value) {
                                                   setState(() {
                                                     setState(() {
-                                                      isCheckedList[
-                                                          index] = value!;
+                                                      isCheckedList[index] =
+                                                          value!;
                                                       if (value) {
                                                         listIds.add(widget
                                                                 .subcategories![
                                                             index]['id']);
                                                       } else {
-                                                        listIds.remove(
-                                                            widget.subcategories![
-                                                                    index]
-                                                                ['id']);
+                                                        listIds.remove(widget
+                                                                .subcategories![
+                                                            index]['id']);
                                                       }
                                                     });
                                                   });
                                                 },
                                               ),
-                                              Text(widget.subcategories![
-                                                  index]['name']),
+                                              Text(widget.subcategories![index]
+                                                  ['name']),
                                             ],
                                           ),
                                         ),
@@ -517,9 +518,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                         : addCategory();
                                   },
                                   width: double.infinity,
-                                  label: widget.data != null
-                                      ? 'Edit'
-                                      : "Add")
+                                  label: widget.data != null ? 'Edit' : "Add")
                             ],
                           ),
                         ),

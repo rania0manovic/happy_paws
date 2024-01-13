@@ -31,7 +31,7 @@ namespace HappyPaws.Application.Services
                     UnitOfWork.ImagesRepository.Update(photo);
 
                 }
-                var subcategoriesIds = await UnitOfWork.ProductCategorySubcategoriesRepository.GetSubcategoryIdsForCategory(dto.Id, cancellationToken, true);
+                var subcategoriesIds = await UnitOfWork.ProductCategorySubcategoriesRepository.GetSubcategoryIdsForCategoryAsync(dto.Id, cancellationToken, true);
                 if (dto.RemovedSubcategoryIds != null)
                 {
                     foreach (var subcategoryId in dto.RemovedSubcategoryIds)

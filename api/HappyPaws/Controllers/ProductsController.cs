@@ -9,5 +9,10 @@ namespace HappyPaws.Api.Controllers
         public ProductsController(IProductsService service, ILogger<BaseController> logger) : base(service, logger)
         {
         }
+
+        public override Task<IActionResult> Post([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Post(upsertDto, cancellationToken);
+        }
     }
 }
