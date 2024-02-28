@@ -4,15 +4,16 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Models;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
 
 namespace HappyPaws.Application.Services
 {
-    public abstract class BaseService<TEntity, TDto, TRepository> : IBaseService<int, TDto>
+    public abstract class BaseService<TEntity, TDto, TRepository, TBaseSearchObject> : IBaseService<int, TDto, TBaseSearchObject>
        where TEntity : BaseEntity
        where TDto : BaseDto
-       where TRepository : class, IBaseRepository<TEntity, int>
+       where TRepository : class, IBaseRepository<TEntity, int, TBaseSearchObject>
     {
         private const bool ShouldSoftDelete = true;
         protected readonly IMapper Mapper;
@@ -38,7 +39,7 @@ namespace HappyPaws.Application.Services
         }
 
 
-        public virtual async Task<PagedList<TDto>> GetPagedAsync(BaseSearchObject searchObject, CancellationToken cancellationToken = default)
+        public virtual async Task<PagedList<TDto>> GetPagedAsync(TBaseSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             var pagedList = await CurrentRepository.GetPagedAsync(searchObject, cancellationToken);
             return Mapper.Map<PagedList<TDto>>(pagedList);

@@ -1,10 +1,11 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductSubcategory;
+using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
-    public class ProductSubcategoriesController : BaseCrudController<ProductSubcategoryDto, IProductSubcategoriesService>
+    public class ProductSubcategoriesController : BaseCrudController<ProductSubcategoryDto, IProductSubcategoriesService, ProductSubcategorySearchObject>
     {
         public ProductSubcategoriesController(IProductSubcategoriesService service, ILogger<BaseController> logger) : base(service, logger)
         {

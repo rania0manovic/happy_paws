@@ -1,5 +1,6 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductCategorySubcategory;
+using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Validations.Rules;
@@ -7,7 +8,7 @@ using Microsoft.OpenApi.Validations.Rules;
 namespace HappyPaws.Api.Controllers
 {
 
-    public class ProductCategorySubcategoriesController : BaseCrudController<ProductCategorySubcategoryDto, IProductCategorySubcategoriesService>
+    public class ProductCategorySubcategoriesController : BaseCrudController<ProductCategorySubcategoryDto, IProductCategorySubcategoriesService, ProductCategorySubcategorySearchObject>
     {
         public ProductCategorySubcategoriesController(IProductCategorySubcategoriesService service, ILogger<BaseController> logger) : base(service, logger)
         {
@@ -27,11 +28,11 @@ namespace HappyPaws.Api.Controllers
             }
         }
         [HttpGet("GetSubcategoriesForCategory")]
-        public async Task<IActionResult> GetSubcategoriesForCategory(int categoryId, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetSubcategoriesForCategory(int categoryId, bool includePhotos = false, CancellationToken cancellationToken = default)
         {
             try
             {
-                var response = await Service.GetSubcategoriesForCategoryAsync(categoryId, cancellationToken);
+                var response = await Service.GetSubcategoriesForCategoryAsync(categoryId, includePhotos, cancellationToken);
                 return Ok(response);
             }
             catch (Exception e)

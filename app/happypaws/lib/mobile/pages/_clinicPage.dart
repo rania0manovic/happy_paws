@@ -33,7 +33,7 @@ class _ClinicPageState extends State<ClinicPage> {
                     ),
                     GestureDetector(
                       onTap: () =>
-                          {context.router.push(const AppointmentsRoute())},
+                          {context.router.push(const UserAppointmentsRoute())},
                       child: const Text(
                         "See all",
                         style: TextStyle(

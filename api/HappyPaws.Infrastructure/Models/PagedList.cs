@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Models;
+using HappyPaws.Core.SearchObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

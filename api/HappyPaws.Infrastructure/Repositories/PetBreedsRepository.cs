@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class PetBreedsRepository : BaseRepository<PetBreed, int>, IPetBreedsRepository
+    public class PetBreedsRepository : BaseRepository<PetBreed, int, PetBreedSearchObject>, IPetBreedsRepository
     {
         public PetBreedsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {

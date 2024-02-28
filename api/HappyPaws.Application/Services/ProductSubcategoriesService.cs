@@ -3,6 +3,7 @@ using FluentValidation;
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductSubcategory;
 using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
 using System;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Services
 {
-    public class ProductSubcategoriesService : BaseService<ProductSubcategory, ProductSubcategoryDto, IProductSubcategoriesRepository>, IProductSubcategoriesService
+    public class ProductSubcategoriesService : BaseService<ProductSubcategory, ProductSubcategoryDto, IProductSubcategoriesRepository, ProductSubcategorySearchObject>, IProductSubcategoriesService
     {
         public ProductSubcategoriesService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<ProductSubcategoryDto> validator) : base(mapper, unitOfWork, validator)
         {

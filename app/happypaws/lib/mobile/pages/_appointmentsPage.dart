@@ -3,14 +3,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
 @RoutePage()
-class AppointmentsPage extends StatefulWidget {
-  const AppointmentsPage({super.key});
+class UserAppointmentsPage extends StatefulWidget {
+  const UserAppointmentsPage({super.key});
 
   @override
-  State<AppointmentsPage> createState() => _AppointmentsPageState();
+  State<UserAppointmentsPage> createState() => _UserAppointmentsPageState();
 }
 
-class _AppointmentsPageState extends State<AppointmentsPage> {
+class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
   int activeTab = 0;
   @override
   Widget build(BuildContext context) {

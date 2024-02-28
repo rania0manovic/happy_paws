@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class UsersRepository : BaseRepository<User, int>, IUsersRepository
+    public class UsersRepository : BaseRepository<User, int, UserSearchObject>, IUsersRepository
     {
         public UsersRepository(DatabaseContext databaseContext) : base(databaseContext)
         {

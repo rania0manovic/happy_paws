@@ -27,7 +27,7 @@ namespace HappyPaws.Core.Dtos.Product
         public ProductCategorySubcategoryDto? ProductCategorySubcategory { get; set; } 
         public int ProductCategorySubcategoryId { get; set; }
 
-        public IFormFile? ImageFile { get; set; }
+        public List<IFormFile>? ImageFiles { get; set; }
         public ICollection<ProductImageDto>? ProductImages { get; set; }
         public ICollection<ProductReviewDto>? ProductReviews { get; set; }
         public ICollection<UserCartDto>? UserCartItems { get; set; }

@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class UserCartsRepository : BaseRepository<UserCart, int>, IUserCartsRepository
+    public class UserCartsRepository : BaseRepository<UserCart, int,UserCartSearchObject>, IUserCartsRepository
     {
         public UserCartsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {

@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class ImagesRepository : BaseRepository<Image, int>, IImagesRepository
+    public class ImagesRepository : BaseRepository<Image, int, BaseSearchObject>, IImagesRepository
     {
         public ImagesRepository(DatabaseContext databaseContext) : base(databaseContext)
         {

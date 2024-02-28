@@ -1,13 +1,15 @@
 ﻿using HappyPaws.Core.Entities;
 using HappyPaws.Core.Models;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using HappyPaws.Infrastructure.Other;
 using Microsoft.EntityFrameworkCore;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class BaseRepository<TEntity, TPrimaryKey> : IBaseRepository<TEntity, TPrimaryKey>
+    public class BaseRepository<TEntity, TPrimaryKey, TSearchObject> : IBaseRepository<TEntity, TPrimaryKey, TSearchObject>
           where TEntity : BaseEntity
+          where TSearchObject : BaseSearchObject
     {
         protected readonly DatabaseContext DatabaseContext;
         protected readonly DbSet<TEntity> DbSet;
@@ -24,7 +26,7 @@ namespace HappyPaws.Infrastructure.Repositories
             await DbSet.AddAsync(entity, cancellationToken);
         }
 
-        public virtual async Task<PagedList<TEntity>> GetPagedAsync(BaseSearchObject searchObject, CancellationToken cancellationToken = default)
+        public virtual async Task<PagedList<TEntity>> GetPagedAsync(TSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             return await DbSet.ToPagedListAsync(searchObject, cancellationToken);
         }

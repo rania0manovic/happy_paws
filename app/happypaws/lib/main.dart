@@ -5,8 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:happypaws/common/utilities/PlatfomInfo.dart';
 import 'package:happypaws/routes/app_router.dart';
 import 'mobile/app_mobile.dart';
-
 import 'desktop/app_desktop.dart';
+
 
 GetIt getIt = GetIt.instance;
 PlatformInfo platformInfo = PlatformInfo();

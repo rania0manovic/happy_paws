@@ -31,12 +31,12 @@ class AppRouter extends $AppRouter {
               children: [AutoRoute(path: '', page: HomeRoute.page)]),
           AutoRoute(path: "clinic", page: ClinicTab.page, children: [
             AutoRoute(path: '', page: ClinicRoute.page),
-            AutoRoute(path: 'appointments', page: AppointmentsRoute.page),
+            AutoRoute(path: 'appointments', page: UserAppointmentsRoute.page),
             AutoRoute(path: 'makeAppointment', page: MakeAppointmentRoute.page)
           ]),
           AutoRoute(path: "shop", page: ShopTab.page, children: [
             AutoRoute(path: '', page: ShopRoute.page),
-            AutoRoute(path: 'cats', page: ShopCategoryOptionsRoute.page)
+            AutoRoute(path: 'category/:id', page: ShopCategorySubcategoriesRoute.page)
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
             AutoRoute(path: '', page: ProfileRoute.page),

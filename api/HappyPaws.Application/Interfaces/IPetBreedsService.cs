@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Dtos.PetBreed;
+using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IPetBreedsService : IBaseService<int, PetBreedDto>
+    public interface IPetBreedsService : IBaseService<int, PetBreedDto, PetBreedSearchObject>
     {
     }
 }

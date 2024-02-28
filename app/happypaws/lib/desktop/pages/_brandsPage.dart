@@ -1,18 +1,14 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
-import 'package:happypaws/common/components/text/RegularText.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
-import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/ActionButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryIconButton.dart';
 import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-import 'package:image_picker/image_picker.dart';
 
 @RoutePage()
 class BrandsPage extends StatefulWidget {

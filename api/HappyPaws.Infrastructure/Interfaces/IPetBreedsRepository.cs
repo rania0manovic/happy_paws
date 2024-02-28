@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Interfaces
 {
-    public interface IPetBreedsRepository : IBaseRepository<PetBreed, int>
+    public interface IPetBreedsRepository : IBaseRepository<PetBreed, int, PetBreedSearchObject>
     {
     }
 }

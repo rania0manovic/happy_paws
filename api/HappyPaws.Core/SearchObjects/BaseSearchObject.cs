@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HappyPaws.Core.Models
+namespace HappyPaws.Core.SearchObjects
 {
     public class BaseSearchObject
     {

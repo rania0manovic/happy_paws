@@ -1,10 +1,36 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/services/ProductCategoriesService.dart';
+import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
-class ShopPage extends StatelessWidget {
+class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
+
+  @override
+  State<ShopPage> createState() => _ShopPageState();
+}
+
+class _ShopPageState extends State<ShopPage> {
+  List<Map<String, dynamic>>? categories;
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    var response = await ProductCategoriesService().getPaged("", 1, 999);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonData = json.decode(response.body);
+      setState(() {
+        categories = List<Map<String, dynamic>>.from(jsonData['items']);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,115 +259,127 @@ class ShopPage extends StatelessWidget {
           radius: const Radius.circular(10),
           thumbVisibility: true,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            padding: const EdgeInsets.only(top: 10, bottom: 20),
             scrollDirection: Axis.horizontal,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => {
-                    context.router.push(const ShopCategoryOptionsRoute())
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(top: 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image(
-                            image:
-                                AssetImage("assets/images/category_cats.png")),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "Cats",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.w700),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Image(
-                          image: AssetImage("assets/images/category_dogs.png")),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Dogs",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w700),
+                if (categories != null)
+                  for (var category in categories!)
+                    GestureDetector(
+                      onTap: () => {
+                        context.router.push(ShopCategorySubcategoriesRoute(
+                            categoryId: category['id'],
+                            categoryName: category['name'],
+                            categoryPhoto:
+                                category['photo']['data']))
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.memory(
+                              base64
+                                  .decode(category['photo']['data'].toString()),
+                              height: 128,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                category['name'],
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    fontSize: 25, fontWeight: FontWeight.w700),
+                              ),
+                            )
+                          ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image(
-                          image: AssetImage("assets/images/category_fish.png")),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Fish",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w700),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image(
-                          image:
-                              AssetImage("assets/images/category_birds.png")),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Birds",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w700),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image(
-                          image: AssetImage(
-                              "assets/images/category_small_animals.png")),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Small\nanimals",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 25, fontWeight: FontWeight.w700),
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                      ),
+                    )
+                    else
+                    const Padding(
+                        padding: EdgeInsets.only(top: 5.0, bottom: 5),
+                        child: Spinner())
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 14, right: 14),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     mainAxisAlignment: MainAxisAlignment.start,
+                //     children: [
+                //       Image(
+                //           image: AssetImage("assets/images/category_dogs.png")),
+                //       Padding(
+                //         padding: EdgeInsets.all(8.0),
+                //         child: Text(
+                //           "Dogs",
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //               fontSize: 25, fontWeight: FontWeight.w700),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 14, right: 14),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: [
+                //       Image(
+                //           image: AssetImage("assets/images/category_fish.png")),
+                //       Padding(
+                //         padding: EdgeInsets.all(8.0),
+                //         child: Text(
+                //           "Fish",
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //               fontSize: 25, fontWeight: FontWeight.w700),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 14, right: 14),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: [
+                //       Image(
+                //           image:
+                //               AssetImage("assets/images/category_birds.png")),
+                //       Padding(
+                //         padding: EdgeInsets.all(8.0),
+                //         child: Text(
+                //           "Birds",
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //               fontSize: 25, fontWeight: FontWeight.w700),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // const Padding(
+                //   padding: EdgeInsets.only(left: 14, right: 14),
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     children: [
+                //       Image(
+                //           image: AssetImage(
+                //               "assets/images/category_small_animals.png")),
+                //       Padding(
+                //         padding: EdgeInsets.all(8.0),
+                //         child: Text(
+                //           "Small\nanimals",
+                //           textAlign: TextAlign.center,
+                //           style: TextStyle(
+                //               fontSize: 25, fontWeight: FontWeight.w700),
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // )
               ],
             ),
           )),

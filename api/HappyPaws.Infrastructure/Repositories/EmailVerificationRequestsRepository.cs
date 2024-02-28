@@ -1,5 +1,6 @@
 ﻿using HappyPaws.Core.Dtos.EmailVerificationRequest;
 using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class EmailVerificationRequestsRepository : BaseRepository<EmailVerificationRequest, int>, IEmailVerificationRequestsRepository
+    public class EmailVerificationRequestsRepository : BaseRepository<EmailVerificationRequest, int, BaseSearchObject>, IEmailVerificationRequestsRepository
     {
         public EmailVerificationRequestsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {

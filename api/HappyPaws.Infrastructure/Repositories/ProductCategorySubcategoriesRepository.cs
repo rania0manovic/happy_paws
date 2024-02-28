@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class ProductCategorySubcategoriesRepository : BaseRepository<ProductCategorySubcategory, int>, IProductCategorySubcategoriesRepository
+    public class ProductCategorySubcategoriesRepository : BaseRepository<ProductCategorySubcategory, int, ProductCategorySubcategorySearchObject>, IProductCategorySubcategoriesRepository
     {
         public ProductCategorySubcategoriesRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
@@ -22,9 +23,18 @@ namespace HappyPaws.Infrastructure.Repositories
                   .SetProperty(x => x.ModifiedAt, DateTime.Now), cancellationToken);
         }
 
-        public async Task<List<ProductCategorySubcategory>> GetSubcategoriesForCategoryAsync(int categoryId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
+        public async Task<List<ProductCategorySubcategory>> GetSubcategoriesForCategoryAsync(int categoryId, bool includePhotos = false, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
         {
-            return await DbSet.Include(x => x.ProductSubcategory).Where(x => x.ProductCategoryId == categoryId && (isDeletedIncluded ? true : x.IsDeleted == false)).ToListAsync(cancellationToken);
+            var query = DbSet.AsQueryable();
+
+            if (includePhotos)
+                query = query.Include(x => x.ProductSubcategory).ThenInclude(x => x.Photo);
+            else
+                query = query.Include(x => x.ProductSubcategory);
+
+            query = query.Where(x => x.ProductCategoryId == categoryId && (isDeletedIncluded || !x.IsDeleted));
+
+            return await query.ToListAsync(cancellationToken);
 
         }
 

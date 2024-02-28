@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Dtos.Employee;
+using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IEmployeesService : IBaseService<int, EmployeeDto>
+    public interface IEmployeesService : IBaseService<int, EmployeeDto, EmployeeSearchObject>
     {
     }
 }

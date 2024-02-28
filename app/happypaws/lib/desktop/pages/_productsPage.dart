@@ -1,16 +1,13 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
-import 'package:http/http.dart' as http;
-
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
-import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/ActionButton.dart';
@@ -275,16 +272,19 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   String? selectedCategory;
   String? selectedSubCategory;
   String? selectedBrand;
-  Map<String, dynamic> data = {};
   List<Map<String, dynamic>>? productCategories;
   List<Map<String, dynamic>>? productSubcategories;
   List<Map<String, dynamic>>? productBrands;
   final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
+  final List<File> _selectedImages = [];
+  var photoCount = 0;
 
   @override
   void initState() {
-    super.initState();
+      super.initState();
+    if (widget.data != null) {
+      data = widget.data!;
+    }
     fetchData();
   }
 
@@ -302,6 +302,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
           fetchSubcategories(selectedCategory);
           selectedSubCategory =
               widget.data!['productCategorySubcategory']['id'].toString();
+          photoCount = widget.data!['productImages'].length;
         }
       });
     }
@@ -332,12 +333,13 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   }
 
   Future<void> _pickImage() async {
+    if (photoCount + _selectedImages.length >= 6) return;
     final XFile? selectedImage =
         await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (selectedImage != null) {
       setState(() {
-        _selectedImage = File(selectedImage.path);
+        _selectedImages.add(File(selectedImage.path));
         data["photoFile"] = selectedImage.path;
       });
     }
@@ -345,6 +347,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
 
   Future<void> addProduct() async {
     try {
+      data["photoFiles"] = _selectedImages;
       var response = await ProductsService().post('', data);
       if (response.statusCode == 200) {
         widget.onClose();
@@ -356,6 +359,23 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       rethrow;
     }
   }
+
+  Future<void> editProduct() async {
+    try {
+      data["photoFiles"] = _selectedImages;
+      var response = await ProductsService().put('', widget.data);
+      if (response.statusCode == 200) {
+        widget.onClose();
+        widget.fetchData();
+      } else {
+       
+        throw Exception('Error occured');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+  Map<String, dynamic> data = {};
 
   @override
   Widget build(BuildContext context) {
@@ -402,9 +422,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                           widthFactor: 0.33,
                           child: Column(
                             children: [
-                              inputField("Name", "Name"),
-                              inputField("Price", "Price"),
-                              textBox("Description", "Description"),
+                              inputField("Name", "name"),
+                              inputField("Price", "price"),
+                              textBox("Description", "description"),
                             ],
                           ),
                         ),
@@ -413,7 +433,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              inputField("In Stock", "InStock"),
+                              inputField("In Stock", "inStock"),
                               dropdownMenu(
                                   productCategories!,
                                   "Category",
@@ -435,7 +455,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                   "Subcategory",
                                   (String? newValue) => setState(() {
                                         selectedSubCategory = newValue;
-                                        data['ProductCategorySubcategoryId'] =
+                                        data['productCategorySubcategoryId'] =
                                             newValue;
                                       }),
                                   selectedSubCategory,
@@ -446,7 +466,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                   "Brand",
                                   (String? newValue) => setState(() {
                                         selectedBrand = newValue;
-                                        data['BrandId'] = newValue;
+                                        data['brandId'] = newValue;
                                       }),
                                   selectedBrand)
                             ],
@@ -462,28 +482,49 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                               Stack(
                                 children: [
                                   Container(
-                                    width: double.infinity,
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                        color: AppColors.dimWhite,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: _selectedImage != null
-                                            ? Image.file(_selectedImage!)
-                                            : widget.data != null
-                                                ? Image.memory(
-                                                    base64.decode(widget
-                                                        .data!['productImages']
-                                                            [0]['image']['data']
-                                                        .toString()),
-                                                    height: 25,
-                                                  )
-                                                : const Image(
-                                                    image: AssetImage(
-                                                        "assets/images/gallery.png"))),
-                                  ),
+                                      width: double.infinity,
+                                      height: 200,
+                                      decoration: BoxDecoration(
+                                          color: AppColors.dimWhite,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Padding(
+                                          padding: const EdgeInsets.all(20.0),
+                                          child: Wrap(
+                                            spacing: 20,
+                                            runSpacing: 20,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            runAlignment: WrapAlignment.center,
+                                            children: [
+                                              if (photoCount > 0)
+                                                for (var item in widget
+                                                    .data!['productImages'])
+                                                  FractionallySizedBox(
+                                                      widthFactor: 0.25,
+                                                      child: Image.memory(base64
+                                                          .decode(item['image']
+                                                                  ['data']
+                                                              .toString()))),
+                                              for (var item in _selectedImages)
+                                                FractionallySizedBox(
+                                                    widthFactor: 0.25,
+                                                    child: Image.file(item)),
+                                              for (int i = 0;
+                                                  i <
+                                                      6 -
+                                                          photoCount -
+                                                          _selectedImages
+                                                              .length;
+                                                  i++)
+                                                const FractionallySizedBox(
+                                                  widthFactor: 0.25,
+                                                  child: Image(
+                                                      image: AssetImage(
+                                                          "assets/images/gallery.png")),
+                                                )
+                                            ],
+                                          ))),
                                   Positioned(
                                       bottom: 0,
                                       right: 0,
@@ -499,7 +540,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                 height: 50,
                               ),
                               PrimaryButton(
-                                onPressed: () => addProduct(),
+                                onPressed: () => widget.data != null
+                                    ? editProduct()
+                                    : addProduct(),
                                 label: widget.data != null
                                     ? "Edit product"
                                     : "Add product",

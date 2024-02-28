@@ -1,15 +1,16 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos;
-using HappyPaws.Core.Models;
+using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace HappyPaws.Api.Controllers
 {
 
-    public abstract class BaseCrudController<TDto, TService> : BaseController
+    public abstract class BaseCrudController<TDto, TService, TSearchObject> : BaseController
         where TDto : BaseDto
-        where TService : IBaseService<int, TDto>
+        where TService : IBaseService<int, TDto, TSearchObject>
+        where TSearchObject : BaseSearchObject
     {
         protected readonly TService Service;
 
@@ -35,7 +36,7 @@ namespace HappyPaws.Api.Controllers
         }
 
         [HttpGet("GetPaged")]
-        public virtual async Task<IActionResult> GetPaged([FromQuery] BaseSearchObject searchObject, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetPaged([FromQuery] TSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             try
             {
