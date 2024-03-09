@@ -246,7 +246,7 @@ class _ProductsPageState extends State<CategoriesPage> {
                   );
                 },
                 icon: Icons.delete_outline_outlined,
-                iconColor: AppColors.errorColor,
+                iconColor: AppColors.error,
               ),
             ],
           ),
@@ -455,7 +455,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                         onPressed: _pickImage,
                                         icon: Icons.add,
                                         iconSize: 20,
-                                        iconColor: AppColors.primaryColor,
+                                        iconColor: AppColors.primary,
                                       ))
                                 ],
                               ),
@@ -478,7 +478,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                             children: [
                                               Checkbox(
                                                 activeColor:
-                                                    AppColors.primaryColor,
+                                                    AppColors.primary,
                                                 value: isCheckedList[index],
                                                 onChanged: (bool? value) {
                                                   setState(() {
@@ -559,7 +559,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.errorColor : Colors.black,
+                color: false ? AppColors.error : Colors.black,
                 fontFamily: 'GilroyLight'),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
@@ -573,7 +573,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
                       color:
-                          false ? AppColors.errorColor : AppColors.primaryColor,
+                          false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

@@ -12,7 +12,7 @@ class Spinner extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            color: AppColors.primaryColor,
+            color: AppColors.primary,
           ),
           SizedBox(
             height: 16,
@@ -20,7 +20,7 @@ class Spinner extends StatelessWidget {
           RegularText(
             label: "Please wait...",
             fontSize: 14,
-            color: AppColors.primaryColor,
+            color: AppColors.primary,
           )
         ],
       ),

@@ -15,7 +15,6 @@ namespace HappyPaws.Application.Services
        where TDto : BaseDto
        where TRepository : class, IBaseRepository<TEntity, int, TBaseSearchObject>
     {
-        private const bool ShouldSoftDelete = true;
         protected readonly IMapper Mapper;
         protected readonly UnitOfWork UnitOfWork;
         protected readonly TRepository CurrentRepository;

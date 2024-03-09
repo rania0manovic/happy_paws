@@ -36,7 +36,11 @@ class AppRouter extends $AppRouter {
           ]),
           AutoRoute(path: "shop", page: ShopTab.page, children: [
             AutoRoute(path: '', page: ShopRoute.page),
-            AutoRoute(path: 'category/:id', page: ShopCategorySubcategoriesRoute.page)
+            AutoRoute(path: 'cart',  page: CartRoute.page, ),
+            AutoRoute(path: 'category/:id', page: ShopCategorySubcategoriesRoute.page), 
+            AutoRoute(path: "products/:categoryId/:subcategoryId", page: CatalogRoute.page),
+            AutoRoute(path: "product/:id", page: ProductDetailsRoute.page)
+
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
             AutoRoute(path: '', page: ProfileRoute.page),

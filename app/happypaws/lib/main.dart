@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +9,7 @@ import 'desktop/app_desktop.dart';
 
 GetIt getIt = GetIt.instance;
 PlatformInfo platformInfo = PlatformInfo();
+
 
 Future<void> main() async {
     await dotenv.load(fileName: ".env");

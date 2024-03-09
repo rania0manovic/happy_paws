@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -16,10 +17,22 @@ class _ClientLayoutState extends State<ClientLayout> {
   final _pageController = PageController(
     initialPage: 0,
   );
+  String searchInput = "";
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> search() async {
+    if (searchInput == "") {
+      if (!context.mounted) return;
+      ToastHelper.showToastError(context, "Input field can not be empty!");
+      return;
+    }
+    else {
+      context.router.push(CatalogRoute(searchInput: searchInput));
+    }
   }
 
   @override
@@ -72,7 +85,6 @@ class _ClientLayoutState extends State<ClientLayout> {
           title: const Text("Home"),
           selectedColor: const Color(0xff3F0D84),
         ),
-
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/vaccines.svg",
@@ -85,7 +97,6 @@ class _ClientLayoutState extends State<ClientLayout> {
           title: const Text("Clinic"),
           selectedColor: const Color(0xff3F0D84),
         ),
-
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/storefront.svg",
@@ -98,7 +109,6 @@ class _ClientLayoutState extends State<ClientLayout> {
           title: const Text("Shop"),
           selectedColor: const Color(0xff3F0D84),
         ),
-
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/account.svg",
@@ -121,35 +131,50 @@ class _ClientLayoutState extends State<ClientLayout> {
       children: [
         Visibility(
             visible: tabsRouter.activeIndex == 2,
-            child: Container(
+            child: SizedBox(
               width: 200,
               child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchInput = value;
+                  });
+                },
                 decoration: InputDecoration(
                     labelText: "Search...",
                     labelStyle: TextStyle(
                         color: Colors.grey.shade400,
                         fontFamily: "GilroyLight",
                         fontWeight: FontWeight.w300),
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SvgPicture.asset(
-                        "assets/icons/search.svg",
-                        height: 20,
-                        width: 20,
-                        color: const Color(0xff3F0D84),
+                    suffixIcon: GestureDetector(
+                      onTap: () => search(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(
+                          "assets/icons/search.svg",
+                          height: 20,
+                          width: 20,
+                          color: const Color(0xff3F0D84),
+                        ),
                       ),
                     )),
               ),
             )),
         Visibility(
           visible: tabsRouter.activeIndex == 2,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SvgPicture.asset(
-              "assets/icons/cart.svg",
-              height: 35,
-              width: 35,
-              color: const Color(0xff3F0D84),
+          child: GestureDetector(
+            onTap: () {
+              print(context.router.current.path);
+              if (context.router.current.name == 'cart') return;
+              context.router.push(const CartRoute());
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SvgPicture.asset(
+                "assets/icons/cart.svg",
+                height: 35,
+                width: 35,
+                color: const Color(0xff3F0D84),
+              ),
             ),
           ),
         ),
@@ -168,14 +193,19 @@ class _ClientLayoutState extends State<ClientLayout> {
         Visibility(
           visible: tabsRouter.activeIndex == 1,
           child: Padding(
-            padding: const EdgeInsets.only(right:10),
+            padding: const EdgeInsets.only(right: 10),
             child: Row(
               children: [
                 const Text(
                   "Emergency call",
                   style: TextStyle(color: Color(0xffBA1A36), fontSize: 20),
                 ),
-                SvgPicture.asset("assets/icons/phone.svg", height: 24, width: 24, color: Color(0xffBA1A36),)
+                SvgPicture.asset(
+                  "assets/icons/phone.svg",
+                  height: 24,
+                  width: 24,
+                  color: Color(0xffBA1A36),
+                )
               ],
             ),
           ),

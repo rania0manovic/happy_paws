@@ -43,7 +43,7 @@ class _ProductsPageState extends State<BrandsPage> {
         fetchData();
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -52,7 +52,7 @@ class _ProductsPageState extends State<BrandsPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            contentPadding: EdgeInsets.all(0),
+            contentPadding: const EdgeInsets.all(0),
             content: AddEditBrandMenu(
               onClose: () {
                 Navigator.of(context).pop();
@@ -206,7 +206,7 @@ class _ProductsPageState extends State<BrandsPage> {
                   );
                 },
                 icon: Icons.delete_outline_outlined,
-                iconColor: AppColors.errorColor,
+                iconColor: AppColors.error,
               ),
             ],
           ),
@@ -276,7 +276,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
         widget.fetchData();
       } else {}
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -373,7 +373,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.errorColor : Colors.black,
+                color: false ? AppColors.error : Colors.black,
                 fontFamily: 'GilroyLight'),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
@@ -387,7 +387,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
                       color:
-                          false ? AppColors.errorColor : AppColors.primaryColor,
+                          false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

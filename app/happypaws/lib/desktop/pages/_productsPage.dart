@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:card_swiper/card_swiper.dart';
+import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
@@ -111,10 +112,14 @@ class _ProductsPageState extends State<ProductsPage> {
                             padding: EdgeInsets.only(top: 32.0),
                             child: Text(
                               'No products added yet.',
-                              style: TextStyle(color: AppColors.primaryColor),
+                              style: TextStyle(color: AppColors.primary),
                             ),
                           ))
-                        : table())
+                        : Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: table()),
+                        ))
                     : const Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
@@ -229,7 +234,7 @@ class _ProductsPageState extends State<ProductsPage> {
                 );
               },
               icon: Icons.delete_outline_outlined,
-              iconColor: AppColors.errorColor,
+              iconColor: AppColors.error,
             ),
           ],
         ),
@@ -277,11 +282,13 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   List<Map<String, dynamic>>? productBrands;
   final ImagePicker _imagePicker = ImagePicker();
   final List<File> _selectedImages = [];
-  var photoCount = 0;
+  List<Map<String, dynamic>> productImages = [];
+  int activeImageId = 0;
+  int activeImageIndex = 0;
 
   @override
   void initState() {
-      super.initState();
+    super.initState();
     if (widget.data != null) {
       data = widget.data!;
     }
@@ -302,7 +309,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
           fetchSubcategories(selectedCategory);
           selectedSubCategory =
               widget.data!['productCategorySubcategory']['id'].toString();
-          photoCount = widget.data!['productImages'].length;
+          productImages =
+              List<Map<String, dynamic>>.from(widget.data!['productImages']);
         }
       });
     }
@@ -333,21 +341,26 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   }
 
   Future<void> _pickImage() async {
-    if (photoCount + _selectedImages.length >= 6) return;
+    if (productImages.length >= 6) return;
     final XFile? selectedImage =
         await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (selectedImage != null) {
+      List<int> bytes = await File(selectedImage.path).readAsBytes();
+      String base64Image = base64Encode(bytes);
       setState(() {
         _selectedImages.add(File(selectedImage.path));
-        data["photoFile"] = selectedImage.path;
+        dynamic photo = {
+          'image': {'data': base64Image}
+        };
+        productImages.add(photo);
       });
     }
   }
 
   Future<void> addProduct() async {
     try {
-      data["photoFiles"] = _selectedImages;
+      data["imageFiles"] = _selectedImages;
       var response = await ProductsService().post('', data);
       if (response.statusCode == 200) {
         widget.onClose();
@@ -362,19 +375,35 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
 
   Future<void> editProduct() async {
     try {
-      data["photoFiles"] = _selectedImages;
+      data["imageFiles"] = _selectedImages;
       var response = await ProductsService().put('', widget.data);
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
       } else {
-       
         throw Exception('Error occured');
       }
     } catch (e) {
       rethrow;
     }
   }
+
+  Future<void> deleteImage() async {
+    try {
+      if (activeImageId != 0) {
+        var response = await ImagesService().delete('/$activeImageId');
+        if (response.statusCode == 200) {
+          widget.fetchData();
+        }
+      }
+      setState(() {
+        productImages.removeAt(activeImageIndex);
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Map<String, dynamic> data = {};
 
   @override
@@ -479,62 +508,98 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                               const SizedBox(
                                 height: 40,
                               ),
-                              Stack(
-                                children: [
-                                  Container(
-                                      width: double.infinity,
-                                      height: 200,
-                                      decoration: BoxDecoration(
-                                          color: AppColors.dimWhite,
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(20.0),
-                                          child: Wrap(
-                                            spacing: 20,
-                                            runSpacing: 20,
-                                            crossAxisAlignment:
-                                                WrapCrossAlignment.center,
-                                            runAlignment: WrapAlignment.center,
-                                            children: [
-                                              if (photoCount > 0)
-                                                for (var item in widget
-                                                    .data!['productImages'])
-                                                  FractionallySizedBox(
-                                                      widthFactor: 0.25,
-                                                      child: Image.memory(base64
-                                                          .decode(item['image']
-                                                                  ['data']
-                                                              .toString()))),
-                                              for (var item in _selectedImages)
-                                                FractionallySizedBox(
-                                                    widthFactor: 0.25,
-                                                    child: Image.file(item)),
-                                              for (int i = 0;
-                                                  i <
-                                                      6 -
-                                                          photoCount -
-                                                          _selectedImages
-                                                              .length;
-                                                  i++)
-                                                const FractionallySizedBox(
-                                                  widthFactor: 0.25,
-                                                  child: Image(
-                                                      image: AssetImage(
-                                                          "assets/images/gallery.png")),
-                                                )
-                                            ],
-                                          ))),
-                                  Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: ActionButton(
+                              Container(
+                                width: double.infinity,
+                                height: 210,
+                                decoration: BoxDecoration(
+                                    color: AppColors.dimWhite,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: productImages.isNotEmpty
+                                    ? Stack(children: [
+                                        Swiper(
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.all(32.0),
+                                              child: Image.memory(
+                                                base64.decode(
+                                                    productImages[index]
+                                                            ['image']['data']
+                                                        .toString()),
+                                              ),
+                                            );
+                                          },
+                                          onIndexChanged: (value) =>
+                                              setState(() {
+                                            if (productImages[value]['image']
+                                                    ['id'] !=
+                                                null) {
+                                              activeImageId =
+                                                  productImages[value]['image']
+                                                      ['id'];
+                                            } else {
+                                              activeImageId = 0;
+                                            }
+                                            activeImageIndex = value;
+                                          }),
+                                          itemCount: productImages.length,
+                                          pagination: const SwiperPagination(
+                                            builder: DotSwiperPaginationBuilder(
+                                              activeColor:
+                                                  AppColors.primary,
+                                            ),
+                                          ),
+                                          control: const SwiperControl(
+                                              color: AppColors.primary,
+                                              size: 16),
+                                        ),
+                                        Positioned(
+                                            bottom: 0,
+                                            right: 0,
+                                            child: ActionButton(
+                                              onPressed: _pickImage,
+                                              icon: Icons.add,
+                                              iconSize: 20,
+                                              iconColor: AppColors.primary,
+                                            )),
+                                        Positioned(
+                                            bottom: 0,
+                                            right: 20,
+                                            child: ActionButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return ConfirmationDialog(
+                                                      title: 'Confirmation',
+                                                      content:
+                                                          'Are you sure you want to delete this photo? This action cannot be undone and will take place immediatly.',
+                                                      onYesPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        deleteImage();
+                                                      },
+                                                      onNoPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                              icon:
+                                                  Icons.delete_forever_rounded,
+                                              iconSize: 20,
+                                              iconColor: AppColors.error,
+                                            ))
+                                      ])
+                                    : ActionButton(
                                         onPressed: _pickImage,
                                         icon: Icons.add,
                                         iconSize: 20,
-                                        iconColor: AppColors.primaryColor,
-                                      ))
-                                ],
+                                        iconColor: AppColors.primary,
+                                      ),
                               ),
                               const SizedBox(
                                 height: 50,
@@ -684,7 +749,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.errorColor : Colors.black,
+                color: false ? AppColors.error : Colors.black,
                 fontFamily: 'GilroyLight'),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
@@ -698,7 +763,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
                       color:
-                          false ? AppColors.errorColor : AppColors.primaryColor,
+                          false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

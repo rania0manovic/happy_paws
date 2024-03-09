@@ -21,18 +21,19 @@ namespace HappyPaws.Infrastructure.Repositories
         {
             return await DbSet.Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
                 .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
-                .Include(x => x.ProductImages).ThenInclude(x => x.Image)
-                .ToPagedListAsync(searchObject, cancellationToken);
+                .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
+                .Where(x => (searchObject.SubcategoryId==null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
+                && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
+                && (searchObject.ProductOrBrandName == null || (x.Name.Contains(searchObject.ProductOrBrandName) || x.Brand.Name.Contains(searchObject.ProductOrBrandName)))
+                ).ToPagedListAsync(searchObject, cancellationToken);
         }
-
-        public async Task<PagedList<Product>> GetPagedByCategoryIdAndSubcategoryIdAsync(ProductSearchObject searchObject, CancellationToken cancellationToken = default)
+        public override async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await DbSet
-                .Include(x => x.ProductImages).ThenInclude(x => x.Image)
-                .Where(x => x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId
-                && x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
-                .ToPagedListAsync(searchObject, cancellationToken);
-
+                .Include(x=>x.ProductImages).ThenInclude(x=>x.Image)
+                .FirstOrDefaultAsync(x=>x.Id==id, cancellationToken);
         }
+
     }
 }
+

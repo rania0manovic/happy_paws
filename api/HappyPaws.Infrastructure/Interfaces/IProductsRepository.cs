@@ -12,6 +12,5 @@ namespace HappyPaws.Infrastructure.Interfaces
 {
     public interface IProductsRepository : IBaseRepository<Product, int, ProductSearchObject>
     {
-        Task<PagedList<Product>> GetPagedByCategoryIdAndSubcategoryIdAsync(ProductSearchObject searchObject, CancellationToken cancellationToken=default);
     }
 }

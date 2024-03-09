@@ -10,10 +10,10 @@ namespace HappyPaws.Core.Entities
     {
         public int Quantity { get; set; }
 
-        public required User User { get; set; }
+        public User User { get; set; } = null!;
         public int UserId { get; set; }
 
-        public required Product Product { get; set; }
+        public Product Product { get; set; } = null!;
         public int ProductId { get; set; }
     }
 }

@@ -10,7 +10,7 @@ class ProductsService extends BaseService {
       'POST',
       Uri.parse(baseUrl),
     );
-    for (var file in data['photoFiles']) {
+    for (var file in data['imageFiles']) {
       request.files.add(
         await http.MultipartFile.fromPath(
           'ImageFiles',
@@ -25,7 +25,7 @@ class ProductsService extends BaseService {
       var response = await request.send();
       return response;
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -35,8 +35,8 @@ class ProductsService extends BaseService {
       'PUT',
       Uri.parse(baseUrl),
     );
-    if (data['photoFiles'] != null) {
-      for (var file in data['photoFiles']) {
+    if (data['imageFiles'] != null) {
+      for (var file in data['imageFiles']) {
         request.files.add(
           await http.MultipartFile.fromPath(
             'ImageFiles',
@@ -54,7 +54,8 @@ class ProductsService extends BaseService {
       var response = await request.send();
       return response;
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
+
 }

@@ -19,7 +19,7 @@ class ConfirmationDialog extends StatelessWidget {
     return AlertDialog(
       title: Text(
         title,
-        style: TextStyle(color: AppColors.primaryColor),
+        style: TextStyle(color: AppColors.primary),
       ),
       content: Text(content),
       actions: [
@@ -28,26 +28,26 @@ class ConfirmationDialog extends StatelessWidget {
               overlayColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.hovered)) {
-                return AppColors.primaryColor.withOpacity(0.1);
+                return AppColors.primary.withOpacity(0.1);
               }
               return Colors.transparent;
             },
           )),
           onPressed: onYesPressed,
-          child: Text('Yes', style: TextStyle(color: AppColors.primaryColor)),
+          child: Text('Yes', style: TextStyle(color: AppColors.primary)),
         ),
         TextButton(
             style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.hovered)) {
-                return AppColors.primaryColor.withOpacity(0.1);
+                return AppColors.primary.withOpacity(0.1);
               }
               return Colors.transparent;
             },
           )),
           onPressed: onNoPressed,
-          child: Text('No', style: TextStyle(color: AppColors.primaryColor)),
+          child: Text('No', style: TextStyle(color: AppColors.primary)),
         ),
       ],
     );

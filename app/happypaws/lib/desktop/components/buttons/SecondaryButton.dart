@@ -19,12 +19,12 @@ class SecondaryButton extends StatelessWidget {
       onPressed: onPressed,
       icon: Icon(
         icon,
-        color: AppColors.primaryColor,
+        color: AppColors.primary,
       ),
       style: ButtonStyle(
         padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)),
         elevation: MaterialStateProperty.all(0),
-        side: MaterialStateBorderSide.resolveWith((states) => BorderSide(color:AppColors.primaryColor)),
+        side: MaterialStateBorderSide.resolveWith((states) => BorderSide(color:AppColors.primary)),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.hovered)) {
@@ -38,7 +38,7 @@ class SecondaryButton extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: Text(
           label,
-          style: const TextStyle(color: AppColors.primaryColor),
+          style: const TextStyle(color: AppColors.primary),
         ),
       ),
     );

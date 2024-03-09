@@ -86,7 +86,7 @@ class _AdminLayoutState extends State<AdminLayout> {
           barTile(0, context, "Dashboard", "assets/icons/dashboard.svg",
               const DashboardRoute()),
           ExpansionTile(
-            iconColor: AppColors.primaryColor,
+            iconColor: AppColors.primary,
             collapsedIconColor: Colors.white,
             leading: SvgPicture.asset(
               "assets/icons/storefront.svg",
@@ -118,7 +118,7 @@ class _AdminLayoutState extends State<AdminLayout> {
           barTile(6, context, "Reports", "assets/icons/report.svg",
               const AppointmentsRoute()),
           ExpansionTile(
-            iconColor: AppColors.primaryColor,
+            iconColor: AppColors.primary,
             collapsedIconColor: Colors.white,
             leading: SvgPicture.asset(
               "assets/icons/settings.svg",
@@ -172,7 +172,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 fontFamily: 'GilroyLight',
                 fontWeight: FontWeight.w600)),
         selected: _selectedIndex == index,
-        selectedTileColor: AppColors.primaryColor,
+        selectedTileColor: AppColors.primary,
         hoverColor: const Color.fromARGB(25, 219, 219, 219),
         onTap: () {
           context.router.push(page);

@@ -31,7 +31,7 @@ class ActionButton extends StatelessWidget {
         ),
       ),
       splashRadius: 15,
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       icon: Icon(icon, color: iconColor),
     );
   }

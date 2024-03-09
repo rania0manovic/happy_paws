@@ -18,7 +18,7 @@ class PrimaryIconButton extends StatelessWidget {
       onPressed: onPressed,
       icon: icon,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.primary,
         padding: const EdgeInsets.all(15),
       ),
       label: Text(label),

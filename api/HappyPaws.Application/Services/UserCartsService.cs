@@ -14,5 +14,22 @@ namespace HappyPaws.Application.Services
         public UserCartsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<UserCartDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
+
+        public async Task<bool> AlreadyInCartAsync(int productId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.AlreadyInCartAsync(productId, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<UserCartDto> UpdateAsync(UserCartDto dto, CancellationToken cancellationToken = default)
+        {
+            var entity = await GetByIdAsync(dto.Id);
+            if (entity != null)
+            {
+                entity.Quantity = dto.Quantity;
+                return await base.UpdateAsync(entity, cancellationToken);
+            }
+            else throw new Exception($"Product in cart with id: {dto.Id} not found.");
+        }
+
     }
 }

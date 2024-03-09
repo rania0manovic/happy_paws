@@ -46,7 +46,7 @@ class _ProductsPageState extends State<SubcategoriesPage> {
         fetchData();
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -55,19 +55,17 @@ class _ProductsPageState extends State<SubcategoriesPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            insetPadding: EdgeInsets.symmetric(vertical: 80),
-            contentPadding: EdgeInsets.all(8),
+            insetPadding: const EdgeInsets.symmetric(vertical: 80),
+            contentPadding: const EdgeInsets.all(8),
             content: AddEditSubcategoryMenu(
               fetchData: fetchData,
               onClose: () {
                 Navigator.of(context).pop();
               },
-              
               data: data,
             ),
           );
         });
-   
   }
 
   void showConfirmationDialog(BuildContext context) {
@@ -238,7 +236,7 @@ class _ProductsPageState extends State<SubcategoriesPage> {
                   );
                 },
                 icon: Icons.delete_outline_outlined,
-                iconColor: AppColors.errorColor,
+                iconColor: AppColors.error,
               ),
             ],
           ),
@@ -274,8 +272,7 @@ class AddEditSubcategoryMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditSubcategoryMenuState createState() =>
-      _AddEditSubcategoryMenuState();
+  _AddEditSubcategoryMenuState createState() => _AddEditSubcategoryMenuState();
 }
 
 class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
@@ -323,7 +320,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
         widget.fetchData();
       } else {}
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 
@@ -391,16 +388,15 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                               height: 200,
                               decoration: BoxDecoration(
                                   color: AppColors.dimWhite,
-                                  borderRadius:
-                                      BorderRadius.circular(10)),
+                                  borderRadius: BorderRadius.circular(10)),
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: _selectedImage != null
                                     ? Image.file(_selectedImage!)
                                     : widget.data != null
                                         ? Image.memory(
-                                            base64.decode(widget
-                                                .data!['photo']['data']
+                                            base64.decode(widget.data!['photo']
+                                                    ['data']
                                                 .toString()),
                                             height: 25,
                                           )
@@ -416,7 +412,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                                   onPressed: _pickImage,
                                   icon: Icons.add,
                                   iconSize: 20,
-                                  iconColor: AppColors.primaryColor,
+                                  iconColor: AppColors.primary,
                                 ))
                           ],
                         ),
@@ -468,7 +464,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.errorColor : Colors.black,
+                color: false ? AppColors.error : Colors.black,
                 fontFamily: 'GilroyLight'),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
@@ -481,8 +477,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color:
-                          false ? AppColors.errorColor : AppColors.primaryColor,
+                      color: false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

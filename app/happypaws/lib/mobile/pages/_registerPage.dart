@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
         throw Exception('User with the same email exists');
       }
     } catch (e) {
-      print(e);
+      rethrow;
     }
   }
 

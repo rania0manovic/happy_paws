@@ -24,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
         Map<String, dynamic> jsonResponse = json.decode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', jsonResponse['token'].toString());
-        var user = await AuthService().getCurrentUser();
         context.router.push(const ClientLayout());
       } else if (response.statusCode == 403) {
         setState(() {
@@ -59,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                 "Happy paws",
                 style: TextStyle(
                   fontSize: 35,
-                  color: AppColors.primaryColor,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -94,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: 16,
-                              color: AppColors.errorColor,
+                              color: AppColors.error,
                               fontWeight: FontWeight.w300,
                               fontFamily: "GilroyLight"),
                         ),
@@ -108,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 50,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: AppColors.primaryColor),
+                              color: AppColors.primary),
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -175,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                 data[key] = value;
               });
             },
-            style: TextStyle(color: error ? AppColors.errorColor :Colors.black),
+            style: TextStyle(color: error ? AppColors.error :Colors.black),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 filled: true,
@@ -185,8 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide:  BorderSide(
-                      color: error ? AppColors.errorColor :
-                          AppColors.primaryColor, 
+                      color: error ? AppColors.error :
+                          AppColors.primary, 
                       width: 5.0, 
                     ),
                     borderRadius: BorderRadius.circular(10))),

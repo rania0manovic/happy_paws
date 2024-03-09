@@ -10,6 +10,8 @@ namespace HappyPaws.Core.SearchObjects
     {
         public int? CategoryId { get; set; }
         public int? SubcategoryId { get; set; }
+        public string? ProductOrBrandName { get; set; }
+        public int TakePhotos { get; set; } = 6;
 
     }
 }

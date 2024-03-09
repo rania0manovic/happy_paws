@@ -10,5 +10,6 @@ namespace HappyPaws.Application.Interfaces
 {
     public interface IUserCartsService : IBaseService<int, UserCartDto, UserCartSearchObject>
     {
+        Task<bool> AlreadyInCartAsync(int productId, CancellationToken cancellationToken = default);
     }
 }

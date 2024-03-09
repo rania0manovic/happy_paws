@@ -38,11 +38,16 @@ class BaseService {
     return response;
   }
 
-  Future<dynamic> getPaged(
-      String endpoint, int pageNumber, int pageSize) async {
+  Future<dynamic> getPaged(String endpoint, int pageNumber, int pageSize,
+      {Map<String, dynamic>? searchObject}) async {
+    var queryString = '';
+    if (searchObject != null) {
+      queryString = Uri(queryParameters: searchObject).query;
+    }
 
     final response = await http.get(
-      Uri.parse('$baseUrl/GetPaged?PageNumber=$pageNumber&PageSize=$pageSize'),
+      Uri.parse(
+          '$baseUrl/GetPaged?PageNumber=$pageNumber&PageSize=$pageSize&$queryString'),
     );
     return _processResponse(response);
   }

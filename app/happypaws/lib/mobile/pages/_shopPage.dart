@@ -271,8 +271,7 @@ class _ShopPageState extends State<ShopPage> {
                         context.router.push(ShopCategorySubcategoriesRoute(
                             categoryId: category['id'],
                             categoryName: category['name'],
-                            categoryPhoto:
-                                category['photo']['data']))
+                            categoryPhoto: category['photo']['data']))
                       },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 0),
@@ -297,89 +296,12 @@ class _ShopPageState extends State<ShopPage> {
                         ),
                       ),
                     )
-                    else
-                    const Padding(
-                        padding: EdgeInsets.only(top: 5.0, bottom: 5),
-                        child: Spinner())
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 14, right: 14),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     mainAxisAlignment: MainAxisAlignment.start,
-                //     children: [
-                //       Image(
-                //           image: AssetImage("assets/images/category_dogs.png")),
-                //       Padding(
-                //         padding: EdgeInsets.all(8.0),
-                //         child: Text(
-                //           "Dogs",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontSize: 25, fontWeight: FontWeight.w700),
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // ),
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 14, right: 14),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       Image(
-                //           image: AssetImage("assets/images/category_fish.png")),
-                //       Padding(
-                //         padding: EdgeInsets.all(8.0),
-                //         child: Text(
-                //           "Fish",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontSize: 25, fontWeight: FontWeight.w700),
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // ),
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 14, right: 14),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       Image(
-                //           image:
-                //               AssetImage("assets/images/category_birds.png")),
-                //       Padding(
-                //         padding: EdgeInsets.all(8.0),
-                //         child: Text(
-                //           "Birds",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontSize: 25, fontWeight: FontWeight.w700),
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // ),
-                // const Padding(
-                //   padding: EdgeInsets.only(left: 14, right: 14),
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       Image(
-                //           image: AssetImage(
-                //               "assets/images/category_small_animals.png")),
-                //       Padding(
-                //         padding: EdgeInsets.all(8.0),
-                //         child: Text(
-                //           "Small\nanimals",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontSize: 25, fontWeight: FontWeight.w700),
-                //         ),
-                //       )
-                //     ],
-                //   ),
-                // )
+                else
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 160,
+                    child: Spinner())
+               
               ],
             ),
           )),
