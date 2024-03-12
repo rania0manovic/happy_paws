@@ -26,8 +26,7 @@ class _HomePageState extends State<HomePage> {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 16,
-                fontFamily: "GilroyLight",
-                fontWeight: FontWeight.w300),
+                fontWeight: FontWeight.w500),
           ),
         ),
         _cheritySection(),
@@ -85,7 +84,7 @@ Column _cheritySection() {
               height: 40,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Color(0xff3F0D84)),
+                  color: const Color(0xff3F0D84)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -119,8 +118,7 @@ Column _cheritySection() {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 16,
-              fontFamily: "GilroyLight",
-              fontWeight: FontWeight.w300),
+              fontWeight: FontWeight.w500),
         ),
       ),
     ],
@@ -256,10 +254,9 @@ class _QuestionSectionItemState extends State<QuestionSectionItem> {
               child: Text(
                 widget.content,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: "GilroyLight",
+                style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w300),
+                    fontWeight: FontWeight.w500),
               ),
             ),
         ],

@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
+import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -15,7 +17,8 @@ class CatalogPage extends StatefulWidget {
       this.categoryPhoto,
       this.categoryName,
       this.subcategoryName,
-      this.searchInput});
+      this.searchInput,
+      this.isShowingFavourites});
 
   final int? categoryId;
   final int? subcategoryId;
@@ -23,6 +26,7 @@ class CatalogPage extends StatefulWidget {
   final String? categoryName;
   final String? subcategoryName;
   final String? searchInput;
+  final bool? isShowingFavourites;
 
   @override
   State<CatalogPage> createState() => _CatalogPageState();
@@ -38,19 +42,25 @@ class _CatalogPageState extends State<CatalogPage> {
   @override
   void initState() {
     super.initState();
-      setState(() {
-        params['categoryId'] = widget.categoryId?.toString();
-        params['subcategoryId'] = widget.subcategoryId?.toString();
-        params['takePhotos'] = "1";
-        params['productOrBrandName'] = widget.searchInput;
-
-      });
+    setState(() {
+      params['categoryId'] = widget.categoryId?.toString();
+      params['subcategoryId'] = widget.subcategoryId?.toString();
+      params['takePhotos'] = "1";
+      params['productOrBrandName'] = widget.searchInput;
+    });
     fetchData();
   }
 
   Future<void> fetchData() async {
-    var response =
+    var response;
+    if (widget.isShowingFavourites != null && widget.isShowingFavourites!) {
+      var fetchedUser = await AuthService().getCurrentUser();
+       response = await UserFavouritesService().getPagedProducts(fetchedUser?['Id']);
+    }
+     else {
+      response =
         await ProductsService().getPaged('', 1, 999, searchObject: params);
+    }
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
@@ -77,10 +87,8 @@ class _CatalogPageState extends State<CatalogPage> {
                     padding: EdgeInsets.only(bottom: 14.0),
                     child: Text(
                       'Go back',
-                      style: TextStyle(
-                          fontFamily: 'GilroyLight',
-                          fontWeight: FontWeight.w300,
-                          fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                   ),
                 ),
@@ -160,9 +168,7 @@ class _CatalogPageState extends State<CatalogPage> {
                               : item['name'],
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                              fontSize: 15,
-                              fontFamily: "GilroyLight",
-                              fontWeight: FontWeight.w300),
+                              fontSize: 15, fontWeight: FontWeight.w500),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -215,7 +221,7 @@ class _CatalogPageState extends State<CatalogPage> {
         if (products != null && products!.isEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 36.0),
-            child: Center(child: Text( 'We found no products in this category')),
+            child: Center(child: Text('We found no products in this category')),
           )
       ],
     );
@@ -236,9 +242,9 @@ class _CatalogPageState extends State<CatalogPage> {
         child: Text(
           " / ${widget.subcategoryName}",
           style: const TextStyle(
-              fontWeight: FontWeight.w300,
-              fontSize: 14,
-              fontFamily: "GilroyLight"),
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
         ),
       ),
       const Spacer(),
@@ -314,7 +320,6 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
-                          fontFamily: 'GilroyLight',
                         ),
                       ),
                       const Spacer(),
@@ -367,8 +372,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
             '1 star & Up',
             style: TextStyle(
               fontSize: 16,
-              fontFamily: "GilroyLight",
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
           ),
           value: '1',
@@ -383,8 +387,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
             '2 star & Up',
             style: TextStyle(
               fontSize: 16,
-              fontFamily: "GilroyLight",
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
           ),
           value: '2',
@@ -399,8 +402,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
             '3 star & Up',
             style: TextStyle(
               fontSize: 16,
-              fontFamily: "GilroyLight",
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
           ),
           value: '3',
@@ -415,8 +417,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
             '4 star & Up',
             style: TextStyle(
               fontSize: 16,
-              fontFamily: "GilroyLight",
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w500,
             ),
           ),
           value: '4',
@@ -470,8 +471,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
               'Highest',
               style: TextStyle(
                 fontSize: 16,
-                fontFamily: "GilroyLight",
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
               ),
             ),
             value: 'option1',
@@ -488,8 +488,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
               'Lowest',
               style: TextStyle(
                 fontSize: 16,
-                fontFamily: "GilroyLight",
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w500,
               ),
             ),
             value: 'option2',

@@ -10,7 +10,7 @@ class MyAppMobile extends StatelessWidget {
     final appRouter = AppRouter();
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(fontFamily: "Gilroy"),
+      theme: ThemeData(fontFamily: "SF Pro Display"),
       routerConfig: appRouter.config(),
     );
   }

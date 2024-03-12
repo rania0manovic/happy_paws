@@ -24,8 +24,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
               child: Text(
                 'Go back',
                 style: TextStyle(
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w500,
                     fontSize: 16),
               ),
             ),
@@ -40,8 +39,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           const Text(
             'Please pick your pet:',
             style: TextStyle(
-                fontFamily: 'GilroyLight',
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w500,
                 fontSize: 16),
           ),
           dropdownMenu(),
@@ -51,8 +49,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           const Text(
             'Please describe your reason for visit:',
             style: TextStyle(
-                fontFamily: 'GilroyLight',
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w500,
                 fontSize: 16),
           ),
           Container(
@@ -61,7 +58,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           child: TextField(
             minLines: 10,
             maxLines: 10,
-            style: TextStyle(fontFamily: 'GilroyLight', fontWeight: FontWeight.w300, fontSize: 14),
+            style: const TextStyle( fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
@@ -82,8 +79,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           const Text(
             'Note (optional):',
             style: TextStyle(
-                fontFamily: 'GilroyLight',
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w500,
                 fontSize: 16),
           ),
           Container(
@@ -92,7 +88,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           child: TextField(
             minLines: 5,
             maxLines: 5,
-            style: TextStyle(fontFamily: 'GilroyLight', fontWeight: FontWeight.w300, fontSize: 14),
+            style: const TextStyle( fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),

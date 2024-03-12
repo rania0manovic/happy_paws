@@ -52,7 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(
                   fontSize: 35,
                   color: Color(0xff3F0D84),
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -64,8 +64,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextStyle(
                     fontSize: 16,
                     color: Colors.black.withOpacity(0.7),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: "GilroyLight"),
+                    fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
             Padding(
@@ -104,8 +104,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       decoration: TextDecoration.underline,
                       fontSize: 16,
                       color: Colors.black.withOpacity(0.7),
-                      fontWeight: FontWeight.w300,
-                      fontFamily: "GilroyLight"),
+                      fontWeight: FontWeight.w500,
+                     ),
                 ),
               ),
             )
@@ -123,8 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
         Text(
           label,
           style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(

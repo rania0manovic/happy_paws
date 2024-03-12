@@ -8,6 +8,8 @@ using HappyPaws.Core.Entities;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace HappyPaws.Application.Services
 {
@@ -58,7 +60,7 @@ namespace HappyPaws.Application.Services
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
                 var response = await base.UpdateAsync(dto, cancellationToken);
-                if(dto.ImageFiles != null)
+                if (dto.ImageFiles != null)
                 {
                     foreach (var file in dto.ImageFiles)
                     {
@@ -89,6 +91,16 @@ namespace HappyPaws.Application.Services
             {
                 throw;
             }
+        }
+        public async Task<ProductDto?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default)
+        {
+            var result = Mapper.Map<ProductDto>(await CurrentRepository.GetByIdAsync(id, userId, cancellationToken));
+            if (result != null && !result.UserFavouriteItems.IsNullOrEmpty())
+            {
+                result.IsFavourite = true;
+            }
+
+            return result;
         }
     }
 }

@@ -27,8 +27,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                 child: Text(
                   'Go back',
                   style: TextStyle(
-                      fontFamily: 'GilroyLight',
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w500,
                       fontSize: 16),
                 ),
               ),
@@ -194,8 +193,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontFamily: 'GilroyLight',
-                        fontWeight: FontWeight.w300),
+                        fontWeight: FontWeight.w500),
                   ),
                   Text(
                     "Reason: $reason",
@@ -203,8 +201,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                     style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontFamily: 'GilroyLight',
-                        fontWeight: FontWeight.w300),
+                        fontWeight: FontWeight.w500),
                   )
                 ]),
           ),

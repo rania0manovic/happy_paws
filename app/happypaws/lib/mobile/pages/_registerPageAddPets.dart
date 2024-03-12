@@ -55,8 +55,8 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black.withOpacity(0.7),
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ),
                       const Padding(
@@ -121,8 +121,8 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black.withOpacity(0.7),
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                              ),
                         ),
                       )
                     ],
@@ -138,8 +138,8 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black.withOpacity(0.7),
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ),
                       Padding(
@@ -223,8 +223,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
         Text(
           label,
           style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(

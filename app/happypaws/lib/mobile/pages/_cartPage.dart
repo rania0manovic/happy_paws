@@ -28,14 +28,16 @@ class _CartPageState extends State<CartPage> {
   Future<void> fetchData() async {
     try {
       var user = await AuthService().getCurrentUser();
-      var response = await UserCartsService()
-          .getPaged('', 1, 999, searchObject: {'userId': user?['Id']});
-      if (response.statusCode == 200) {
+      if (user != null) {
+        var response = await UserCartsService()
+            .getPaged('', 1, 999, searchObject: {'userId': user['Id']});
         if (response.statusCode == 200) {
-          Map<String, dynamic> jsonData = json.decode(response.body);
-          setState(() {
-            products = List<Map<String, dynamic>>.from(jsonData['items']);
-          });
+          if (response.statusCode == 200) {
+            Map<String, dynamic> jsonData = json.decode(response.body);
+            setState(() {
+              products = List<Map<String, dynamic>>.from(jsonData['items']);
+            });
+          }
         }
       }
     } catch (e) {
@@ -72,7 +74,7 @@ class _CartPageState extends State<CartPage> {
       if (response.statusCode == 200) {
         setState(() {
           products!.firstWhere((element) => element['id'] == id)['quantity'] =
-            int.parse(quantity!);
+              int.parse(quantity!);
         });
       }
     } catch (e) {
@@ -95,10 +97,8 @@ class _CartPageState extends State<CartPage> {
                     padding: EdgeInsets.all(14.0),
                     child: Text(
                       'Go back',
-                      style: TextStyle(
-                          fontFamily: 'GilroyLight',
-                          fontWeight: FontWeight.w300,
-                          fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
                   ),
                 ),
@@ -178,9 +178,7 @@ class _CartPageState extends State<CartPage> {
                                         Text(
                                           item['product']['brand']['name']
                                               .toUpperCase(),
-                                          style: const TextStyle(
-                                              fontFamily: 'Gilroy light',
-                                              fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                       ],
                                     ),
@@ -193,7 +191,9 @@ class _CartPageState extends State<CartPage> {
                                       children: [
                                         Text(
                                           "\$ ${item['product']['price']}",
-                                          style: const TextStyle(fontSize: 20),
+                                          style: const TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600),
                                         ),
                                         const SizedBox(
                                           height: 20,
@@ -236,12 +236,10 @@ class _CartPageState extends State<CartPage> {
                                                       value: value,
                                                       child: Text(value,
                                                           style: const TextStyle(
-                                                              fontFamily:
-                                                                  'GilroyLight',
                                                               fontSize: 18,
                                                               fontWeight:
                                                                   FontWeight
-                                                                      .w300)),
+                                                                      .w500)),
                                                     );
                                                   }).toList(),
                                                 ),
@@ -286,7 +284,8 @@ class _CartPageState extends State<CartPage> {
                             ),
                             Text(
                                 '\$ ${products!.map<double>((item) => item['product']['price'] * item['quantity']).reduce((value, element) => value + element).toStringAsFixed(2)}',
-                                style: const TextStyle(fontSize: 20))
+                                style: const TextStyle(
+                                    fontSize: 22, fontWeight: FontWeight.w600))
                           ],
                         ),
                       ),
@@ -300,7 +299,7 @@ class _CartPageState extends State<CartPage> {
                         child: const Center(
                             child: Text(
                           'Order',
-                          style: TextStyle(fontSize: 22, color: Colors.white),
+                          style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.w600),
                         )),
                       ),
                       const SizedBox(

@@ -3,11 +3,10 @@ import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService extends BaseService {
-     AuthService() : super("Auth");
-
+  AuthService() : super("Auth");
 
   Future<dynamic> signIn(dynamic data) async {
-    final response = await post('/SignIn', data);
+    final response = await post('SignIn', data);
     return response;
   }
 
@@ -22,18 +21,23 @@ class AuthService extends BaseService {
   }
 
   Future<Map<String, dynamic>?> getCurrentUser() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final String? token = prefs.getString("token");
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString("token");
 
-  if (token != null) {
-    try {
-      final Map<String, dynamic> decoded = Jwt.parseJwt(token);
-      return decoded;
-    } catch (e) {
-      print("Error decoding JWT: $e");
+    if (token != null) {
+      try {
+        final Map<String, dynamic> decoded = Jwt.parseJwt(token);
+        return decoded;
+      } catch (e) {
+        print("Error decoding JWT: $e");
+      }
     }
+
+    return null;
   }
 
-  return null;
-}
+  Future<void> logOut() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+  }
 }

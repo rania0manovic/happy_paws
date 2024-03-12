@@ -91,6 +91,7 @@ abstract class $AppRouter extends _i28.RootStackRouter {
           categoryName: args.categoryName,
           subcategoryName: args.subcategoryName,
           searchInput: args.searchInput,
+          isShowingFavourites: args.isShowingFavourites,
         ),
       );
     },
@@ -345,6 +346,7 @@ class CatalogRoute extends _i28.PageRouteInfo<CatalogRouteArgs> {
     String? categoryName,
     String? subcategoryName,
     String? searchInput,
+    bool? isShowingFavourites,
     List<_i28.PageRouteInfo>? children,
   }) : super(
           CatalogRoute.name,
@@ -356,6 +358,7 @@ class CatalogRoute extends _i28.PageRouteInfo<CatalogRouteArgs> {
             categoryName: categoryName,
             subcategoryName: subcategoryName,
             searchInput: searchInput,
+            isShowingFavourites: isShowingFavourites,
           ),
           rawPathParams: {
             'categoryId': categoryId,
@@ -379,6 +382,7 @@ class CatalogRouteArgs {
     this.categoryName,
     this.subcategoryName,
     this.searchInput,
+    this.isShowingFavourites,
   });
 
   final _i29.Key? key;
@@ -395,9 +399,11 @@ class CatalogRouteArgs {
 
   final String? searchInput;
 
+  final bool? isShowingFavourites;
+
   @override
   String toString() {
-    return 'CatalogRouteArgs{key: $key, categoryId: $categoryId, subcategoryId: $subcategoryId, categoryPhoto: $categoryPhoto, categoryName: $categoryName, subcategoryName: $subcategoryName, searchInput: $searchInput}';
+    return 'CatalogRouteArgs{key: $key, categoryId: $categoryId, subcategoryId: $subcategoryId, categoryPhoto: $categoryPhoto, categoryName: $categoryName, subcategoryName: $subcategoryName, searchInput: $searchInput, isShowingFavourites: $isShowingFavourites}';
   }
 }
 

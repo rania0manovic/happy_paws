@@ -50,7 +50,6 @@ class _AdminLayoutState extends State<AdminLayout> {
                                     child: Text(
                                       'Rania Omanovic',
                                       style: TextStyle(
-                                          fontFamily: 'GilroyLight',
                                           fontSize: 12),
                                     ),
                                   )
@@ -98,7 +97,6 @@ class _AdminLayoutState extends State<AdminLayout> {
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
-                  fontFamily: 'GilroyLight',
                   fontWeight: FontWeight.w600),
             ),
             children: [
@@ -130,7 +128,6 @@ class _AdminLayoutState extends State<AdminLayout> {
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
-                  fontFamily: 'GilroyLight',
                   fontWeight: FontWeight.w600),
             ),
             children: [
@@ -169,7 +166,6 @@ class _AdminLayoutState extends State<AdminLayout> {
             style: const TextStyle(
                 color: Colors.white,
                 fontSize: 14,
-                fontFamily: 'GilroyLight',
                 fontWeight: FontWeight.w600)),
         selected: _selectedIndex == index,
         selectedTileColor: AppColors.primary,

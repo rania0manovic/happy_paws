@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -132,7 +133,7 @@ class _ClientLayoutState extends State<ClientLayout> {
         Visibility(
             visible: tabsRouter.activeIndex == 2,
             child: SizedBox(
-              width: 200,
+              width: 150,
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -143,8 +144,7 @@ class _ClientLayoutState extends State<ClientLayout> {
                     labelText: "Search...",
                     labelStyle: TextStyle(
                         color: Colors.grey.shade400,
-                        fontFamily: "GilroyLight",
-                        fontWeight: FontWeight.w300),
+                        fontWeight: FontWeight.w500),
                     suffixIcon: GestureDetector(
                       onTap: () => search(),
                       child: Padding(
@@ -178,6 +178,18 @@ class _ClientLayoutState extends State<ClientLayout> {
             ),
           ),
         ),
+         Visibility(
+          visible: tabsRouter.activeIndex == 2,
+          child: GestureDetector(
+            onTap: () {
+              context.router.push( CatalogRoute(isShowingFavourites: true));
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.favorite, size: 35, color: AppColors.primary,)
+            ),
+          ),
+        ),
         Visibility(
           visible: tabsRouter.activeIndex == 0,
           child: Padding(
@@ -204,7 +216,7 @@ class _ClientLayoutState extends State<ClientLayout> {
                   "assets/icons/phone.svg",
                   height: 24,
                   width: 24,
-                  color: Color(0xffBA1A36),
+                  color: const Color(0xffBA1A36),
                 )
               ],
             ),

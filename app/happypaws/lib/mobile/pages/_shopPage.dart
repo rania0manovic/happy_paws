@@ -45,8 +45,7 @@ class _ShopPageState extends State<ShopPage> {
                 "Previous orders",
                 style: TextStyle(
                     fontSize: 16,
-                    fontFamily: "GilroyLight",
-                    fontWeight: FontWeight.w300),
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ),
@@ -152,8 +151,7 @@ class _ShopPageState extends State<ShopPage> {
                     Text(
                       "MaroSnacks",
                       style: TextStyle(
-                        fontFamily: "GilroyLight",
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
@@ -178,8 +176,7 @@ class _ShopPageState extends State<ShopPage> {
                     Text(
                       "MaroSnacks",
                       style: TextStyle(
-                        fontFamily: "GilroyLight",
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
@@ -204,8 +201,7 @@ class _ShopPageState extends State<ShopPage> {
                     Text(
                       "MaroSnacks",
                       style: TextStyle(
-                        fontFamily: "GilroyLight",
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
@@ -230,8 +226,7 @@ class _ShopPageState extends State<ShopPage> {
                     Text(
                       "MaroSnacks",
                       style: TextStyle(
-                        fontFamily: "GilroyLight",
-                        fontWeight: FontWeight.w300,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(

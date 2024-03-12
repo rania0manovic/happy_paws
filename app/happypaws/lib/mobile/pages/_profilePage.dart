@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/mobile/pages/_welcomePage.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -68,8 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text(
                         "Personal Information",
                         style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GilroyLight',
+                            fontWeight: FontWeight.w500,
                             fontSize: 20),
                       ),
                     ),
@@ -78,8 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text(
                         "My Pets",
                         style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GilroyLight',
+                            fontWeight: FontWeight.w500,
                             fontSize: 20),
                       ),
                     ),
@@ -87,8 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: const Text(
                         "Payment Information",
                         style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'GilroyLight',
+                            fontWeight: FontWeight.w500,
                             fontSize: 20),
                       ),
                     )
@@ -107,6 +105,10 @@ class _ProfilePageState extends State<ProfilePage> {
       left: 20,
       right: 20,
       child: GestureDetector(
+        onTap: () {
+          AuthService().logOut();
+          context.router.push(const WelcomeRoute());
+        },
         child: Container(
           height: 50,
           decoration: BoxDecoration(
@@ -158,21 +160,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       "MyPaw",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
                     )
                   ],
                 ),
                 const Spacer(),
                 Text(
                   user['FirstName'] + ' ' + user['LastName'],
-                  style: const TextStyle(color: Colors.white, fontSize: 20),
+                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
                 Text(
                   formatedCardNumber!= Null ? formatedCardNumber : '',
-                  style: const TextStyle(color: Colors.white, fontSize: 28),
+                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600),
                 )
               ],
             ),

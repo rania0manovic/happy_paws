@@ -12,5 +12,7 @@ namespace HappyPaws.Infrastructure.Interfaces
 {
     public interface IProductsRepository : IBaseRepository<Product, int, ProductSearchObject>
     {
+        Task<Product?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default);
+
     }
 }

@@ -118,8 +118,8 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black.withOpacity(0.7),
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ),
                        Padding(
@@ -171,8 +171,8 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black.withOpacity(0.7),
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ),
                       Padding(
@@ -197,8 +197,8 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Color(0xffBA1A36),
-                                fontWeight: FontWeight.w300,
-                                fontFamily: "GilroyLight"),
+                                fontWeight: FontWeight.w500,
+                                ),
                           ),
                         ),
                       ),
@@ -214,8 +214,8 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                                 decoration: TextDecoration.underline,
                                 fontSize: 16,
                                 color: Colors.black.withOpacity(0.7),
-                                fontWeight: FontWeight.w300,
-                                fontFamily: "GilroyLight"),
+                                fontWeight: FontWeight.w500,
+                                ),
                           ),
                         ),
                       ),

@@ -11,7 +11,7 @@ class BaseService {
 
   Future<dynamic> get(String endpoint) async {
     final response = await http.get(Uri.parse('$baseUrl$endpoint'));
-    return _processResponse(response);
+    return processResponse(response);
   }
 
   Future<dynamic> post(String endpoint, dynamic data) async {
@@ -49,10 +49,10 @@ class BaseService {
       Uri.parse(
           '$baseUrl/GetPaged?PageNumber=$pageNumber&PageSize=$pageSize&$queryString'),
     );
-    return _processResponse(response);
+    return processResponse(response);
   }
 
-  dynamic _processResponse(http.Response response) {
+   dynamic processResponse(http.Response response) {
     if (response.statusCode == 200) {
       return response;
     } else {

@@ -1,6 +1,9 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
+using HappyPaws.Infrastructure.Other;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +16,18 @@ namespace HappyPaws.Infrastructure.Repositories
     {
         public UserFavouritesRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
+
+        }
+
+        public async Task<PagedList<Product>> GetPagedProductsAsync(UserFavouriteSearchObject searchObject, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.Include(x=>x.Product).ThenInclude(x=>x.ProductImages.Take(1)).ThenInclude(x=>x.Image)
+                .Where(x => x.UserId == searchObject.UserId).Select(x => x.Product).ToPagedListAsync(searchObject, cancellationToken);
+        }
+
+        public async Task<UserFavourite> IsAlreadyStored(int productId, int userId, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
     }
 }

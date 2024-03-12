@@ -67,7 +67,7 @@ namespace HappyPaws.Api.Auth.AuthService
             }
         }
 
-        public async Task<SignInResponseModel> SignInAsync(SignInModel model, CancellationToken cancellationToken = default)
+        public async Task<TokenModel> SignInAsync(SignInModel model, CancellationToken cancellationToken = default)
         {
             var user = await _usersService.GetByEmailAsync(model.Email, cancellationToken);
             if (user == null)
@@ -79,7 +79,7 @@ namespace HappyPaws.Api.Auth.AuthService
             if (!_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, model.Password))
                 throw new UserWrongCredentialsException();
 
-            return new SignInResponseModel
+            return new TokenModel
             {
                 Token = CreateToken(user)
             };
@@ -98,6 +98,16 @@ namespace HappyPaws.Api.Auth.AuthService
         public async Task<bool> VerifyEmail(EmailVerificationRequestDto model, CancellationToken cancellationToken = default)
         {
             return await _emailVerificationRequestsService.VerifyCodeAsync(model, cancellationToken);
+        }
+
+        public async Task<TokenModel> UpdateUserAsync(UserDto dto, CancellationToken cancellationToken = default)
+        {
+           var user = await _usersService.UpdateAsync(dto, cancellationToken);
+
+            return new TokenModel
+            {
+                Token = CreateToken(user)
+            };
         }
 
         static int CreateVerificationCode()

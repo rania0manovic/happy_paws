@@ -9,7 +9,7 @@ class RegularText extends StatelessWidget {
   const RegularText(
       {super.key,
       required this.label,
-      this.fontWeight = FontWeight.w400,
+      this.fontWeight = FontWeight.w500,
       this.fontSize = 16,  this.color= Colors.black});
 
   @override

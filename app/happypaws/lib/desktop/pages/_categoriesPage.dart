@@ -193,7 +193,6 @@ class _ProductsPageState extends State<CategoriesPage> {
           data,
           style: const TextStyle(
               fontSize: 12,
-              fontFamily: 'GilroyLight',
               fontWeight: FontWeight.w500),
         ),
       ),
@@ -388,7 +387,6 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      fontFamily: 'GilroyLight',
                     ),
                   ),
                   const Spacer(),
@@ -560,7 +558,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
             },
             style: const TextStyle(
                 color: false ? AppColors.error : Colors.black,
-                fontFamily: 'GilroyLight'),
+                ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:

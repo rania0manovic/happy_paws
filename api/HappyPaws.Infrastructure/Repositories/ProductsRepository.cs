@@ -27,10 +27,11 @@ namespace HappyPaws.Infrastructure.Repositories
                 && (searchObject.ProductOrBrandName == null || (x.Name.Contains(searchObject.ProductOrBrandName) || x.Brand.Name.Contains(searchObject.ProductOrBrandName)))
                 ).ToPagedListAsync(searchObject, cancellationToken);
         }
-        public override async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<Product?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default)
         {
             return await DbSet
                 .Include(x=>x.ProductImages).ThenInclude(x=>x.Image)
+                .Include(x=>x.UserFavouriteItems.Where(x=>x.UserId==userId))
                 .FirstOrDefaultAsync(x=>x.Id==id, cancellationToken);
         }
 

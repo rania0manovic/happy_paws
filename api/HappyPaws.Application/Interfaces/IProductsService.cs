@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IProductsService:IBaseService<int,ProductDto, ProductSearchObject>
+    public interface IProductsService : IBaseService<int, ProductDto, ProductSearchObject>
     {
+        Task<ProductDto?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default);
+
     }
 }

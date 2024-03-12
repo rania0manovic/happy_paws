@@ -116,10 +116,9 @@ class _ProductsPageState extends State<ProductsPage> {
                             ),
                           ))
                         : Expanded(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: table()),
-                        ))
+                            child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical, child: table()),
+                          ))
                     : const Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
@@ -181,10 +180,7 @@ class _ProductsPageState extends State<ProductsPage> {
           message: data.length > 20 ? data : '',
           child: Text(
             data.length > 20 ? '${data.substring(0, 20)}...' : data,
-            style: const TextStyle(
-                fontSize: 12,
-                fontFamily: 'GilroyLight',
-                fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
           ),
         )),
       ),
@@ -427,7 +423,6 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        fontFamily: 'GilroyLight',
                       ),
                     ),
                     const Spacer(),
@@ -545,8 +540,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                           itemCount: productImages.length,
                                           pagination: const SwiperPagination(
                                             builder: DotSwiperPaginationBuilder(
-                                              activeColor:
-                                                  AppColors.primary,
+                                              activeColor: AppColors.primary,
                                             ),
                                           ),
                                           control: const SwiperControl(
@@ -699,10 +693,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
             }),
             minLines: 10,
             maxLines: 10,
-            style: const TextStyle(
-                fontFamily: 'GilroyLight',
-                fontWeight: FontWeight.w300,
-                fontSize: 14),
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
@@ -749,8 +740,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.error : Colors.black,
-                fontFamily: 'GilroyLight'),
+              color: false ? AppColors.error : Colors.black,
+            ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:
@@ -762,8 +753,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color:
-                          false ? AppColors.error : AppColors.primary,
+                      color: false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

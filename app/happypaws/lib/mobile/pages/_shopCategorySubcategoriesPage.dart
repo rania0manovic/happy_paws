@@ -71,8 +71,7 @@ class _ShopCategorySubcategoriesPageState
               child: Text(
                 'Go back',
                 style: TextStyle(
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w500,
                     fontSize: 16),
               ),
             ),
@@ -130,9 +129,9 @@ class _ShopCategorySubcategoriesPageState
                       child: Text(
                         subcategory['productSubcategory']['name'],
                         style: const TextStyle(
-                            fontWeight: FontWeight.w300,
+                            fontWeight: FontWeight.w500,
                             fontSize: 20,
-                            fontFamily: "GilroyLight"),
+                            ),
                       ),
                     ),
                   ],

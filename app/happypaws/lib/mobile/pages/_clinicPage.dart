@@ -38,8 +38,8 @@ class _ClinicPageState extends State<ClinicPage> {
                         "See all",
                         style: TextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.w300,
-                            fontFamily: 'GilroyLight'),
+                            fontWeight: FontWeight.w500,
+                            ),
                       ),
                     )
                   ],
@@ -150,8 +150,7 @@ class _ClinicPageState extends State<ClinicPage> {
                             textAlign: TextAlign.left,
                             style: const TextStyle(
                                 fontSize: 16,
-                                fontFamily: 'GilroyLight',
-                                fontWeight: FontWeight.w300),
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
                       ],
@@ -161,16 +160,14 @@ class _ClinicPageState extends State<ClinicPage> {
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 16,
-                          fontFamily: 'GilroyLight',
-                          fontWeight: FontWeight.w300),
+                          fontWeight: FontWeight.w500),
                     ),
                     Text(
                       "Note: $note",
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 16,
-                          fontFamily: 'GilroyLight',
-                          fontWeight: FontWeight.w300),
+                          fontWeight: FontWeight.w500),
                     ),
                   ],
                 )
@@ -208,8 +205,7 @@ class _ClinicPageState extends State<ClinicPage> {
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300),
+                    fontWeight: FontWeight.w500),
               ),
               Text(
                 "Reason: $reason",
@@ -217,8 +213,7 @@ class _ClinicPageState extends State<ClinicPage> {
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300),
+                    fontWeight: FontWeight.w500),
               )
             ]),
       ),

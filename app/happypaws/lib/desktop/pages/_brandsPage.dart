@@ -154,7 +154,6 @@ class _ProductsPageState extends State<BrandsPage> {
           data,
           style: const TextStyle(
               fontSize: 12,
-              fontFamily: 'GilroyLight',
               fontWeight: FontWeight.w500),
         ),
       ),
@@ -304,7 +303,6 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    fontFamily: 'GilroyLight',
                   ),
                 ),
                 const Spacer(),
@@ -374,7 +372,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
             },
             style: const TextStyle(
                 color: false ? AppColors.error : Colors.black,
-                fontFamily: 'GilroyLight'),
+               ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Models
 {
-    public class SignInResponseModel
+    public class TokenModel
     {
         public string Token { get; set; } = null!;
     }

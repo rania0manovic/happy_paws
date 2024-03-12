@@ -24,7 +24,9 @@ class _LoginPageState extends State<LoginPage> {
         Map<String, dynamic> jsonResponse = json.decode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', jsonResponse['token'].toString());
-        context.router.push(const ClientLayout());
+        if(context.mounted) {
+          context.router.push(const ClientLayout());
+        }
       } else if (response.statusCode == 403) {
         setState(() {
           error = true;
@@ -59,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 35,
                   color: AppColors.primary,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -71,8 +73,8 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                     fontSize: 16,
                     color: Colors.black.withOpacity(0.7),
-                    fontWeight: FontWeight.w300,
-                    fontFamily: "GilroyLight"),
+                    fontWeight: FontWeight.w500,
+                   ),
               ),
             ),
             Padding(
@@ -94,8 +96,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                               fontSize: 16,
                               color: AppColors.error,
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "GilroyLight"),
+                              fontWeight: FontWeight.w500,
+                        ),
                         ),
                       ),
                       const SizedBox(
@@ -140,8 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                       decoration: TextDecoration.underline,
                       fontSize: 16,
                       color: Colors.black.withOpacity(0.7),
-                      fontWeight: FontWeight.w300,
-                      fontFamily: "GilroyLight"),
+                      fontWeight: FontWeight.w500,
+                      ),
                 ),
               ),
             )
@@ -159,8 +161,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           label,
           style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(

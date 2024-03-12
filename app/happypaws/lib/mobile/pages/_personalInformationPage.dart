@@ -1,6 +1,13 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
+import 'package:happypaws/common/services/UsersService.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
+import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
+import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
 class PersonalInformationPage extends StatefulWidget {
@@ -12,7 +19,7 @@ class PersonalInformationPage extends StatefulWidget {
 }
 
 class _PersonalInformationPageState extends State<PersonalInformationPage> {
-  String selectedValue = 'Female';
+  String selectedValue = 'Unknown';
   late dynamic user = Null;
   late dynamic formatedCardNumber = Null;
 
@@ -25,9 +32,21 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   Future<void> fetchUser() async {
     var fetchedUser = await AuthService().getCurrentUser();
     setState(() {
-      selectedValue=fetchedUser?['Gender'];
+      selectedValue = fetchedUser?['Gender'];
       user = fetchedUser;
     });
+  }
+
+  Future<void> updateUser() async {
+    var response = await UsersService().put('', user);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', jsonResponse['token'].toString());
+      if (!context.mounted) return;
+      ToastHelper.showToastSuccess(
+          context, "Sucessfully updated user information!");
+    }
   }
 
   @override
@@ -42,10 +61,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
               padding: EdgeInsets.only(bottom: 14.0),
               child: Text(
                 'Go back',
-                style: TextStyle(
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
               ),
             ),
           ),
@@ -53,56 +69,64 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
               padding: const EdgeInsets.only(left: 20, right: 20, top: 0),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child:  user!=Null ?  Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Align(
-                        alignment: Alignment.topCenter,
-                        child:Column(
-                          children: [
-                            Text("Personal information",
-                                style: TextStyle(
-                                    fontFamily: 'GilroyLight',
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w300)),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            SizedBox(
-                                height: 128,
-                                width: 128,
-                                child: Stack(
-                                  children: [
-                                    Image(
-                                        image: AssetImage(
-                                            "assets/images/user.png")),
-                                    Positioned(
-                                        bottom: 5,
-                                        right: 5,
-                                        child: Image(
-                                            image: AssetImage(
-                                                "assets/images/edit.png")))
-                                  ],
-                                ))
-                          ],
-                        )),
-                    inputField('Name', user["FirstName"]),
-                    inputField('Surname', user["LastName"]),
-                    inputField('Email', user["Email"]),
-                    dropdownMenu("Gender"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text("Change password",
-                        style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontFamily: 'GilroyLight',
-                            fontSize: 18,
-                            fontWeight: FontWeight.w300))
-                  ],
-                ) : CircularProgressIndicator(),
-              )
-              ),
+                child: user != Null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Align(
+                              alignment: Alignment.topCenter,
+                              child: Column(
+                                children: [
+                                  Text("Personal information",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500)),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                      height: 128,
+                                      width: 128,
+                                      child: Stack(
+                                        children: [
+                                          Image(
+                                              image: AssetImage(
+                                                  "assets/images/user.png")),
+                                          Positioned(
+                                              bottom: 5,
+                                              right: 5,
+                                              child: Image(
+                                                  image: AssetImage(
+                                                      "assets/images/edit.png")))
+                                        ],
+                                      ))
+                                ],
+                              )),
+                          inputField('Name', user["FirstName"], "FirstName"),
+                          inputField('Surname', user["LastName"], "LastName"),
+                          inputField('Email', user["Email"], "Email"),
+                          dropdownMenu("Gender"),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text("Change password",
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500)),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          PrimaryButton(
+                            onPressed: () => updateUser(),
+                            label: 'Update',
+                            width: double.infinity,
+                            fontSize: 20,
+                          )
+                        ],
+                      )
+                    : const Spinner(),
+              )),
         ]),
       ),
     );
@@ -117,15 +141,12 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
         ),
-        Container(
+        SizedBox(
             width: double.infinity,
             child: Container(
               decoration: BoxDecoration(
@@ -143,6 +164,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                   onChanged: (String? newValue) {
                     setState(() {
                       selectedValue = newValue!;
+                      user[label] = selectedValue;
                     });
                   },
                   items: <String>[
@@ -154,9 +176,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                       value: value,
                       child: Text(value,
                           style: const TextStyle(
-                              fontFamily: 'GilroyLight',
-                              fontSize: 18,
-                              fontWeight: FontWeight.w300)),
+                              fontSize: 18, fontWeight: FontWeight.w500)),
                     );
                   }).toList(),
                 ),
@@ -166,7 +186,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
     );
   }
 
-  Column inputField(String label, String? initialValue) {
+  Column inputField(String label, String? initialValue, String? objName) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -175,10 +195,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
@@ -186,11 +203,13 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         SizedBox(
           height: 49,
           child: TextFormField(
+            onChanged: (value) {
+              setState(() {
+                user[objName] = value;
+              });
+            },
             initialValue: initialValue,
-            style: const TextStyle(
-                fontFamily: 'GilroyLight',
-                fontSize: 18,
-                fontWeight: FontWeight.w300),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
@@ -199,8 +218,8 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color(0xff3F0D84), 
-                      width: 5.0, 
+                      color: Color(0xff3F0D84),
+                      width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),
           ),

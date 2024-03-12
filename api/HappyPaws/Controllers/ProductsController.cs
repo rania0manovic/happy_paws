@@ -19,5 +19,21 @@ namespace HappyPaws.Api.Controllers
         {
             return base.Put(upsertDto, cancellationToken);
         }
+
+        [HttpGet("{id}/{userId}")]
+        public async Task<IActionResult> Get(int id, int userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var dto = await Service.GetByIdAsync(id, userId, cancellationToken);
+                return Ok(dto);
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resource for userId {UserId} and productId {ProductId}", userId, id);
+                return BadRequest();
+            }
+        }
     }
 }

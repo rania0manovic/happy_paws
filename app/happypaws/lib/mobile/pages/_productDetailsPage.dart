@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
+import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
@@ -31,9 +32,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await ProductsService().get(
-      '/${widget.productId}',
-    );
+    var fetchedUser = await AuthService().getCurrentUser();
+    var userId = fetchedUser?['Id'];
+    var response = await ProductsService().get('/${widget.productId}/$userId');
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
@@ -43,17 +44,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> addProductToCart() async {
-    var productAlreadyInCart = await UserCartsService().get("/ProductAlreadyInCart?productId=${widget.productId}");
-    if(productAlreadyInCart.statusCode!=200) {
+    var productAlreadyInCart = await UserCartsService()
+        .get("/ProductAlreadyInCart?productId=${widget.productId}");
+    if (productAlreadyInCart.statusCode != 200) {
       throw Exception();
     }
-    if( productAlreadyInCart.body == "true") {
+    if (productAlreadyInCart.body == "true") {
       if (!context.mounted) return;
-       ToastHelper.showToastWarning(
-            context, "Product is already in cart! To increase the quantity please go to cart.");
+      ToastHelper.showToastWarning(context,
+          "Product is already in cart! To increase the quantity please go to cart.");
       return;
     }
-    
+
     var fetchedUser = await AuthService().getCurrentUser();
     var userId = fetchedUser?['Id'];
     var data = {'userId': userId, 'productId': widget.productId};
@@ -64,13 +66,63 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ToastHelper.showToastSuccess(
             context, "Successfully added product into the cart!");
       } else {
-      if (!context.mounted) return;
+        if (!context.mounted) return;
         ToastHelper.showToastError(
             context, "Something went wrong! Please try again.");
       }
     } catch (e) {
       if (!context.mounted) return;
-       ToastHelper.showToastError(
+      ToastHelper.showToastError(
+          context, "An error has occured! Please try again later.");
+      rethrow;
+    }
+  }
+
+  Future<void> removeProductFromFavourites() async {
+    try {
+      var response = await UserFavouritesService()
+          .delete('/${product!['userFavouriteItems'][0]['id']}');
+      if (response.statusCode == 200) {
+        if (!context.mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "Successfully removed product from favourites!");
+        setState(() {
+          product!["isFavourite"] = false;
+        });
+      } else {
+        if (!context.mounted) return;
+        ToastHelper.showToastError(
+            context, "Something went wrong! Please try again.");
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ToastHelper.showToastError(
+          context, "An error has occured! Please try again later.");
+      rethrow;
+    }
+  }
+
+  Future<void> addProductToFavourites() async {
+    var fetchedUser = await AuthService().getCurrentUser();
+    var userId = fetchedUser?['Id'];
+    var data = {'userId': userId, 'productId': widget.productId};
+    try {
+      var response = await UserFavouritesService().post('', data);
+      if (response.statusCode == 200) {
+        if (!context.mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "Successfully added product to favourites!");
+             setState(() {
+          product!["isFavourite"] = true;
+        });
+      } else {
+        if (!context.mounted) return;
+        ToastHelper.showToastError(
+            context, "Something went wrong! Please try again.");
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
       rethrow;
     }
@@ -89,10 +141,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               padding: EdgeInsets.all(14.0),
               child: Text(
                 'Go back',
-                style: TextStyle(
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
               ),
             ),
           ),
@@ -104,10 +153,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 const EdgeInsets.only(left: 34, right: 34, top: 10, bottom: 10),
             child: Text(
               product!['name'],
-              style: const TextStyle(
-                  fontFamily: "GilroyLight",
-                  fontWeight: FontWeight.w300,
-                  fontSize: 20),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
             ),
           ),
           Padding(
@@ -204,14 +250,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   color: Colors.white,
                 )),
           ),
-          Container(
-              height: 48,
-              width: 48,
-              padding: const EdgeInsets.all(0),
-              child: SvgPicture.asset(
-                "assets/icons/heart.svg",
-                color: const Color(0xff3F0D84),
-              ))
+          GestureDetector(
+            onTap: () => product!['isFavourite']
+                ? removeProductFromFavourites()
+                : addProductToFavourites(),
+            child: Container(
+                height: 48,
+                width: 48,
+                padding: const EdgeInsets.all(0),
+                child: Icon(
+                  product!['isFavourite']
+                      ? Icons.favorite
+                      : Icons.favorite_border,
+                  size: 35,
+                  color: AppColors.primary,
+                )),
+          )
         ],
       ),
     );
@@ -311,8 +365,7 @@ class _DescriptionState extends State<Description> {
               title: Text(
                 widget.title,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontFamily: "GilroyLight",
+                  fontWeight: FontWeight.w500,
                   fontSize: 20,
                 ),
               ),
@@ -335,9 +388,7 @@ class _DescriptionState extends State<Description> {
                   widget.content,
                   textAlign: TextAlign.start,
                   style: const TextStyle(
-                      fontFamily: "GilroyLight",
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300),
+                      fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ),
           ],

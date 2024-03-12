@@ -28,8 +28,7 @@ class _MyPetsPageState extends State<MyPetsPage> {
                   child: Text(
                     'Go back',
                     style: TextStyle(
-                      fontFamily: 'GilroyLight',
-                      fontWeight: FontWeight.w300,
+                      fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),
                   ),
@@ -47,9 +46,8 @@ class _MyPetsPageState extends State<MyPetsPage> {
                           const Text(
                             "My pets",
                             style: TextStyle(
-                              fontFamily: 'GilroyLight',
                               fontSize: 18,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const SizedBox(

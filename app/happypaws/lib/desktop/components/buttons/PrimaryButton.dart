@@ -25,7 +25,7 @@ class PrimaryButton extends StatelessWidget {
           backgroundColor: AppColors.primary,
           padding: const EdgeInsets.all(15),
         ),
-        child: Text(label, style: TextStyle(fontSize: fontSize),),
+        child: Text(label, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w600),),
       ),
     );
   }

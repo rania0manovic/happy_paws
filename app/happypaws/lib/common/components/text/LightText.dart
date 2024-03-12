@@ -9,7 +9,7 @@ class LightText extends StatelessWidget {
   const LightText({
     super.key,
     required this.label,
-    this.fontWeight = FontWeight.w400,
+    this.fontWeight = FontWeight.w500,
     this.fontSize = 16,
     this.color = Colors.black,
   });
@@ -19,7 +19,6 @@ class LightText extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
-          fontFamily: 'GilroyLight',
           fontWeight: fontWeight,
           fontSize: fontSize,
           color: color),

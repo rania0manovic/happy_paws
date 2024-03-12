@@ -25,8 +25,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               child: Text(
                 'Go back',
                 style: TextStyle(
-                    fontFamily: 'GilroyLight',
-                    fontWeight: FontWeight.w300,
+                    fontWeight: FontWeight.w500,
                     fontSize: 16),
               ),
             ),
@@ -44,9 +43,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                           children: [
                             const Text("Pet information",
                                 style: TextStyle(
-                                    fontFamily: 'GilroyLight',
                                     fontSize: 18,
-                                    fontWeight: FontWeight.w300)),
+                                    fontWeight: FontWeight.w500)),
                             const SizedBox(
                               height: 20,
                             ),
@@ -100,8 +98,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         const Text(
           "Medications",
           style: TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(
@@ -130,8 +127,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         const Text(
           "Allergies",
           style: TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(
@@ -163,8 +159,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           allergy,
           style: const TextStyle(
               fontSize: 18.0,
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300), 
+              fontWeight: FontWeight.w500), 
         ),
       ],
     );
@@ -180,8 +175,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         Text(
           label,
           style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(
@@ -216,9 +210,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                       value: value,
                       child: Text(value,
                           style: const TextStyle(
-                              fontFamily: 'GilroyLight',
                               fontSize: 18,
-                              fontWeight: FontWeight.w300)),
+                              fontWeight: FontWeight.w500)),
                     );
                   }).toList(),
                 ),
@@ -238,8 +231,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         Text(
           label,
           style: const TextStyle(
-              fontFamily: 'GilroyLight',
-              fontWeight: FontWeight.w300,
+              fontWeight: FontWeight.w500,
               fontSize: 18),
         ),
         const SizedBox(
@@ -250,9 +242,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           child: TextFormField(
             initialValue: initialValue,
             style: const TextStyle(
-                fontFamily: 'GilroyLight',
                 fontSize: 18,
-                fontWeight: FontWeight.w300),
+                fontWeight: FontWeight.w500),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
