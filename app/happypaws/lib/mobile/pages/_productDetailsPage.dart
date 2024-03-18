@@ -50,7 +50,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       throw Exception();
     }
     if (productAlreadyInCart.body == "true") {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastWarning(context,
           "Product is already in cart! To increase the quantity please go to cart.");
       return;
@@ -62,16 +62,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     try {
       var response = await UserCartsService().post('', data);
       if (response.statusCode == 200) {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Successfully added product into the cart!");
       } else {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastError(
             context, "Something went wrong! Please try again.");
       }
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
       rethrow;
@@ -83,19 +83,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       var response = await UserFavouritesService()
           .delete('/${product!['userFavouriteItems'][0]['id']}');
       if (response.statusCode == 200) {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Successfully removed product from favourites!");
         setState(() {
           product!["isFavourite"] = false;
         });
       } else {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastError(
             context, "Something went wrong! Please try again.");
       }
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
       rethrow;
@@ -109,19 +109,19 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     try {
       var response = await UserFavouritesService().post('', data);
       if (response.statusCode == 200) {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Successfully added product to favourites!");
              setState(() {
           product!["isFavourite"] = true;
         });
       } else {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastError(
             context, "Something went wrong! Please try again.");
       }
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
       rethrow;

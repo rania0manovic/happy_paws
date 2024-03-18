@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     public class PetBreedsController : BaseCrudController<PetBreedDto, IPetBreedsService, PetBreedSearchObject>
     {

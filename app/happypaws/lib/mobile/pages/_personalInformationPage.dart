@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
+import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
@@ -22,6 +25,9 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   String selectedValue = 'Unknown';
   late dynamic user = Null;
   late dynamic formatedCardNumber = Null;
+  final ImagePicker _imagePicker = ImagePicker();
+  File? _selectedImage;
+  Map<String, dynamic>? profilePhoto;
 
   @override
   void initState() {
@@ -31,6 +37,15 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
 
   Future<void> fetchUser() async {
     var fetchedUser = await AuthService().getCurrentUser();
+    if (fetchedUser != null && fetchedUser['ProfilePhotoId'] != null && fetchedUser['ProfilePhotoId']!= "") {
+      var image =
+          await ImagesService().get("/${fetchedUser['ProfilePhotoId']}");
+      if (image.statusCode == 200) {
+        setState(() {
+          profilePhoto = json.decode(image.body);
+        });
+      }
+    }
     setState(() {
       selectedValue = fetchedUser?['Gender'];
       user = fetchedUser;
@@ -40,12 +55,25 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   Future<void> updateUser() async {
     var response = await UsersService().put('', user);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      String responseBody = await response.stream.bytesToString();
+      Map<String, dynamic> jsonResponse = json.decode(responseBody);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('token', jsonResponse['token'].toString());
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastSuccess(
           context, "Sucessfully updated user information!");
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? selectedImage =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (selectedImage != null) {
+      setState(() {
+        _selectedImage = File(selectedImage.path);
+        user["photoFile"] = selectedImage.path;
+      });
     }
   }
 
@@ -73,15 +101,15 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Align(
+                          Align(
                               alignment: Alignment.topCenter,
                               child: Column(
                                 children: [
-                                  Text("Personal information",
+                                  const Text("Personal information",
                                       style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500)),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 20,
                                   ),
                                   SizedBox(
@@ -89,15 +117,30 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                                       width: 128,
                                       child: Stack(
                                         children: [
-                                          Image(
-                                              image: AssetImage(
-                                                  "assets/images/user.png")),
+                                          ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              child: _selectedImage != null
+                                                  ? Image.file(_selectedImage!)
+                                                  : profilePhoto != null
+                                                      ? Image.memory(
+                                                          base64.decode(
+                                                              profilePhoto![
+                                                                      'data']
+                                                                  .toString()),
+                                                        )
+                                                      : const Image(
+                                                          image: AssetImage(
+                                                              "assets/images/user.png"))),
                                           Positioned(
                                               bottom: 5,
                                               right: 5,
-                                              child: Image(
-                                                  image: AssetImage(
-                                                      "assets/images/edit.png")))
+                                              child: GestureDetector(
+                                                onTap: () => _pickImage(),
+                                                child: const Image(
+                                                    image: AssetImage(
+                                                        "assets/images/edit.png")),
+                                              ))
                                         ],
                                       ))
                                 ],

@@ -76,6 +76,7 @@ Positioned addNewPet(BuildContext context) {
         bottom: 15,
         right: 15,
         child: GestureDetector(
+          onTap: () => context.router.push(const PetDetailsRoute()),
           child: Container(
             height: 54,
             width: 54,

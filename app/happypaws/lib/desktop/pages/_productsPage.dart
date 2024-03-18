@@ -81,7 +81,6 @@ class _ProductsPageState extends State<ProductsPage> {
     return Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 0),
         child: Card(
-          elevation: 10.0,
           margin: const EdgeInsets.all(16.0),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -96,11 +95,12 @@ class _ProductsPageState extends State<ProductsPage> {
                       'Product details',
                       style: TextStyle(
                         fontSize: 18.0,
+                        fontWeight: FontWeight.w600
                       ),
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditProductMenu(context),
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add, color: Colors.white,),
                         label: "Add new product"),
                   ],
                 ),
@@ -245,7 +245,7 @@ class _ProductsPageState extends State<ProductsPage> {
           padding: const EdgeInsets.only(top: 12, bottom: 12),
           child: Text(
             header,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
           ),
         ),
       ),
@@ -461,15 +461,15 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                               dropdownMenu(
                                   productCategories!,
                                   "Category",
-                                  (String? newValue) async => {
+                                  (String? newValue) async {
                                         setState(() {
                                           selectedSubCategory = null;
                                           selectedCategory = null;
-                                        }),
-                                        await fetchSubcategories(newValue),
+                                        });
+                                        await fetchSubcategories(newValue);
                                         setState(() {
                                           selectedCategory = newValue;
-                                        })
+                                        });
                                       },
                                   selectedCategory),
                               dropdownMenu(

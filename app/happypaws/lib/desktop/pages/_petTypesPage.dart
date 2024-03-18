@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
-import 'package:happypaws/common/services/BrandsService.dart';
+import 'package:happypaws/common/services/PetTypesService.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/ActionButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
@@ -11,15 +12,15 @@ import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
 @RoutePage()
-class BrandsPage extends StatefulWidget {
-  const BrandsPage({super.key});
+class PetTypesPage extends StatefulWidget {
+  const PetTypesPage({super.key});
 
   @override
-  State<BrandsPage> createState() => _ProductsPageState();
+  State<PetTypesPage> createState() => _PetTypesPageState();
 }
 
-class _ProductsPageState extends State<BrandsPage> {
-  List<Map<String, dynamic>>? brands;
+class _PetTypesPageState extends State<PetTypesPage> {
+  List<Map<String, dynamic>>? petTypes;
   @override
   void initState() {
     super.initState();
@@ -27,18 +28,18 @@ class _ProductsPageState extends State<BrandsPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await BrandsService().getPaged("", 1, 999);
+    var response = await PetTypesService().getPaged("", 1, 999);
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        brands = List<Map<String, dynamic>>.from(jsonData['items']);
+        petTypes = List<Map<String, dynamic>>.from(jsonData['items']);
       });
     }
   }
 
-  Future<void> deleteBrand(int id) async {
+  Future<void> deletePetType(int id) async {
     try {
-      var response = await BrandsService().delete('/$id');
+      var response = await PetTypesService().delete('/$id');
       if (response.statusCode == 200) {
         fetchData();
       }
@@ -53,7 +54,7 @@ class _ProductsPageState extends State<BrandsPage> {
         builder: (context) {
           return AlertDialog(
             contentPadding: const EdgeInsets.all(0),
-            content: AddEditBrandMenu(
+            content: AddEditPetTypeMenu(
               onClose: () {
                 Navigator.of(context).pop();
               },
@@ -80,20 +81,21 @@ class _ProductsPageState extends State<BrandsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Brands settings',
+                      'Pet types settings',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600
-                      ),
+                          fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
-                        icon: const Icon(Icons.add, color: Colors.white,),
-                        label: "Add new brand"),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
+                        label: "Add new pet type"),
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                if (brands != null)
+                if (petTypes != null)
                   Expanded(
                       child: SingleChildScrollView(
                           scrollDirection: Axis.vertical, child: table()))
@@ -125,7 +127,7 @@ class _ProductsPageState extends State<BrandsPage> {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 30),
-              child: tableHead('Brand name'),
+              child: tableHead('Pet type name'),
             ),
             Align(
                 alignment: Alignment.centerRight,
@@ -135,12 +137,9 @@ class _ProductsPageState extends State<BrandsPage> {
                 )),
           ],
         ),
-        for (var subcategory in brands!)
+        for (var petType in petTypes!)
           TableRow(
-            children: [
-              tableCell(subcategory['name']),
-              tableActions(subcategory)
-            ],
+            children: [tableCell(petType['name']), tableActions(petType)],
           ),
       ],
     );
@@ -152,9 +151,7 @@ class _ProductsPageState extends State<BrandsPage> {
         padding: const EdgeInsets.only(top: 20, bottom: 20, left: 30),
         child: Text(
           data,
-          style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
         ),
       ),
     );
@@ -192,10 +189,11 @@ class _ProductsPageState extends State<BrandsPage> {
                     builder: (BuildContext context) {
                       return ConfirmationDialog(
                         title: 'Confirmation',
-                        content: 'Are you sure you want to delete this brand?',
+                        content:
+                            'Are you sure you want to delete this pet type?',
                         onYesPressed: () {
                           Navigator.of(context).pop();
-                          deleteBrand(data['id']);
+                          deletePetType(data['id']);
                         },
                         onNoPressed: () {
                           Navigator.of(context).pop();
@@ -227,13 +225,13 @@ class _ProductsPageState extends State<BrandsPage> {
   }
 }
 
-class AddEditBrandMenu extends StatefulWidget {
+class AddEditPetTypeMenu extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
 
   final Map<String, dynamic>? data;
 
-  const AddEditBrandMenu({
+  const AddEditPetTypeMenu({
     Key? key,
     required this.onClose,
     required this.fetchData,
@@ -241,10 +239,10 @@ class AddEditBrandMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditBrandMenuState createState() => _AddEditBrandMenuState();
+  _AddEditPetTypeMenuState createState() => _AddEditPetTypeMenuState();
 }
 
-class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
+class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
   @override
   void initState() {
     super.initState();
@@ -253,10 +251,13 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
     }
   }
 
-  Future<void> addBrand() async {
+  Future<void> addPetType() async {
     try {
-      final response = await BrandsService().post("", data);
+      final response = await PetTypesService().post("", data);
       if (response.statusCode == 200) {
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have succesfully added a new pet type!");
         widget.onClose();
         widget.fetchData();
       } else {
@@ -267,9 +268,9 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
     }
   }
 
-  Future<void> editBrand() async {
+  Future<void> editPetType() async {
     try {
-      final response = await BrandsService().put("", widget.data);
+      final response = await PetTypesService().put("", widget.data);
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
@@ -299,7 +300,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                   color: AppColors.gray,
                 ),
                 Text(
-                  widget.data != null ? 'Edit brand' : "Add new brand",
+                  widget.data != null ? 'Edit pet type' : "Add new pet type",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -330,7 +331,9 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                         ),
                         PrimaryButton(
                             onPressed: () {
-                              widget.data != null ? editBrand() : addBrand();
+                              widget.data != null
+                                  ? editPetType()
+                                  : addPetType();
                             },
                             width: double.infinity,
                             label: widget.data != null ? 'Edit' : "Add")
@@ -371,8 +374,8 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
               });
             },
             style: const TextStyle(
-                color: false ? AppColors.error : Colors.black,
-               ),
+              color: false ? AppColors.error : Colors.black,
+            ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:
@@ -384,8 +387,7 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color:
-                          false ? AppColors.error : AppColors.primary,
+                      color: false ? AppColors.error : AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

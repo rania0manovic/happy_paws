@@ -12,7 +12,7 @@ namespace HappyPaws.Application.Services
 {
     public class UsersService : BaseService<User, UserDto, IUsersRepository, UserSearchObject>, IUsersService
     {
-        
+
         public UsersService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<UserDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
@@ -26,9 +26,37 @@ namespace HappyPaws.Application.Services
         public override async Task<UserDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken = default)
         {
             var user = await CurrentRepository.GetByIdAsync(dto.Id, cancellationToken) ?? throw new Exception("User not found");
-           
+
+            if (dto.PhotoFile != null)
+            {
+                var memoryStream = new MemoryStream();
+                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
+                if (user.ProfilePhotoId != null)
+                {
+                    var photo = await UnitOfWork.ImagesRepository.GetByIdAsync((int)user.ProfilePhotoId, cancellationToken);
+
+                    photo!.ContentType = dto.PhotoFile.ContentType;
+                    photo.Data = memoryStream.ToArray();
+                    UnitOfWork.ImagesRepository.Update(photo);
+                    await UnitOfWork.SaveChangesAsync(cancellationToken);
+                    dto.ProfilePhotoId = photo.Id;
+
+                }
+                else
+                {
+                    var photo = new Image()
+                    {
+                        ContentType = dto.PhotoFile.ContentType,
+                        Data = memoryStream.ToArray(),
+                    };
+                    await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
+                    await UnitOfWork.SaveChangesAsync(cancellationToken);
+                    dto.ProfilePhotoId = photo.Id;
+                }
+            }
             Mapper.Map(dto, user);
-            CurrentRepository.Update(user);
+            user.IsVerified = true;
+            UnitOfWork.UsersRepository.Update(user);
             await UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Mapper.Map<UserDto>(user);

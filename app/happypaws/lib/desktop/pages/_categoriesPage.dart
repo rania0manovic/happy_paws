@@ -109,7 +109,6 @@ class _ProductsPageState extends State<CategoriesPage> {
     return Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 0),
         child: Card(
-          elevation: 10.0,
           margin: const EdgeInsets.all(16.0),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -124,11 +123,12 @@ class _ProductsPageState extends State<CategoriesPage> {
                       'Categories settings',
                       style: TextStyle(
                         fontSize: 18.0,
+                        fontWeight: FontWeight.w600
                       ),
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add, color: Colors.white,),
                         label: "Add new category"),
                   ],
                 ),
@@ -260,7 +260,7 @@ class _ProductsPageState extends State<CategoriesPage> {
         padding: const EdgeInsets.only(top: 12, bottom: 12),
         child: Text(
           header,
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -369,7 +369,8 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
         decoration: const BoxDecoration(
           color: Colors.transparent,
         ),
-        child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[

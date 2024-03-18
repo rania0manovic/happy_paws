@@ -27,7 +27,7 @@ class _ClientLayoutState extends State<ClientLayout> {
 
   Future<void> search() async {
     if (searchInput == "") {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ToastHelper.showToastError(context, "Input field can not be empty!");
       return;
     }

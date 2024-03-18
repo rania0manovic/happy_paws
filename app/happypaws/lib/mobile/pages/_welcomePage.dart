@@ -23,7 +23,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Future<void> checkIfLogged() async {
     var user = await AuthService().getCurrentUser();
     if (user != null) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       context.router.push(const ClientLayout());
     }
     else {

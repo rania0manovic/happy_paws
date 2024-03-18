@@ -24,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
         Map<String, dynamic> jsonResponse = json.decode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', jsonResponse['token'].toString());
-        if(context.mounted) {
+        if(mounted) {
           context.router.push(const ClientLayout());
         }
       } else if (response.statusCode == 403) {

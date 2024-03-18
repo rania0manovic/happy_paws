@@ -15,7 +15,7 @@ namespace HappyPaws.Api.Controllers
             _authService = authService;
         }
 
-        public override async Task<IActionResult> Put([FromBody] UserDto upsertDto, CancellationToken cancellationToken = default)
+        public override async Task<IActionResult> Put([FromForm] UserDto upsertDto, CancellationToken cancellationToken = default)
         {
             try
             {

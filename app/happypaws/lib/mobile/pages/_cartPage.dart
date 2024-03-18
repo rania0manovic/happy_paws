@@ -49,14 +49,14 @@ class _CartPageState extends State<CartPage> {
     try {
       var response = await UserCartsService().delete('/$id');
       if (response.statusCode == 200) {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully removed product from the cart!");
         setState(() {
           products!.removeAt(index);
         });
       } else {
-        if (!context.mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastError(
             context, "Something went wrong! Please try again.");
       }

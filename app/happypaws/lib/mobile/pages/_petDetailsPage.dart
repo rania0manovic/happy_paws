@@ -1,5 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
+import 'package:happypaws/desktop/components/buttons/PrimaryIconButton.dart';
+import 'package:happypaws/desktop/components/buttons/SecondaryButton.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 @RoutePage()
 class PetDetailsPage extends StatefulWidget {
@@ -10,7 +15,8 @@ class PetDetailsPage extends StatefulWidget {
 }
 
 class _PetDetailsPageState extends State<PetDetailsPage> {
-  String selectedValue = 'Female';
+  String selectedValue = 'Unknown';
+  String selectedDate = 'Select date';
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +30,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               padding: EdgeInsets.only(bottom: 14.0),
               child: Text(
                 'Go back',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
               ),
             ),
           ),
@@ -43,8 +47,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                           children: [
                             const Text("Pet information",
                                 style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500)),
+                                    fontSize: 18, fontWeight: FontWeight.w500)),
                             const SizedBox(
                               height: 20,
                             ),
@@ -55,11 +58,12 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                          image: const DecorationImage(
-                                              image: AssetImage(
-                                                  "assets/images/mypet-dog.jpg"))),
+                                        borderRadius:
+                                            BorderRadius.circular(200),
+                                        image: const DecorationImage(
+                                            image: AssetImage(
+                                                "assets/images/pet_default.jpg")),
+                                      ),
                                     ),
                                     const Positioned(
                                         bottom: 5,
@@ -71,13 +75,14 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                 ))
                           ],
                         )),
-                    inputField('Name:', "Donna"),
-                    inputField('Breed:', "American Staffordshire Terrier"),
-                    inputField('Age:', "7"),
+                    inputField('Name:', ""),
+                    inputField('Type (e.g. Cat):', ""),
+                    inputField('Breed (e.g. British Shorthair):', ""),
+                    birthDateInput(context),
                     dropdownMenu("Gender:"),
                     allergiesSection(),
                     medicationSection(),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     )
                   ],
@@ -85,6 +90,64 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
               )),
         ]),
       ),
+    );
+  }
+
+  Column birthDateInput(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        const Text(
+          'Date of birth (approximately):',
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        PrimaryIconButton(
+          icon: const Icon(
+            Icons.date_range_rounded,
+            color: Colors.white,
+          ),
+          label: selectedDate,
+          width: double.infinity,
+          onPressed: () {
+            _showDatePicker(context);
+          },
+        ),
+      ],
+    );
+  }
+
+  void _showDatePicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            height: 300,
+            width: MediaQuery.of(context)
+                .size
+                .width, // Adjust the height as needed
+            child: SfDateRangePicker(
+              maxDate: DateTime.now(),
+              selectionMode: DateRangePickerSelectionMode.single,
+              showNavigationArrow: true,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                final formatter = DateFormat('dd.MM.yyyy'); // Define the format
+                setState(() {
+                  selectedDate =
+                      formatter.format(args.value!); // Format the date
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -96,10 +159,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           height: 10,
         ),
         const Text(
-          "Medications",
-          style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          "Medications:",
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
@@ -107,15 +168,14 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         SizedBox(
           width: double.infinity,
           child: Wrap(
-            spacing: 18.0, 
-            runSpacing: 8.0, 
+            spacing: 18.0,
+            runSpacing: 8.0,
             children: [listItem("Vetmedin 5mg")],
           ),
         ),
       ],
     );
   }
-  
 
   Column allergiesSection() {
     return Column(
@@ -125,10 +185,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           height: 10,
         ),
         const Text(
-          "Allergies",
-          style: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          "Allergies:",
+          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
@@ -136,8 +194,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         SizedBox(
           width: double.infinity,
           child: Wrap(
-            spacing: 18.0, 
-            runSpacing: 8.0, 
+            spacing: 18.0,
+            runSpacing: 8.0,
             children: [listItem("Soy"), listItem("Eggs")],
           ),
         ),
@@ -154,12 +212,10 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           size: 8.0,
           color: Colors.grey.shade400,
         ),
-        const SizedBox(width: 8.0), 
+        const SizedBox(width: 8.0),
         Text(
           allergy,
-          style: const TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500), 
+          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
         ),
       ],
     );
@@ -174,14 +230,12 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
         ),
-        Container(
+        SizedBox(
             width: double.infinity,
             child: Container(
               decoration: BoxDecoration(
@@ -202,16 +256,15 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     });
                   },
                   items: <String>[
+                    'Unknown',
                     'Female',
                     'Male',
-                    'Other',
                   ].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value,
                           style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500)),
+                              fontSize: 18, fontWeight: FontWeight.w500)),
                     );
                   }).toList(),
                 ),
@@ -230,9 +283,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
@@ -241,9 +292,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           height: 49,
           child: TextFormField(
             initialValue: initialValue,
-            style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
@@ -252,7 +301,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color(0xff3F0D84), 
+                      color: Color(0xff3F0D84),
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

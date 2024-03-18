@@ -9,5 +9,7 @@
         public static readonly string Role = "Role";
         public static readonly string Gender = "Gender";
         public static readonly string MyPawNumber = "MyPawNumber";
+        public static readonly string ProfilePhotoId = "ProfilePhotoId";
+
     }
 }

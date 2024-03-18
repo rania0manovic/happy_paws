@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/main.dart';
 import 'app_router.gr.dart';
 
@@ -24,7 +25,9 @@ class AppRouter extends $AppRouter {
           path: "/login",
           page: LoginRoute.page,
         ),
-        AutoRoute(page: ClientLayout.page, children: [
+        AutoRoute(page: ClientLayout.page, guards: [
+          AuthGuardMobile()
+        ], children: [
           AutoRoute(
               path: 'home',
               page: HomeTab.page,
@@ -36,11 +39,17 @@ class AppRouter extends $AppRouter {
           ]),
           AutoRoute(path: "shop", page: ShopTab.page, children: [
             AutoRoute(path: '', page: ShopRoute.page),
-            AutoRoute(path: 'cart',  page: CartRoute.page, ),
-            AutoRoute(path: 'category/:id', page: ShopCategorySubcategoriesRoute.page), 
-            AutoRoute(path: "products/:categoryId/:subcategoryId", page: CatalogRoute.page),
+            AutoRoute(
+              path: 'cart',
+              page: CartRoute.page,
+            ),
+            AutoRoute(
+                path: 'category/:id',
+                page: ShopCategorySubcategoriesRoute.page),
+            AutoRoute(
+                path: "products/:categoryId/:subcategoryId",
+                page: CatalogRoute.page),
             AutoRoute(path: "product/:id", page: ProductDetailsRoute.page)
-
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
             AutoRoute(path: '', page: ProfileRoute.page),
@@ -52,12 +61,15 @@ class AppRouter extends $AppRouter {
           ]),
         ]),
         AutoRoute(
+            path: '/admin/login',
+            page: LoginDesktopRoute.page,
+            initial: platformInfo.isDesktopOS()),
+        AutoRoute(
             path: "/admin",
+            guards: [AuthGuardDesktop()],
             page: AdminLayout.page,
-            initial: platformInfo.isDesktopOS(),
             children: [
-              AutoRoute(
-                  path: 'dashboard', page: DashboardRoute.page, initial: true),
+              AutoRoute(path: 'dashboard', page: DashboardRoute.page),
               AutoRoute(path: 'appointments', page: AppointmentsRoute.page),
               AutoRoute(path: 'products', page: ProductsRoute.page),
               AutoRoute(
@@ -67,6 +79,10 @@ class AppRouter extends $AppRouter {
                   path: 'settings/product-subcategories',
                   page: SubcategoriesRoute.page),
               AutoRoute(path: 'settings/brands', page: BrandsRoute.page),
+              AutoRoute(path: 'settings/pet-types', page: PetTypesRoute.page),
+              AutoRoute(path: 'settings/pet-breeds', page: PetBreedsRoute.page),
+
+
             ]),
       ];
 }
@@ -94,4 +110,31 @@ class ProfileTabPage extends AutoRouter {
 @RoutePage(name: 'AdminOutlet')
 class AdminOutletPage extends AutoRouter {
   const AdminOutletPage({super.key});
+}
+
+class AuthGuardDesktop extends AutoRouteGuard {
+  @override
+  Future<void> onNavigation(
+      NavigationResolver resolver, StackRouter router) async {
+    var user = await AuthService().getCurrentUser();
+    if (user != null &&
+        (user["Role"] == 'Admin' || user['Role'] == 'Employee')) {
+      resolver.next(true);
+    } else {
+      resolver.redirect(const LoginDesktopRoute());
+    }
+  }
+}
+
+class AuthGuardMobile extends AutoRouteGuard {
+  @override
+  Future<void> onNavigation(
+      NavigationResolver resolver, StackRouter router) async {
+    var user = await AuthService().getCurrentUser();
+    if (user != null) {
+      resolver.next(true);
+    } else {
+      resolver.redirect(const LoginRoute());
+    }
+  }
 }
