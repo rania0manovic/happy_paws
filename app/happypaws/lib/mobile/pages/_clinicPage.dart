@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:happypaws/common/services/AppointmentsService.dart';
+import 'package:happypaws/common/services/AuthService.dart';
+import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
@@ -12,76 +17,105 @@ class ClinicPage extends StatefulWidget {
 }
 
 class _ClinicPageState extends State<ClinicPage> {
+  List<Map<String, dynamic>>? upcomingAppointments;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      var user = await AuthService().getCurrentUser();
+      if (user != null) {
+        var response = await AppointmentsService()
+            .getPaged('endpoint', 1, 2, searchObject: {'userId': user['id']});
+        if (response.statusCode == 200) {
+          Map<String, dynamic> jsonData = json.decode(response.body);
+          setState(() {
+            upcomingAppointments =
+                List<Map<String, dynamic>>.from(jsonData['items']);
+          });
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Upcoming appointments",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                    ),
-                    GestureDetector(
-                      onTap: () =>
-                          {context.router.push(const UserAppointmentsRoute())},
-                      child: const Text(
-                        "See all",
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+    return upcomingAppointments == null
+        ? const Spinner()
+        : Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Upcoming appointments",
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w700),
+                          ),
+                          GestureDetector(
+                            onTap: () => {
+                              context.router.push(const UserAppointmentsRoute())
+                            },
+                            child: const Text(
+                              "See all",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
+                          )
+                        ],
                       ),
-                    )
-                  ],
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      for (var appointment in upcomingAppointments!)
+                        Column(
+                          children: [
+                            appointmentContainer(
+                                appointment['dateTime'],
+                                appointment['pet']['name'],
+                                appointment['reason']),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      const Text(
+                        "Medication reminders",
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
+                          "After Breakfast"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
+                          "After Breakfast"),
+                    ],
+                  ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  children: [
-                    appointmentContainer("Wednesday, March 22 2023", "10:30 AM",
-                        "Donna", "Vaccination"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    appointmentContainer("Sunday, April 23 2023", "02:00 PM",
-                        "Ollie", "Neutering"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                ),
-                const Text(
-                  "Medication reminders",
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                medicationContainer(
-                    "Vetmedin 5mg", "10:00 AM", "Donna", "After Breakfast"),
-                const SizedBox(
-                  height: 20,
-                ),
-                medicationContainer(
-                    "Vetmedin 5mg", "10:00 AM", "Donna", "After Breakfast"),
-              ],
-            ),
-          ),
-        ),
-        addAppointmentButton(context)
-      ],
-    );
+              ),
+              addAppointmentButton(context)
+            ],
+          );
   }
 
   Positioned addAppointmentButton(BuildContext context) {
@@ -133,7 +167,8 @@ class _ClinicPageState extends State<ClinicPage> {
                   children: [
                     Text(
                       medication,
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -149,8 +184,7 @@ class _ClinicPageState extends State<ClinicPage> {
                             time,
                             textAlign: TextAlign.left,
                             style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600),
+                                fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                         ),
                       ],
@@ -159,15 +193,13 @@ class _ClinicPageState extends State<ClinicPage> {
                       "Pet name: $petName",
                       textAlign: TextAlign.left,
                       style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       "Note: $note",
                       textAlign: TextAlign.left,
                       style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                   ],
                 )
@@ -176,7 +208,7 @@ class _ClinicPageState extends State<ClinicPage> {
   }
 
   Container appointmentContainer(
-      String date, String time, String petName, String reason) {
+      String? dateTime, String petName, String reason) {
     return Container(
       height: 140,
       width: double.infinity,
@@ -190,14 +222,20 @@ class _ClinicPageState extends State<ClinicPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                date,
+                dateTime == null ? "Date TBA" : dateTime,
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700),
               ),
               Text(
-                time,
+                dateTime == null ? "Time TBA" : dateTime,
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600),
               ),
               Text(
                 "Pet name: $petName",

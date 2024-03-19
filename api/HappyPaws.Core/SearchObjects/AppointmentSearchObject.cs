@@ -8,5 +8,6 @@ namespace HappyPaws.Core.SearchObjects
 {
     public class AppointmentSearchObject:BaseSearchObject
     {
+        public int? UserId { get; set; }
     }
 }

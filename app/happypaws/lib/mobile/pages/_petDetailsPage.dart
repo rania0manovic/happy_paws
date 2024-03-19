@@ -84,6 +84,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       if (response.statusCode == 200) {
         await widget.onChangedData!.call();
         if (!mounted) return;
+        context.router.pop();
         ToastHelper.showToastSuccess(
             context, "You have successfully added a new pet!");
       } else {
