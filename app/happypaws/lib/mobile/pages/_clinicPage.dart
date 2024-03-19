@@ -29,7 +29,7 @@ class _ClinicPageState extends State<ClinicPage> {
                     const Text(
                       "Upcoming appointments",
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
                     ),
                     GestureDetector(
                       onTap: () =>
@@ -63,7 +63,7 @@ class _ClinicPageState extends State<ClinicPage> {
                 ),
                 const Text(
                   "Medication reminders",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(
                   height: 8,
@@ -133,7 +133,7 @@ class _ClinicPageState extends State<ClinicPage> {
                   children: [
                     Text(
                       medication,
-                      style: const TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -150,7 +150,7 @@ class _ClinicPageState extends State<ClinicPage> {
                             textAlign: TextAlign.left,
                             style: const TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.w500),
+                                fontWeight: FontWeight.w600),
                           ),
                         ),
                       ],
@@ -192,12 +192,12 @@ class _ClinicPageState extends State<ClinicPage> {
               Text(
                 date,
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 20),
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700),
               ),
               Text(
                 time,
                 textAlign: TextAlign.left,
-                style: const TextStyle(color: Colors.white, fontSize: 20),
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
               ),
               Text(
                 "Pet name: $petName",

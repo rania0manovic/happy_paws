@@ -1,6 +1,9 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
+using HappyPaws.Infrastructure.Other;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +16,18 @@ namespace HappyPaws.Infrastructure.Repositories
     {
         public PetsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
+        }
+        public override async Task<PagedList<Pet>> GetPagedAsync(PetSearchObject searchObject, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.Include(x => x.Photo)
+                .Where(x => searchObject.UserId == null || x.OwnerId == searchObject.UserId).ToPagedListAsync(searchObject, cancellationToken);
+        }
+        public override async Task<Pet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .Include(x => x.Photo)
+                .Include(x => x.PetBreed).ThenInclude(x => x.PetType)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
     }
 }

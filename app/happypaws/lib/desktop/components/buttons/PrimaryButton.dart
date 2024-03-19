@@ -5,7 +5,8 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String label;
   final double? width;
-  final double fontSize;
+  final double fontSize; 
+  final Color backgroundColor;
 
 
   const PrimaryButton({super.key, 
@@ -13,6 +14,7 @@ class PrimaryButton extends StatelessWidget {
     required this.label,
     this.width, 
     this.fontSize=14,
+    this.backgroundColor= AppColors.primary
   });
 
   @override
@@ -22,7 +24,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: backgroundColor,
           padding: const EdgeInsets.all(15),
             shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(

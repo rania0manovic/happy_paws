@@ -8,6 +8,8 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i33;
+
 import 'package:auto_route/auto_route.dart' as _i31;
 import 'package:flutter/material.dart' as _i32;
 import 'package:happypaws/common/layouts/admin_layout.dart' as _i1;
@@ -159,9 +161,13 @@ abstract class $AppRouter extends _i31.RootStackRouter {
       );
     },
     MyPetsRoute.name: (routeData) {
+      final args = routeData.argsAs<MyPetsRouteArgs>();
       return _i31.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i15.MyPetsPage(),
+        child: _i15.MyPetsPage(
+          key: args.key,
+          userId: args.userId,
+        ),
       );
     },
     PersonalInformationRoute.name: (routeData) {
@@ -177,9 +183,15 @@ abstract class $AppRouter extends _i31.RootStackRouter {
       );
     },
     PetDetailsRoute.name: (routeData) {
+      final args = routeData.argsAs<PetDetailsRouteArgs>();
       return _i31.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i18.PetDetailsPage(),
+        child: _i18.PetDetailsPage(
+          key: args.key,
+          userId: args.userId,
+          petId: args.petId,
+          onChangedData: args.onChangedData,
+        ),
       );
     },
     PetTypesRoute.name: (routeData) {
@@ -570,16 +582,40 @@ class MakeAppointmentRoute extends _i31.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i15.MyPetsPage]
-class MyPetsRoute extends _i31.PageRouteInfo<void> {
-  const MyPetsRoute({List<_i31.PageRouteInfo>? children})
-      : super(
+class MyPetsRoute extends _i31.PageRouteInfo<MyPetsRouteArgs> {
+  MyPetsRoute({
+    _i32.Key? key,
+    required String userId,
+    List<_i31.PageRouteInfo>? children,
+  }) : super(
           MyPetsRoute.name,
+          args: MyPetsRouteArgs(
+            key: key,
+            userId: userId,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'MyPetsRoute';
 
-  static const _i31.PageInfo<void> page = _i31.PageInfo<void>(name);
+  static const _i31.PageInfo<MyPetsRouteArgs> page =
+      _i31.PageInfo<MyPetsRouteArgs>(name);
+}
+
+class MyPetsRouteArgs {
+  const MyPetsRouteArgs({
+    this.key,
+    required this.userId,
+  });
+
+  final _i32.Key? key;
+
+  final String userId;
+
+  @override
+  String toString() {
+    return 'MyPetsRouteArgs{key: $key, userId: $userId}';
+  }
 }
 
 /// generated route for
@@ -612,16 +648,50 @@ class PetBreedsRoute extends _i31.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i18.PetDetailsPage]
-class PetDetailsRoute extends _i31.PageRouteInfo<void> {
-  const PetDetailsRoute({List<_i31.PageRouteInfo>? children})
-      : super(
+class PetDetailsRoute extends _i31.PageRouteInfo<PetDetailsRouteArgs> {
+  PetDetailsRoute({
+    _i32.Key? key,
+    required String userId,
+    int? petId,
+    _i33.Future<void> Function()? onChangedData,
+    List<_i31.PageRouteInfo>? children,
+  }) : super(
           PetDetailsRoute.name,
+          args: PetDetailsRouteArgs(
+            key: key,
+            userId: userId,
+            petId: petId,
+            onChangedData: onChangedData,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'PetDetailsRoute';
 
-  static const _i31.PageInfo<void> page = _i31.PageInfo<void>(name);
+  static const _i31.PageInfo<PetDetailsRouteArgs> page =
+      _i31.PageInfo<PetDetailsRouteArgs>(name);
+}
+
+class PetDetailsRouteArgs {
+  const PetDetailsRouteArgs({
+    this.key,
+    required this.userId,
+    this.petId,
+    this.onChangedData,
+  });
+
+  final _i32.Key? key;
+
+  final String userId;
+
+  final int? petId;
+
+  final _i33.Future<void> Function()? onChangedData;
+
+  @override
+  String toString() {
+    return 'PetDetailsRouteArgs{key: $key, userId: $userId, petId: $petId, onChangedData: $onChangedData}';
+  }
 }
 
 /// generated route for

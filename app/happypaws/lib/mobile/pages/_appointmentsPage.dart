@@ -1,6 +1,8 @@
 import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 
 @RoutePage()
 class UserAppointmentsPage extends StatefulWidget {
@@ -18,19 +20,10 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
       child: Padding(
           padding: const EdgeInsets.all(14.0),
           child:
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start, children: [
-            GestureDetector(
-              onTap: () => context.router.pop(),
-              child: const Padding(
-                padding: EdgeInsets.only(bottom: 14.0),
-                child: Text(
-                  'Go back',
-                  style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16),
-                ),
-              ),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const GoBackButton(),
+            const SizedBox(
+              height: 14,
             ),
             const Text(
               "All appointments",
@@ -111,7 +104,9 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                 child: Text(
               "Upcoming",
               style: TextStyle(
-                  color: activeTab == 0 ? Colors.white : Colors.black),
+                  color: activeTab == 0 ? Colors.white : Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )),
           ),
         ),
@@ -131,7 +126,9 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                 child: Text(
               "Completed",
               style: TextStyle(
-                  color: activeTab == 1 ? Colors.white : Colors.black),
+                  color: activeTab == 1 ? Colors.white : Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )),
           ),
         ),
@@ -151,7 +148,9 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                 child: Text(
               "Cancelled",
               style: TextStyle(
-                  color: activeTab == 2 ? Colors.white : Colors.black),
+                  color: activeTab == 2 ? Colors.white : Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600),
             )),
           ),
         ),
@@ -180,12 +179,18 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                   Text(
                     date,
                     textAlign: TextAlign.left,
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700),
                   ),
                   Text(
                     time,
                     textAlign: TextAlign.left,
-                    style: const TextStyle(color: Colors.white, fontSize: 20),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),
                   ),
                   Text(
                     "Pet name: $petName",
@@ -214,12 +219,15 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                   height: 35,
                   width: 80,
                   decoration: BoxDecoration(
-                      color: const Color(0xffBA1A36),
+                      color: AppColors.error,
                       borderRadius: BorderRadius.circular(10)),
                   child: const Center(
                       child: Text(
                     "Cancel",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16),
                   )),
                 ),
               )
@@ -229,8 +237,9 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                     right: 10,
                     child: Text("Cancelled",
                         style: TextStyle(
-                          color: Color(0xffBA1A36),
-                        )),
+                            color: AppColors.error,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
                   )
                 : Container()
       ],

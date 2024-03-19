@@ -5,6 +5,7 @@ import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -88,30 +89,22 @@ class _CartPageState extends State<CartPage> {
     return products == null
         ? const Expanded(child: Spinner())
         : Padding(
-            padding: const EdgeInsets.only(top: 0, left: 20, right: 20),
+            padding: const EdgeInsets.all(14),
             child: Stack(children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                GestureDetector(
-                  onTap: () => context.router.pop(),
-                  child: const Padding(
-                    padding: EdgeInsets.all(14.0),
-                    child: Text(
-                      'Go back',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+              const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GoBackButton(),
+                    Center(
+                      child: Text(
+                        'CART',
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                ),
-                const Center(
-                  child: Text(
-                    'CART',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                ),
-                const SizedBox(
-                  height: 14,
-                ),
-              ]),
+                    SizedBox(
+                      height: 14,
+                    ),
+                  ]),
               Positioned(
                 top: 100,
                 left: 0,
@@ -299,7 +292,10 @@ class _CartPageState extends State<CartPage> {
                         child: const Center(
                             child: Text(
                           'Order',
-                          style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
                         )),
                       ),
                       const SizedBox(

@@ -12,8 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -24,9 +22,7 @@ class _HomePageState extends State<HomePage> {
           child: Text(
             "Our primary goal is to help as many animals as we can by providing top quality care.",
             textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
         _cheritySection(),
@@ -116,9 +112,7 @@ Column _cheritySection() {
         child: Text(
           "Each month, we diligently dispatch packages containing essential food and necessities to animal shelters that are most profoundly in need of our assistance. Should you desire to contribute towards our noble cause of ensuring the well-being and contentment of these innocent creatures, we kindly urge you to make a donation today.",
           textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
       ),
     ],
@@ -131,30 +125,31 @@ class CircularPhotoLayout extends StatefulWidget {
 }
 
 class _CircularPhotoLayoutState extends State<CircularPhotoLayout> {
+  var photoUrl = "assets/images/photo_1.jpg";
+  var selectedPhotoIndex = 1;
+
   @override
   Widget build(BuildContext context) {
-    var photoUrl = "assets/images/photo_1.jpg";
     void alterPhotoUrl(index) {
       setState(() {
         photoUrl = "assets/images/photo_$index.jpg";
+        selectedPhotoIndex = index;
       });
     }
 
-    const centralPhotoSize =
-        162.0;
-    const smallPhotoSize =
-        73.0;
+    const centralPhotoSize = 162.0;
+    const smallPhotoSize = 73.0;
     final centralPhotoPosition = Offset(
       MediaQuery.of(context).size.width / 2,
       180,
-    ); 
-    const circleRadius = 130; 
+    );
+    const circleRadius = 130;
     List<Widget> smallPhotos = List.generate(8, (index) {
       final angle = (2 * pi / 8) * index;
       final x = centralPhotoPosition.dx + cos(angle) * circleRadius;
       final y = centralPhotoPosition.dy + sin(angle) * circleRadius;
       final adjustedIndex = index + 1;
-      final opacity = adjustedIndex == 1 ? 1.0 : 0.5;
+      final opacity = adjustedIndex == selectedPhotoIndex ? 1.0 : 0.5;
 
       return Positioned(
         top: y - smallPhotoSize / 2,
@@ -162,16 +157,15 @@ class _CircularPhotoLayoutState extends State<CircularPhotoLayout> {
         child: Opacity(
             opacity: opacity,
             child: GestureDetector(
-              onTap: () => {alterPhotoUrl(adjustedIndex), print(index)},
+              onTap: () => {alterPhotoUrl(adjustedIndex)},
               child: Container(
                 width: smallPhotoSize,
                 height: smallPhotoSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.green,
+                  color: Colors.white,
                   image: DecorationImage(
-                    image: AssetImage(
-                        'assets/images/photo_$adjustedIndex.jpg'), 
+                    image: AssetImage('assets/images/photo_$adjustedIndex.jpg'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -254,9 +248,8 @@ class _QuestionSectionItemState extends State<QuestionSectionItem> {
               child: Text(
                 widget.content,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
         ],

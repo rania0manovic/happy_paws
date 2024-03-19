@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:happypaws/mobile/pages/_welcomePage.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -74,7 +73,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => context.router.push(const MyPetsRoute()),
+                      onTap: () => context.router.push( MyPetsRoute(userId: user?['Id'])),
                       child: const Text(
                         "My Pets",
                         style: TextStyle(

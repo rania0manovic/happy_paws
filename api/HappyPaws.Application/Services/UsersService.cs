@@ -39,7 +39,6 @@ namespace HappyPaws.Application.Services
                     photo.Data = memoryStream.ToArray();
                     UnitOfWork.ImagesRepository.Update(photo);
                     await UnitOfWork.SaveChangesAsync(cancellationToken);
-                    dto.ProfilePhotoId = photo.Id;
 
                 }
                 else
@@ -56,8 +55,7 @@ namespace HappyPaws.Application.Services
             }
             Mapper.Map(dto, user);
             user.IsVerified = true;
-            UnitOfWork.UsersRepository.Update(user);
-            await UnitOfWork.SaveChangesAsync(cancellationToken);
+            CurrentRepository.Update(user);
 
             return Mapper.Map<UserDto>(user);
         }

@@ -8,6 +8,7 @@ import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
 @RoutePage()
@@ -112,7 +113,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Successfully added product to favourites!");
-             setState(() {
+        setState(() {
           product!["isFavourite"] = true;
         });
       } else {
@@ -135,30 +136,22 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     } else {
       return SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          GestureDetector(
-            onTap: () => context.router.pop(),
-            child: const Padding(
-              padding: EdgeInsets.all(14.0),
-              child: Text(
-                'Go back',
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-              ),
-            ),
+          const Padding(
+            padding: EdgeInsets.only(left: 14.0),
+            child: GoBackButton(),
           ),
           SizedBox(
               width: MediaQuery.of(context).size.width,
               child: picturesSection()),
           Padding(
-            padding:
-                const EdgeInsets.only(left: 34, right: 34, top: 10, bottom: 10),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 10),
             child: Text(
               product!['name'],
               style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.only(left: 34, right: 34, top: 10, bottom: 10),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -202,7 +195,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 10.0),
+            padding: const EdgeInsets.only(top: 10.0),
             child: Description(
                 title: "Description", content: product!['description']),
           ),
@@ -285,10 +278,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               const EdgeInsets.only(left: 34, right: 34, top: 10, bottom: 10),
           child: Scrollbar(
               thickness: 12,
-              radius: Radius.circular(10),
+              radius: const Radius.circular(10),
               thumbVisibility: true,
               child: SingleChildScrollView(
-                padding: EdgeInsets.only(top: 10, bottom: 30),
+                padding: const EdgeInsets.only(top: 10, bottom: 30),
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -300,7 +293,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           selectedImageId = i;
                         }),
                         child: Container(
-                          margin: EdgeInsets.only(right: 3),
+                          margin: const EdgeInsets.only(right: 3),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(

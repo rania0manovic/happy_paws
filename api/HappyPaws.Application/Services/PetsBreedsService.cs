@@ -14,5 +14,10 @@ namespace HappyPaws.Application.Services
         public PetsBreedsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<PetBreedDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
+
+        public async Task<List<PetBreedDto>> GetBreedsForPetTypeAsync(int petTypeId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false)
+        {
+            return Mapper.Map<List<PetBreedDto>>(await CurrentRepository.GetBreedsForPetTypeAsync(petTypeId, cancellationToken));
+        }
     }
 }

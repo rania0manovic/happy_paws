@@ -58,6 +58,7 @@ class _ClientLayoutState extends State<ClientLayout> {
   AppBar appBar(TabsRouter tabsRouter) {
     return AppBar(
       elevation: 0,
+      scrolledUnderElevation: 0,
       toolbarHeight: 80,
       backgroundColor: Colors.white,
       leadingWidth: 150,

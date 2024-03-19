@@ -12,5 +12,19 @@ namespace HappyPaws.Api.Controllers
         public PetBreedsController(IPetBreedsService service, ILogger<BaseController> logger) : base(service, logger)
         {
         }
+        [HttpGet("GetBreedsForPetType")]
+        public async Task<IActionResult> GetBreedsForPetType(int petTypeId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.GetBreedsForPetTypeAsync(petTypeId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resource with categoryID {0}", petTypeId);
+                return BadRequest();
+            }
+        }
     }
 }

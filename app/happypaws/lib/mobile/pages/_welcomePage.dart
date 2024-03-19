@@ -108,20 +108,7 @@ class _WelcomePageState extends State<WelcomePage> {
             const SizedBox(
               height: 40,
             ),
-            // GestureDetector(
-            //   onTap: () => context.router.push(const LoginRoute()),
-            //   child: const Padding(
-            //     padding: EdgeInsets.only(top: 0),
-            //     child: Text(
-            //       "Already a member? Login here.",
-            //       style: TextStyle(
-            //           fontSize: 16,
-            //           decoration: TextDecoration.underline,
-            //           fontWeight: FontWeight.w500,
-            //      ),
-            //     ),
-            //   ),
-            // )
+           
           ],
         ),
       ]),

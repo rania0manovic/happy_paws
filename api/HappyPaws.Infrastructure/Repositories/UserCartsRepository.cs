@@ -17,9 +17,9 @@ namespace HappyPaws.Infrastructure.Repositories
         public UserCartsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
         }
-        public override Task<PagedList<UserCart>> GetPagedAsync(UserCartSearchObject searchObject, CancellationToken cancellationToken = default)
+        public override async Task<PagedList<UserCart>> GetPagedAsync(UserCartSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return DbSet
+            return await DbSet
                 .Include(x => x.Product).ThenInclude(x => x.ProductImages.Take(1)).ThenInclude(x => x.Image)
                 .Include(x => x.Product).ThenInclude(x => x.Brand)
                 .Where(x => x.UserId == searchObject.UserId).ToPagedListAsync(searchObject, cancellationToken);

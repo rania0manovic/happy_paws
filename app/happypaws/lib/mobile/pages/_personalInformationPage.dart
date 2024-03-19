@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:image_picker/image_picker.dart';
@@ -37,7 +37,9 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
 
   Future<void> fetchUser() async {
     var fetchedUser = await AuthService().getCurrentUser();
-    if (fetchedUser != null && fetchedUser['ProfilePhotoId'] != null && fetchedUser['ProfilePhotoId']!= "") {
+    if (fetchedUser != null &&
+        fetchedUser['ProfilePhotoId'] != null &&
+        fetchedUser['ProfilePhotoId'] != "") {
       var image =
           await ImagesService().get("/${fetchedUser['ProfilePhotoId']}");
       if (image.statusCode == 200) {
@@ -53,15 +55,21 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   }
 
   Future<void> updateUser() async {
-    var response = await UsersService().put('', user);
-    if (response.statusCode == 200) {
-      String responseBody = await response.stream.bytesToString();
-      Map<String, dynamic> jsonResponse = json.decode(responseBody);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString('token', jsonResponse['token'].toString());
-      if (!mounted) return;
-      ToastHelper.showToastSuccess(
-          context, "Sucessfully updated user information!");
+    try {
+      var response = await UsersService().put('', user);
+      if (response.statusCode == 200) {
+        String responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> jsonResponse = json.decode(responseBody);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', jsonResponse['token'].toString());
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "Sucessfully updated user information!");
+      } else {
+        throw Exception();
+      }
+    } catch (e) {
+      ToastHelper.showToastSuccess(context, "errrrror!");
     }
   }
 
@@ -83,16 +91,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
       child: Padding(
         padding: const EdgeInsets.all(14.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          GestureDetector(
-            onTap: () => context.router.pop(),
-            child: const Padding(
-              padding: EdgeInsets.only(bottom: 14.0),
-              child: Text(
-                'Go back',
-                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-              ),
-            ),
-          ),
+          const GoBackButton(),
           Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, top: 0),
               child: Align(

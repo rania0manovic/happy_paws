@@ -37,18 +37,18 @@ class _ShopPageState extends State<ShopPage> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Text(
-                "Previous orders",
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
+          // const Align(
+          //   alignment: Alignment.centerRight,
+          //   child: Padding(
+          //     padding: EdgeInsets.all(10),
+          //     child: Text(
+          //       "Previous orders",
+          //       style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.w500),
+          //     ),
+          //   ),
+          // ),
           const Align(
             alignment: Alignment.centerLeft,
             child: Padding(

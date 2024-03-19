@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HappyPaws.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace HappyPaws.Core.Entities
         public required string Name { get; set; }
         public DateTime BirthDate { get; set; }
         public double Weight { get; set; }
+        public Gender Gender { get; set; }
 
         public required User Owner { get; set; }
         public int OwnerId { get; set; }

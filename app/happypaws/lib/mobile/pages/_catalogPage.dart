@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -55,11 +56,11 @@ class _CatalogPageState extends State<CatalogPage> {
     var response;
     if (widget.isShowingFavourites != null && widget.isShowingFavourites!) {
       var fetchedUser = await AuthService().getCurrentUser();
-       response = await UserFavouritesService().getPagedProducts(fetchedUser?['Id']);
-    }
-     else {
       response =
-        await ProductsService().getPaged('', 1, 999, searchObject: params);
+          await UserFavouritesService().getPagedProducts(fetchedUser?['Id']);
+    } else {
+      response =
+          await ProductsService().getPaged('', 1, 999, searchObject: params);
     }
     if (response.statusCode == 200) {
       Map<String, dynamic> jsonData = json.decode(response.body);
@@ -81,19 +82,16 @@ class _CatalogPageState extends State<CatalogPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GestureDetector(
-                  onTap: () => context.router.pop(),
-                  child: const Padding(
-                    padding: EdgeInsets.only(bottom: 14.0),
-                    child: Text(
-                      'Go back',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-                    ),
-                  ),
-                ),
+                const GoBackButton(),
                 if (widget.categoryName != null && widget.categoryPhoto != null)
-                  header(context),
+                  Column(
+                    children: [
+                      const SizedBox(
+                        height: 14,
+                      ),
+                      header(context),
+                    ],
+                  ),
                 productsSection(),
               ]),
         ),

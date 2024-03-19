@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
+import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -47,14 +48,14 @@ class _ShopCategorySubcategoriesPageState
 
   @override
   Widget build(BuildContext context) {
-    if(productSubcategories==null) {
+    if (productSubcategories == null) {
       return const Spinner();
     } else {
       return SingleChildScrollView(
-      child: Column(
-        children: [petCategoriesHeader(context), petCategoriesSection()],
-      ),
-    );
+        child: Column(
+          children: [petCategoriesHeader(context), petCategoriesSection()],
+        ),
+      );
     }
   }
 
@@ -64,26 +65,19 @@ class _ShopCategorySubcategoriesPageState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onTap: () => context.router.pop(),
-            child: const Padding(
-              padding: EdgeInsets.only(bottom: 14.0),
-              child: Text(
-                'Go back',
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16),
-              ),
-            ),
+         
+          const GoBackButton(),
+          const SizedBox(
+            height: 14,
           ),
           Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
             Image.memory(base64.decode(widget.categoryPhoto.toString()),
                 height: 55),
             Padding(
-              padding: EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 10),
               child: Text(
                 widget.categoryName,
-                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
               ),
             ),
           ]),
@@ -120,7 +114,7 @@ class _ShopCategorySubcategoriesPageState
                                   ['photo']['data']
                               .toString()),
                           height: 128,
-                          fit: BoxFit.cover, 
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
@@ -129,9 +123,9 @@ class _ShopCategorySubcategoriesPageState
                       child: Text(
                         subcategory['productSubcategory']['name'],
                         style: const TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            ),
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                        ),
                       ),
                     ),
                   ],
