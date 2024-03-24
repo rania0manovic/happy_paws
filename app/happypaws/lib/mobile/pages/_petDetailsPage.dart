@@ -36,8 +36,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   String selectedDate = 'Select date';
   String? selectedPetType;
   String? selectedPetBreed;
-  List<Map<String, dynamic>>? petTypes;
-  List<Map<String, dynamic>>? petBreeds;
+  Map<String, dynamic>? petTypes;
+  List<dynamic>? petBreeds;
   Map<String, dynamic> data = {};
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
@@ -52,24 +52,23 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   Future<void> fetchData() async {
     var responsePetTypes = await PetTypesService().getPaged("", 1, 999);
     if (responsePetTypes.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responsePetTypes.body);
       setState(() {
-        petTypes = List<Map<String, dynamic>>.from(jsonData['items']);
+        petTypes = responsePetTypes.data;
       });
       if (widget.petId != null) {
         var responsePetData = await PetsService().get('/${widget.petId}');
         if (responsePetData.statusCode == 200) {
-          Map<String, dynamic> jsonData = json.decode(responsePetData.body);
-          fetchPetBreeds(jsonData['petBreed']['petType']['id'].toString());
+       
+          fetchPetBreeds(responsePetData.data['petBreed']['petType']['id'].toString());
           final formatter = DateFormat('dd.MM.yyyy');
           setState(() {
-            data = jsonData;
+            data = responsePetData.data;
             selectedDate =
-                formatter.format(DateTime.parse(jsonData['birthDate']));
-            profilePhoto = jsonData['photo'];
-            selectedGender = jsonData['gender'];
-            selectedPetType = jsonData['petBreed']['petType']['id'].toString();
-            selectedPetBreed = jsonData['petBreed']['id'].toString();
+                formatter.format(DateTime.parse(responsePetData.data['birthDate']));
+            profilePhoto = responsePetData.data['photo'];
+            selectedGender = responsePetData.data['gender'];
+            selectedPetType = responsePetData.data['petBreed']['petType']['id'].toString();
+            selectedPetBreed = responsePetData.data['petBreed']['id'].toString();
           });
         }
       } else {
@@ -136,15 +135,11 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   }
 
   Future<void> fetchPetBreeds(String? newValue) async {
-    print(newValue);
     var responseSubcategories =
         await PetBreedsService().getBreedsForPetType(newValue);
     if (responseSubcategories.statusCode == 200) {
-      List<Map<String, dynamic>> jsonData =
-          (json.decode(responseSubcategories.body) as List)
-              .cast<Map<String, dynamic>>();
       setState(() {
-        petBreeds = jsonData;
+        petBreeds = responseSubcategories.data;
       });
     }
   }
@@ -250,7 +245,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                       ? '${data['weight']}'
                                       : null,
                                   "weight"),
-                              apiDropdownMenu(petTypes!, "Pet type:",
+                              apiDropdownMenu(petTypes!['items'], "Pet type:",
                                   (String? newValue) async {
                                   print(newValue);
 
@@ -457,7 +452,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     );
   }
 
-  Column apiDropdownMenu(List<Map<String, dynamic>> items, String label,
+  Column apiDropdownMenu(dynamic items, String label,
       void Function(String? newValue) onChanged, String? selectedOption,
       {bool isDisabeled = false}) {
     return Column(

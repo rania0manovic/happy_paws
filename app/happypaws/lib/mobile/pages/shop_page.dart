@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
@@ -15,7 +14,7 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
-  List<Map<String, dynamic>>? categories;
+  Map<String, dynamic>? categories;
   @override
   void initState() {
     super.initState();
@@ -25,9 +24,8 @@ class _ShopPageState extends State<ShopPage> {
   Future<void> fetchData() async {
     var response = await ProductCategoriesService().getPaged("", 1, 999);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        categories = List<Map<String, dynamic>>.from(jsonData['items']);
+        categories = response.data;
       });
     }
   }
@@ -98,7 +96,6 @@ class _ShopPageState extends State<ShopPage> {
       child: const Scrollbar(
           thickness: 12,
           radius: Radius.circular(10),
-          thumbVisibility: true,
           child: SingleChildScrollView(
             padding: EdgeInsets.only(top: 10, bottom: 30),
             scrollDirection: Axis.horizontal,
@@ -252,7 +249,6 @@ class _ShopPageState extends State<ShopPage> {
       child: Scrollbar(
           thickness: 12,
           radius: const Radius.circular(10),
-          thumbVisibility: true,
           child: SingleChildScrollView(
             padding: const EdgeInsets.only(top: 10, bottom: 20),
             scrollDirection: Axis.horizontal,
@@ -260,7 +256,7 @@ class _ShopPageState extends State<ShopPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (categories != null)
-                  for (var category in categories!)
+                  for (var category in categories!['items'])
                     GestureDetector(
                       onTap: () => {
                         context.router.push(ShopCategorySubcategoriesRoute(
@@ -295,7 +291,7 @@ class _ShopPageState extends State<ShopPage> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: 160,
-                    child: Spinner())
+                    child: const Spinner())
                
               ],
             ),

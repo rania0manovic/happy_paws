@@ -15,9 +15,9 @@ namespace HappyPaws.Application.Services
         {
         }
 
-        public async Task<bool> AlreadyInCartAsync(int productId, CancellationToken cancellationToken = default)
+        public async Task<bool> AlreadyInCartAsync(int productId,int userId, CancellationToken cancellationToken = default)
         {
-            return await CurrentRepository.AlreadyInCartAsync(productId, cancellationToken).ConfigureAwait(false);
+            return await CurrentRepository.AlreadyInCartAsync(productId, userId, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<UserCartDto> UpdateAsync(UserCartDto dto, CancellationToken cancellationToken = default)

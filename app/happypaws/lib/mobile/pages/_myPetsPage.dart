@@ -17,7 +17,7 @@ class MyPetsPage extends StatefulWidget {
 }
 
 class _MyPetsPageState extends State<MyPetsPage> {
-  List<Map<String, dynamic>>? userPets;
+  Map<String, dynamic>? userPets;
 
   @override
   void initState() {
@@ -29,9 +29,8 @@ class _MyPetsPageState extends State<MyPetsPage> {
     var response = await PetsService()
         .getPaged('', 1, 999, searchObject: {'userId': widget.userId});
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        userPets = List<Map<String, dynamic>>.from(jsonData['items']);
+        userPets = response.data;
       });
     }
   }
@@ -68,7 +67,7 @@ class _MyPetsPageState extends State<MyPetsPage> {
                             const SizedBox(
                               height: 20,
                             ),
-                            for (var pet in userPets!)
+                            for (var pet in userPets!['items'])
                               GestureDetector(
                                 onTap: () => context.router.push(
                                     PetDetailsRoute(userId: widget.userId, petId: pet['id'], onChangedData: fetchData)),

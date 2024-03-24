@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Api.Auth.AuthService;
+using HappyPaws.Api.Auth.CurrentUserClaims;
 using HappyPaws.Api.Config;
 using HappyPaws.Application.Mappings;
 using HappyPaws.Common.Services.AuthService;
@@ -110,6 +111,8 @@ namespace HappyPaws.Api
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEnumsService, EnumsService>();
+            services.AddHttpContextAccessor().AddScoped<CurrentUser>().AddSingleton<ClaimsPrincipalAccessor>();
+
 
         }
 

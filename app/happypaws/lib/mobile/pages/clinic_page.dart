@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,7 +17,7 @@ class ClinicPage extends StatefulWidget {
 }
 
 class _ClinicPageState extends State<ClinicPage> {
-  List<Map<String, dynamic>>? upcomingAppointments;
+  Map<String, dynamic>? upcomingAppointments;
 
 
   @override
@@ -35,10 +33,8 @@ class _ClinicPageState extends State<ClinicPage> {
         var response = await AppointmentsService()
             .getPaged('endpoint', 1, 2, searchObject: {'userId': user['Id']});
         if (response.statusCode == 200) {
-          Map<String, dynamic> jsonData = json.decode(response.body);
           setState(() {
-            upcomingAppointments =
-                List<Map<String, dynamic>>.from(jsonData['items']);
+            upcomingAppointments = response.data;
           });
         }
       }
@@ -85,7 +81,7 @@ class _ClinicPageState extends State<ClinicPage> {
                       const SizedBox(
                         height: 20,
                       ),
-                      for (var appointment in upcomingAppointments!)
+                      for (var appointment in upcomingAppointments!['items'])
                         Column(
                           children: [
                             appointmentContainer(

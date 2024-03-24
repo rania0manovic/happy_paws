@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -37,7 +36,7 @@ class _CatalogPageState extends State<CatalogPage> {
   late String selectedValuePrice = "option0";
   late String selectedValueReview = "0";
   List<bool> selectedOptions = [false, false, false, false, false, false];
-  List<Map<String, dynamic>>? products;
+  Map<String, dynamic>? products;
   Map<String, dynamic> params = {};
 
   @override
@@ -63,9 +62,8 @@ class _CatalogPageState extends State<CatalogPage> {
           await ProductsService().getPaged('', 1, 999, searchObject: params);
     }
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        products = List<Map<String, dynamic>>.from(jsonData['items']);
+        products = response.data;
       });
     }
   }
@@ -143,7 +141,7 @@ class _CatalogPageState extends State<CatalogPage> {
       children: [
         if (products != null)
           // TODO: Add pagination
-          for (var item in products!)
+          for (var item in products!['items'])
             GestureDetector(
               onTap: () => context.router
                   .push(ProductDetailsRoute(productId: item['id'])),

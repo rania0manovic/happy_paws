@@ -30,9 +30,9 @@ namespace HappyPaws.Infrastructure.Repositories
 
         }
 
-        public async Task<bool> AlreadyInCartAsync(int productId, CancellationToken cancellationToken = default)
+        public async Task<bool> AlreadyInCartAsync(int productId, int userId, CancellationToken cancellationToken = default)
         {
-            return await DbSet.AnyAsync(x => x.ProductId == productId, cancellationToken);
+            return await DbSet.Where(x=>x.UserId==userId).AnyAsync(x => x.ProductId == productId, cancellationToken);
         }
     }
 }

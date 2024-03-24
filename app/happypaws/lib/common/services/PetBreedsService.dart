@@ -7,6 +7,6 @@ class PetBreedsService extends BaseService {
     print(petTypeId);
 
     final response = await get('/GetBreedsForPetType?petTypeId=$petTypeId');
-    return processResponse(response);
+    return response;
   }
 }

@@ -8,6 +8,7 @@ import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
@@ -35,9 +36,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   String? selectedCategory;
   String? selectedSubCategory;
   String? selectedBrand;
-  List<Map<String, dynamic>>? productCategories;
-  List<Map<String, dynamic>>? productSubcategories;
-  List<Map<String, dynamic>>? productBrands;
+  Map<String, dynamic>? productCategories;
+  List<dynamic>? productSubcategories;
+  Map<String, dynamic>? productBrands;
   final ImagePicker _imagePicker = ImagePicker();
   final List<File> _selectedImages = [];
   List<Map<String, dynamic>> productImages = [];
@@ -57,9 +58,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
     var responseCategories =
         await ProductCategoriesService().getPaged("", 1, 999);
     if (responseCategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseCategories.body);
       setState(() {
-        productCategories = List<Map<String, dynamic>>.from(jsonData['items']);
+        productCategories = responseCategories.data;
         if (widget.data != null) {
           selectedCategory = widget.data!['productCategorySubcategory']
                   ['productCategoryId']
@@ -75,9 +75,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
 
     var responseBrands = await BrandsService().getPaged("", 1, 999);
     if (responseBrands.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseBrands.body);
       setState(() {
-        productBrands = List<Map<String, dynamic>>.from(jsonData['items']);
+        productBrands = responseBrands.data;
         if (widget.data != null) {
           selectedBrand = widget.data!['brandId'].toString();
         }
@@ -89,11 +88,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
     var responseSubcategories =
         await ProductCategorySubcategoriesService().getSubcategories(newValue);
     if (responseSubcategories.statusCode == 200) {
-      List<Map<String, dynamic>> jsonData =
-          (json.decode(responseSubcategories.body) as List)
-              .cast<Map<String, dynamic>>();
       setState(() {
-        productSubcategories = jsonData;
+        productSubcategories = responseSubcategories.data;
       });
     }
   }
@@ -123,6 +119,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
+         if(!mounted) return;
+        ToastHelper.showToastSuccess(context, "You have successfully added a new product!");
       } else {
         throw Exception('Error occured');
       }
@@ -138,6 +136,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully updated product information!");
       } else {
         throw Exception('Error occured');
       }
@@ -221,19 +222,17 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                             children: [
                               inputField("In Stock", "inStock"),
                               dropdownMenu(
-                                  productCategories!,
-                                  "Category",
+                                  productCategories!['items'], "Category",
                                   (String? newValue) async {
-                                        setState(() {
-                                          selectedSubCategory = null;
-                                          selectedCategory = null;
-                                        });
-                                        await fetchSubcategories(newValue);
-                                        setState(() {
-                                          selectedCategory = newValue;
-                                        });
-                                      },
-                                  selectedCategory),
+                                setState(() {
+                                  selectedSubCategory = null;
+                                  selectedCategory = null;
+                                });
+                                await fetchSubcategories(newValue);
+                                setState(() {
+                                  selectedCategory = newValue;
+                                });
+                              }, selectedCategory),
                               dropdownMenu(
                                   productSubcategories == null
                                       ? List.empty()
@@ -248,7 +247,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                   isDisabeled:
                                       selectedCategory == null ? true : false),
                               dropdownMenu(
-                                  productBrands!,
+                                  productBrands!['items'],
                                   "Brand",
                                   (String? newValue) => setState(() {
                                         selectedBrand = newValue;
@@ -381,7 +380,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
     );
   }
 
-  Column dropdownMenu(List<Map<String, dynamic>> items, String label,
+  Column dropdownMenu(dynamic items, String label,
       void Function(String? newValue) onChanged, String? selectedOption,
       {bool isDisabeled = false}) {
     return Column(
@@ -502,7 +501,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
               });
             },
             style: const TextStyle(
-              color:  Colors.black,
+              color: Colors.black,
             ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
@@ -19,7 +18,7 @@ class MakeAppointmentPage extends StatefulWidget {
 }
 
 class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
-  List<Map<String, dynamic>>? userPets;
+  Map<String, dynamic>? userPets;
   Map<String, dynamic> data = {};
 
   String? selectedValue;
@@ -35,11 +34,10 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
     var response = await PetsService()
         .getPaged('', 1, 999, searchObject: {'userId': user?['Id']});
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        userPets = List<Map<String, dynamic>>.from(jsonData['items']);
-        selectedValue = userPets![0]['id'].toString();
-        data['petId']=userPets![0]['id'];
+        userPets = response.data;
+        selectedValue = userPets!['items'][0]['id'].toString();
+        data['petId']=userPets!['items'][0]['id'];
       });
     }
   }
@@ -84,7 +82,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                       style:
                           TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
-                    dropdownMenu(userPets!, (newValue) {
+                    dropdownMenu(userPets!['items'], (newValue) {
                       setState(() {
                         selectedValue = newValue;
                         data['petId'] = newValue;
@@ -174,8 +172,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
           );
   }
 
-  Container dropdownMenu(
-    List<Map<String, dynamic>> items,
+  Container dropdownMenu(dynamic items,
     void Function(String? newValue) onChanged,
     String? selectedOption,
   ) {

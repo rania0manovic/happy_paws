@@ -33,13 +33,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Future<void> fetchData() async {
-    var fetchedUser = await AuthService().getCurrentUser();
-    var userId = fetchedUser?['Id'];
-    var response = await ProductsService().get('/${widget.productId}/$userId');
+    var response = await ProductsService().get('/${widget.productId}');
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        product = jsonData;
+        product = response.data;
       });
     }
   }
@@ -50,7 +47,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     if (productAlreadyInCart.statusCode != 200) {
       throw Exception();
     }
-    if (productAlreadyInCart.body == "true") {
+    if (productAlreadyInCart.data) {
       if (!mounted) return;
       ToastHelper.showToastWarning(context,
           "Product is already in cart! To increase the quantity please go to cart.");
@@ -279,7 +276,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           child: Scrollbar(
               thickness: 12,
               radius: const Radius.circular(10),
-              thumbVisibility: true,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(top: 10, bottom: 30),
                 scrollDirection: Axis.horizontal,

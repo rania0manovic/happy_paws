@@ -25,7 +25,7 @@ class ShopCategorySubcategoriesPage extends StatefulWidget {
 
 class _ShopCategorySubcategoriesPageState
     extends State<ShopCategorySubcategoriesPage> {
-  List<Map<String, dynamic>>? productSubcategories;
+ List< dynamic>? productSubcategories;
 
   @override
   void initState() {
@@ -37,11 +37,8 @@ class _ShopCategorySubcategoriesPageState
     var responseSubcategories = await ProductCategorySubcategoriesService()
         .getSubcategories(widget.categoryId.toString(), includePhotos: true);
     if (responseSubcategories.statusCode == 200) {
-      List<Map<String, dynamic>> jsonData =
-          (json.decode(responseSubcategories.body) as List)
-              .cast<Map<String, dynamic>>();
       setState(() {
-        productSubcategories = jsonData;
+        productSubcategories = responseSubcategories.data;
       });
     }
   }

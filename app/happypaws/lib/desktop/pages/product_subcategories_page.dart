@@ -18,7 +18,7 @@ class SubcategoriesPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<SubcategoriesPage> {
-  List<Map<String, dynamic>>? productSubcategories;
+ Map<String, dynamic>? productSubcategories;
   @override
   void initState() {
     super.initState();
@@ -28,10 +28,8 @@ class _ProductsPageState extends State<SubcategoriesPage> {
   Future<void> fetchData() async {
     var response = await ProductSubcategoriesService().getPaged("", 1, 999);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        productSubcategories =
-            List<Map<String, dynamic>>.from(jsonData['items']);
+        productSubcategories = response.data;
       });
     }
   }
@@ -160,7 +158,7 @@ class _ProductsPageState extends State<SubcategoriesPage> {
                 )),
           ],
         ),
-        for (var subcategory in productSubcategories!)
+        for (var subcategory in productSubcategories!['items'])
           TableRow(
             children: [
               tableCell(subcategory['name']),

@@ -18,7 +18,7 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
-  List<Map<String, dynamic>>? products;
+  Map<String, dynamic>? products;
 
   @override
   void initState() {
@@ -29,9 +29,8 @@ class _ProductsPageState extends State<ProductsPage> {
   Future<void> fetchData() async {
     var responseProducts = await ProductsService().getPaged("", 1, 999);
     if (responseProducts.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseProducts.body);
       setState(() {
-        products = List<Map<String, dynamic>>.from(jsonData['items']);
+        products = responseProducts.data;
       });
     }
   }
@@ -145,7 +144,7 @@ class _ProductsPageState extends State<ProductsPage> {
             tableHead('Actions'),
           ],
         ),
-        for (var product in products!)
+        for (var product in products!['items'])
           TableRow(
             children: [
               tableCell(product['id'].toString()),

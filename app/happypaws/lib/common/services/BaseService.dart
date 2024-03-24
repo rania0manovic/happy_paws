@@ -1,132 +1,107 @@
-import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BaseService {
-  String baseUrl;
+  late Dio _dio;
+  late String baseUrl;
   String? apiUrl = dotenv.env['API_URL'];
-  BaseService(String controllerName) : baseUrl = '' {
+  BaseService(String controllerName) {
     baseUrl = apiUrl != null ? "$apiUrl/$controllerName" : '';
+
+    _dio = Dio(BaseOptions(
+      baseUrl: baseUrl,
+      contentType: 'application/json',
+    ));
+
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString("token");
+        if (token != null) {
+          options.headers["Authorization"] = "Bearer $token";
+        }
+        return handler.next(options);
+      },
+      onError: (error, handler) {
+        return handler.next(error);
+      },
+    ));
   }
 
   Future<dynamic> get(String endpoint,
       {Map<String, dynamic>? searchObject}) async {
-    final response = await http.get(
-      Uri.parse(
-          '$baseUrl$endpoint'),
+    final response = await _dio.get(
+      '$baseUrl$endpoint',
+      queryParameters: searchObject,
     );
-    return processResponse(response);
+    return response;
   }
-    Future<dynamic> getFromQuery(String endpoint,
-      {Map<String, dynamic>? searchObject}) async {
-    var queryString = '';
 
-    if (searchObject != null) {
-      queryString = Uri(queryParameters: searchObject).query;
+  Future<dynamic> getFromQuery(String endpoint,
+      {Map<String, dynamic>? searchObject}) async {
+    try {
+      final response = await _dio.get(
+        endpoint,
+        queryParameters: searchObject,
+      );
+      return response;
+    } catch (e) {
+      rethrow;
     }
-    final response = await http.get(
-      Uri.parse(
-          '$baseUrl$endpoint?$queryString'),
-    );
-    return processResponse(response);
   }
 
   Future<dynamic> post(String endpoint, dynamic data) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(data),
+    final response = await _dio.post(
+      '$baseUrl$endpoint',
+      data: data,
+      options: Options(headers: {'Content-Type': 'application/json'}),
     );
-
     return response;
   }
 
   Future<dynamic> put(String endpoint, dynamic data) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl$endpoint'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(data),
+    final response = await _dio.put(
+      '$baseUrl$endpoint',
+      data: data,
+      options: Options(headers: {'Content-Type': 'application/json'}),
     );
     return response;
   }
 
   Future<dynamic> delete(String endpoint) async {
-    final response = await http.delete(Uri.parse('$baseUrl$endpoint'));
+    final response = await _dio.delete('$baseUrl$endpoint');
     return response;
   }
 
   Future<dynamic> getPaged(String endpoint, int pageNumber, int pageSize,
       {Map<String, dynamic>? searchObject}) async {
-    var queryString = '';
-    if (searchObject != null) {
-      queryString = Uri(queryParameters: searchObject).query;
-    }
-
-    final response = await http.get(
-      Uri.parse(
-          '$baseUrl/GetPaged?PageNumber=$pageNumber&PageSize=$pageSize&$queryString'),
+    final response = await _dio.get(
+      '$baseUrl/GetPaged',
+      queryParameters: {
+        'PageNumber': pageNumber,
+        'PageSize': pageSize,
+        ...?searchObject,
+      },
     );
-    return processResponse(response);
+    return response;
   }
 
   Future<dynamic> postMultiPartRequest(String endpoint, dynamic data) async {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse(baseUrl),
+    final formData = FormData.fromMap(data);
+    final response = await _dio.post(
+      '$baseUrl$endpoint',
+      data: formData,
     );
-    if (data['PhotoFile'] != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'PhotoFile',
-          data["PhotoFile"],
-        ),
-      );
-    }
-    data.forEach((key, value) {
-      if (value != null) {
-        request.fields[key] = value.toString();
-      }
-    });
-    try {
-      var response = await request.send();
-      return response;
-    } catch (e) {
-      rethrow;
-    }
+    return response;
   }
 
   Future<dynamic> putMultiPartRequest(String endpoint, dynamic data) async {
-    var request = http.MultipartRequest(
-      'PUT',
-      Uri.parse(baseUrl),
+    final formData = FormData.fromMap(data);
+    final response = await _dio.put(
+      '$baseUrl$endpoint',
+      data: formData,
     );
-    if (data['PhotoFile'] != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'PhotoFile',
-          data["PhotoFile"],
-        ),
-      );
-    }
-    data.forEach((key, value) {
-      if (value != null) {
-        request.fields[key] = value.toString();
-      }
-    });
-    try {
-      var response = await request.send();
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  dynamic processResponse(http.Response response) {
-    if (response.statusCode == 200 || response.statusCode==406) {
-      return response;
-    } else {
-      throw Exception(
-          'Failed to load data. Status code: ${response.statusCode}');
-    }
+    return response;
   }
 }

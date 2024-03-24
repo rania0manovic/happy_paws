@@ -134,13 +134,14 @@ class _AdminLayoutState extends State<AdminLayout> {
           ),
           barTile(3, context, "Appointments", "assets/icons/calender.svg",
               const AppointmentsRoute()),
+               barTile(5, context, "Patients", "assets/icons/paw.svg",
+              const PatientsRoute()),
           Visibility(
             visible: user!['Role'] == 'Admin',
             child: barTile(4, context, "Employees",
                 "assets/icons/employees.svg", const EmployeesRoute()),
           ),
-          barTile(5, context, "Patients", "assets/icons/paw.svg",
-              const AppointmentsRoute()),
+         
           Visibility(
             visible: user!['Role'] == 'Admin',
             child: barTile(6, context, "Reports", "assets/icons/report.svg",

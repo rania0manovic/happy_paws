@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
@@ -11,7 +10,6 @@ import 'package:happypaws/desktop/components/spinner.dart';
 class AddEditPetBreedMenu extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
-
   final Map<String, dynamic>? data;
 
   const AddEditPetBreedMenu({
@@ -38,9 +36,8 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
   Future<void> fetchData() async {
     var responseCategories = await PetTypesService().getPaged("", 1, 999);
     if (responseCategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseCategories.body);
       setState(() {
-        petTypes = List<Map<String, dynamic>>.from(jsonData['items']);
+        petTypes = responseCategories.data;
         if (widget.data != null) {
           selectedPetType = widget.data!['petTypeId'].toString();
         }
@@ -89,7 +86,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
   }
 
   Map<String, dynamic> data = {};
-  List<Map<String, dynamic>>? petTypes;
+  Map<String, dynamic>? petTypes;
   String? selectedPetType;
 
   @override
@@ -140,7 +137,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              dropdownMenu(petTypes!, "Pet type",
+                              dropdownMenu(petTypes!['items'], "Pet type",
                                   (String? newValue) async {
                                 setState(() {
                                   selectedPetType = newValue;
@@ -171,7 +168,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
     );
   }
 
-  Column dropdownMenu(List<Map<String, dynamic>> items, String label,
+  Column dropdownMenu(dynamic items, String label,
       void Function(String? newValue) onChanged, String? selectedOption,
       {bool isDisabeled = false}) {
     return Column(

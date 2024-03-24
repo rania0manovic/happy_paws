@@ -19,7 +19,7 @@ class PetBreedsPage extends StatefulWidget {
 }
 
 class _PetBreedsPageState extends State<PetBreedsPage> {
-  List<Map<String, dynamic>>? petBreeds;
+  Map<String, dynamic>? petBreeds;
   @override
   void initState() {
     super.initState();
@@ -29,9 +29,8 @@ class _PetBreedsPageState extends State<PetBreedsPage> {
   Future<void> fetchData() async {
     var response = await PetBreedsService().getPaged("", 1, 999);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        petBreeds = List<Map<String, dynamic>>.from(jsonData['items']);
+        petBreeds = response.data;
       });
     }
   }
@@ -148,7 +147,7 @@ class _PetBreedsPageState extends State<PetBreedsPage> {
                 )),
           ],
         ),
-        for (var petBreed in petBreeds!)
+        for (var petBreed in petBreeds!['items'])
           TableRow(
             children: [
               tableCell(petBreed['petType']['name']),

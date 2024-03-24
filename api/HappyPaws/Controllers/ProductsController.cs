@@ -1,4 +1,5 @@
-﻿using HappyPaws.Application.Interfaces;
+﻿using HappyPaws.Api.Auth.CurrentUserClaims;
+using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Mvc;
@@ -7,8 +8,10 @@ namespace HappyPaws.Api.Controllers
 {
     public class ProductsController : BaseCrudController<ProductDto, IProductsService, ProductSearchObject>
     {
-        public ProductsController(IProductsService service, ILogger<BaseController> logger) : base(service, logger)
+        private readonly CurrentUser _currentUser;
+        public ProductsController(IProductsService service, ILogger<BaseController> logger, CurrentUser currentUser) : base(service, logger)
         {
+            _currentUser = currentUser;
         }
 
         public override Task<IActionResult> Post([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
@@ -20,12 +23,14 @@ namespace HappyPaws.Api.Controllers
             return base.Put(upsertDto, cancellationToken);
         }
 
-        [HttpGet("{id}/{userId}")]
-        public async Task<IActionResult> Get(int id, int userId, CancellationToken cancellationToken = default)
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> Get(int id, CancellationToken cancellationToken = default)
         {
+            var userId = _currentUser.Id;
             try
             {
-                var dto = await Service.GetByIdAsync(id, userId, cancellationToken);
+                if (!userId.HasValue) return StatusCode(403);
+                var dto = await Service.GetByIdAsync(id, userId.Value, cancellationToken);
                 return Ok(dto);
 
             }

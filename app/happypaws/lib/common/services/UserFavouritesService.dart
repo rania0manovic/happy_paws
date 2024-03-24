@@ -5,6 +5,6 @@ class UserFavouritesService extends BaseService {
 
   Future<dynamic> getPagedProducts(String userId) async {
     final response = await get("/GetPagedProducts?UserId=$userId");
-    return processResponse(response);
+    return response;
   }
 }

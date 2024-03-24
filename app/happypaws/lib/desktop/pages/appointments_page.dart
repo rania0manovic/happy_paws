@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +21,8 @@ class AppointmentsPage extends StatefulWidget {
 }
 
 class _AppointmentsPageState extends State<AppointmentsPage> {
-  List<Map<String, dynamic>>? appointments;
-  List<Map<String, dynamic>> appointmentsByDate = [];
+  Map<String, dynamic>? appointments;
+  List<dynamic> appointmentsByDate = [];
 
   DateTime date = DateTime.now();
 
@@ -36,9 +35,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   Future<void> fetchData() async {
     var response = await AppointmentsService().getPaged('', 1, 9999);
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
       setState(() {
-        appointments = List<Map<String, dynamic>>.from(jsonData['items']);
+        appointments = response.data;
       });
       filterAppointmentsByDate();
     }
@@ -46,7 +44,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   void filterAppointmentsByDate() {
     if (appointments == null) return;
-    var filtered = appointments!
+    var filtered = appointments!['items']!
         .where((appointment) => appointment['startDateTime'] != null)
         .where((appointment) {
       DateTime startDateTime = DateTime.parse(appointment['startDateTime']);
@@ -114,9 +112,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                           ),
                           ListView.builder(
                             shrinkWrap: true,
-                            itemCount: appointments!.length,
+                            itemCount: appointments!['totalCount'],
                             itemBuilder: (context, index) {
-                              var appointment = appointments![index];
+                              var appointment = appointments!['items'][index];
                               return GestureDetector(
                                 onTap: () {
                                   if (appointment['startDateTime'] == null)

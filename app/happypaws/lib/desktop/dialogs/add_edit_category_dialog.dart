@@ -13,7 +13,7 @@ class AddEditCategoryOverlay extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
   final Map<String, dynamic>? data;
-  final List<Map<String, dynamic>>? subcategories;
+  final Map<String, dynamic>? subcategories;
   List<int>? listIds;
 
   AddEditCategoryOverlay(
@@ -31,7 +31,7 @@ class AddEditCategoryOverlay extends StatefulWidget {
 
 class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
   late List<bool> isCheckedList =
-      List.generate(widget.subcategories!.length, (index) => false);
+      List.generate(widget.subcategories!['totalCount'], (index) => false);
   final ImagePicker _imagePicker = ImagePicker();
   List<int> listIds = [];
 
@@ -44,9 +44,9 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
     }
     if (widget.listIds != null) {
       isCheckedList = List.generate(
-          widget.subcategories!.length,
+          widget.subcategories!['totalCount'],
           (index) => widget.data != null && widget.listIds != null
-              ? widget.listIds!.contains(widget.subcategories![index]['id'])
+              ? widget.listIds!.contains(widget.subcategories!['items'][index]['id'])
               : false);
       listIds = [...widget.listIds!];
     }
@@ -213,7 +213,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                         spacing: 16.0,
                                         runSpacing: 8.0,
                                         children: List.generate(
-                                          widget.subcategories!.length,
+                                          widget.subcategories!['totalCount'],
                                           (index) => Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -228,18 +228,18 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                                           value!;
                                                       if (value) {
                                                         listIds.add(widget
-                                                                .subcategories![
+                                                                .subcategories!['items'][
                                                             index]['id']);
                                                       } else {
                                                         listIds.remove(widget
-                                                                .subcategories![
+                                                                .subcategories!['items'][
                                                             index]['id']);
                                                       }
                                                     });
                                                   });
                                                 },
                                               ),
-                                              Text(widget.subcategories![index]
+                                              Text(widget.subcategories!['items'][index]
                                                   ['name']),
                                             ],
                                           ),

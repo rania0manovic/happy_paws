@@ -23,7 +23,7 @@ class EmployeesPage extends StatefulWidget {
 }
 
 class _EmployeesPageState extends State<EmployeesPage> {
-  List<Map<String, dynamic>>? employees;
+  Map<String, dynamic>? employees;
 
   @override
   void initState() {
@@ -34,9 +34,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
   Future<void> fetchData() async {
     var response = await EmployeesService().getPaged("", 1, 999);
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
       setState(() {
-        employees = List<Map<String, dynamic>>.from(jsonData['items']);
+        employees = response.data;
       });
     }
   }
@@ -161,7 +160,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
             tableHead('Actions'),
           ],
         ),
-        for (var employee in employees!)
+        for (var employee in employees!['items'])
           TableRow(
             children: [
               tableCell(employee['id'].toString()),
@@ -307,7 +306,7 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
-  List<Map<String, dynamic>>? employeePositions;
+  List<dynamic>? employeePositions;
 
   @override
   void initState() {
@@ -322,10 +321,9 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
   Future<void> fetchData() async {
     var response = await EnumsService().getEmployeePositions();
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
       setState(() {
-        selectedRole = jsonData[0]['value'];
-        employeePositions = List<Map<String, dynamic>>.from(jsonData);
+        selectedRole = response.data[0]['value'];
+        employeePositions = response.data;
       });
     }
   }

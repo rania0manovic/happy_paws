@@ -20,8 +20,8 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<CategoriesPage> {
-  List<Map<String, dynamic>>? productCategories;
-  List<Map<String, dynamic>>? productSubcategories;
+  Map<String, dynamic>? productCategories;
+  Map<String, dynamic>? productSubcategories;
 
   @override
   void initState() {
@@ -33,18 +33,15 @@ class _ProductsPageState extends State<CategoriesPage> {
     var responseCategories =
         await ProductCategoriesService().getPaged("", 1, 999);
     if (responseCategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseCategories.body);
       setState(() {
-        productCategories = List<Map<String, dynamic>>.from(jsonData['items']);
+        productCategories = responseCategories.data;
       });
     }
     var responseSubcategories =
         await ProductSubcategoriesService().getPaged("", 1, 999);
     if (responseSubcategories.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(responseSubcategories.body);
       setState(() {
-        productSubcategories =
-            List<Map<String, dynamic>>.from(jsonData['items']);
+        productSubcategories =responseSubcategories.data;
       });
     }
   }
@@ -67,7 +64,7 @@ class _ProductsPageState extends State<CategoriesPage> {
         .getSubcategoryIds(categoryId);
 
     if (response.statusCode == 200) {
-      return json.decode(response.body).cast<int>();
+      return response.data.cast<int>();
     } else {
       return null;
     }
@@ -94,7 +91,7 @@ class _ProductsPageState extends State<CategoriesPage> {
             },
             fetchData: fetchData,
             data: data,
-            subcategories: productSubcategories,
+            subcategories: productSubcategories!,
             listIds: listIds,
           ),
         );
@@ -131,7 +128,7 @@ class _ProductsPageState extends State<CategoriesPage> {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                productCategories != null
+                productCategories != null && productSubcategories!=null
                     ? table()
                     : const Expanded(
                         child: Padding(
@@ -171,7 +168,7 @@ class _ProductsPageState extends State<CategoriesPage> {
                 )),
           ],
         ),
-        for (var category in productCategories!)
+        for (var category in productCategories!['items'])
           TableRow(
             children: [
               tableCell(category['name']),
