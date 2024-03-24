@@ -8,7 +8,7 @@ import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
 @RoutePage()

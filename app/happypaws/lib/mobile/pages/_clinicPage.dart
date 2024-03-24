@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
+import 'package:intl/intl.dart';
 
 @RoutePage()
 class ClinicPage extends StatefulWidget {
@@ -19,6 +21,7 @@ class ClinicPage extends StatefulWidget {
 class _ClinicPageState extends State<ClinicPage> {
   List<Map<String, dynamic>>? upcomingAppointments;
 
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +33,7 @@ class _ClinicPageState extends State<ClinicPage> {
       var user = await AuthService().getCurrentUser();
       if (user != null) {
         var response = await AppointmentsService()
-            .getPaged('endpoint', 1, 2, searchObject: {'userId': user['id']});
+            .getPaged('endpoint', 1, 2, searchObject: {'userId': user['Id']});
         if (response.statusCode == 200) {
           Map<String, dynamic> jsonData = json.decode(response.body);
           setState(() {
@@ -86,7 +89,7 @@ class _ClinicPageState extends State<ClinicPage> {
                         Column(
                           children: [
                             appointmentContainer(
-                                appointment['dateTime'],
+                                appointment['startDateTime'],
                                 appointment['pet']['name'],
                                 appointment['reason']),
                             const SizedBox(
@@ -94,6 +97,17 @@ class _ClinicPageState extends State<ClinicPage> {
                             ),
                           ],
                         ),
+                        if(upcomingAppointments!.isEmpty)
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LightText(label: "You have no upcoming appointments!"),
+                               const SizedBox(
+                        height: 20,)
+                          ],
+                      
+                      ),
+                        
                       const Text(
                         "Medication reminders",
                         style: TextStyle(
@@ -210,7 +224,7 @@ class _ClinicPageState extends State<ClinicPage> {
   Container appointmentContainer(
       String? dateTime, String petName, String reason) {
     return Container(
-      height: 140,
+      height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
           color: const Color(0xff3F0D84),
@@ -222,7 +236,7 @@ class _ClinicPageState extends State<ClinicPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                dateTime == null ? "Date TBA" : dateTime,
+                dateTime == null ? "Date TBA" : DateFormat('EEEE, MMMM dd, yyyy').format( DateTime.parse( dateTime)),
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,
@@ -230,7 +244,7 @@ class _ClinicPageState extends State<ClinicPage> {
                     fontWeight: FontWeight.w700),
               ),
               Text(
-                dateTime == null ? "Time TBA" : dateTime,
+                dateTime == null ? "Time TBA" : DateFormat("HH:mm").format(DateTime.parse(dateTime)),
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,
@@ -246,7 +260,7 @@ class _ClinicPageState extends State<ClinicPage> {
                     fontWeight: FontWeight.w500),
               ),
               Text(
-                "Reason: $reason",
+                "Reason:" + ( reason.length>70 ? '${reason.substring(0, 70)}...' : reason),
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,

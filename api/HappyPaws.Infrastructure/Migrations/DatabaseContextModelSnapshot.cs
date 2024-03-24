@@ -109,8 +109,14 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DateTime")
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDateTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -132,7 +138,12 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
+                    b.Property<DateTime?>("StartDateTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("PetId");
 
@@ -957,11 +968,17 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
                 {
+                    b.HasOne("HappyPaws.Core.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId");
+
                     b.HasOne("HappyPaws.Core.Entities.Pet", "Pet")
                         .WithMany("Appointments")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Employee");
 
                     b.Navigation("Pet");
                 });

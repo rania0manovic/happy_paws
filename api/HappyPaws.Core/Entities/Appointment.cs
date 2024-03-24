@@ -10,9 +10,14 @@ namespace HappyPaws.Core.Entities
     {
         public required string Reason { get; set; }
         public string? Note { get; set; }
-        public DateTime? DateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
+        public bool IsCancelled { get; set; }
 
         public required Pet Pet { get; set; }
         public int PetId { get; set; }
+
+        public Employee? Employee { get; set; }
+        public int? EmployeeId { get; set; }
     }
 }

@@ -16,7 +16,8 @@ namespace HappyPaws.Infrastructure.Configurations
 
             builder.Property(x => x.Reason).IsRequired().HasMaxLength(512);
             builder.Property(x => x.Note).IsRequired(false).HasMaxLength(256);
-            builder.Property(x => x.DateTime).IsRequired(false);
+            builder.Property(x => x.StartDateTime).IsRequired(false);
+            builder.Property(x => x.EndDateTime).IsRequired(false);
 
             builder.HasOne(x => x.Pet).WithMany(x => x.Appointments).HasForeignKey(x => x.PetId).IsRequired();
         }

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 

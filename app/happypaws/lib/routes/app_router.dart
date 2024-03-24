@@ -69,8 +69,9 @@ class AppRouter extends $AppRouter {
             guards: [AuthGuardDesktop()],
             page: AdminLayout.page,
             children: [
-              AutoRoute(path: 'dashboard', page: DashboardRoute.page),
+              AutoRoute(path: 'dashboard', page: DashboardRoute.page, initial: true),
               AutoRoute(path: 'appointments', page: AppointmentsRoute.page),
+              AutoRoute(path: 'employees', page: EmployeesRoute.page),
               AutoRoute(path: 'products', page: ProductsRoute.page),
               AutoRoute(
                   path: 'settings/product-categories',

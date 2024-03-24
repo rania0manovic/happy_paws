@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Dtos.Employee;
+using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -10,5 +11,6 @@ namespace HappyPaws.Application.Interfaces
 {
     public interface IEmployeesService : IBaseService<int, EmployeeDto, EmployeeSearchObject>
     {
+        Task<PagedList<EmployeeDto>> FindFreeEmployeesAsync(EmployeeSearchObject searchObject, CancellationToken cancellationToken);
     }
 }

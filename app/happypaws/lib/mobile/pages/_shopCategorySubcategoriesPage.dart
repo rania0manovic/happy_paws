@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 

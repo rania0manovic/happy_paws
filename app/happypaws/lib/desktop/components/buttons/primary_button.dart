@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 
 class PrimaryButton extends StatelessWidget {
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String label;
   final double? width;
   final double fontSize; 

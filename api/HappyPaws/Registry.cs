@@ -4,6 +4,7 @@ using HappyPaws.Application.Mappings;
 using HappyPaws.Common.Services.AuthService;
 using HappyPaws.Common.Services.CryptoService;
 using HappyPaws.Common.Services.EmailService;
+using HappyPaws.Common.Services.EnumsService;
 using HappyPaws.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Localization;
@@ -108,6 +109,8 @@ namespace HappyPaws.Api
             services.AddSingleton<ICryptoService, CryptoService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEnumsService, EnumsService>();
+
         }
 
     }

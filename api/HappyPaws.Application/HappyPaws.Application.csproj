@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HappyPaws.Common\HappyPaws.Common.csproj" />
     <ProjectReference Include="..\HappyPaws.Core\HappyPaws.Core.csproj" />
     <ProjectReference Include="..\HappyPaws.Infrastructure\HappyPaws.Infrastructure.csproj" />
   </ItemGroup>

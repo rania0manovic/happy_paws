@@ -19,6 +19,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       final response = await AuthService().sendEmailVerification(user);
       if (response.statusCode == 200) {
+        if(!mounted)return;
         context.router.push(RegisterVerificationRoute(user: user));
       } else if (response.statusCode == 409) {
         throw Exception('User with the same email exists');

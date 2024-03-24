@@ -10,5 +10,7 @@ namespace HappyPaws.Application.Interfaces
 {
     public interface IAppointmentsService : IBaseService<int, AppointmentDto, AppointmentSearchObject>
     {
+        Task<bool> IsValidTime(AppointmentSearchObject searchObject);
+
     }
 }

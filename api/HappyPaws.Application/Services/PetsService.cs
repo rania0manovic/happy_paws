@@ -22,7 +22,6 @@ namespace HappyPaws.Application.Services
         }
         public override async Task<PetDto> AddAsync(PetDto dto, CancellationToken cancellationToken = default)
         {
-
             if (dto.PhotoFile != null)
             {
                 var memoryStream = new MemoryStream();

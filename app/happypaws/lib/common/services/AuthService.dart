@@ -11,7 +11,7 @@ class AuthService extends BaseService {
   }
 
   Future<dynamic> sendEmailVerification(dynamic data) async {
-    final response = await post('/SendEmailVerification', data);
+    final response = await post('SendEmailVerification', data);
     return response;
   }
 

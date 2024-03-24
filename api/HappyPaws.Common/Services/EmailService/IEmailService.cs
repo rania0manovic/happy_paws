@@ -9,7 +9,7 @@ namespace HappyPaws.Common.Services.EmailService
 {
     public interface IEmailService
     {
-        Task Send(string subject, string body, string toAddress, Attachment? attachment = null);
-        Task Send(string subject, string body, string[] toAddresses, Attachment? attachment = null);
+        Task SendAsync(string subject, string body, string toAddress, Attachment? attachment = null);
+        Task SendGroupAsync(string subject, string body, string[] toAddresses, Attachment? attachment = null);
     }
 }

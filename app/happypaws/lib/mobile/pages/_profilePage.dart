@@ -123,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                       color: Colors.white),
                 ),
               ),

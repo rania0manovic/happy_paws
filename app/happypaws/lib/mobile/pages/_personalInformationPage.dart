@@ -6,8 +6,8 @@ import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
-import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,7 +69,9 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         throw Exception();
       }
     } catch (e) {
-      ToastHelper.showToastSuccess(context, "errrrror!");
+         ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      rethrow;
     }
   }
 

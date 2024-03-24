@@ -13,6 +13,10 @@ namespace HappyPaws.Application.Mappings
         public EmployeeProfile()
         {
             CreateMap<Employee, EmployeeDto>().ReverseMap();
+            CreateMap<EmployeeDto, EmployeeSensitiveDto>();
+            CreateMap<EmployeeSensitiveDto, Employee>().ReverseMap();
+
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HappyPaws.Core.Dtos.Pet;
+﻿using HappyPaws.Core.Dtos.Employee;
+using HappyPaws.Core.Dtos.Pet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,14 @@ namespace HappyPaws.Core.Dtos.Appointment
     {
         public required string Reason { get; set; }
         public string? Note { get; set; }
-        public DateTime? DateTime { get; set; }
+        public DateTime? StartDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; }
         public bool IsCancelled { get; set; }
 
         public PetDto? Pet { get; set; }
         public int PetId { get; set; }
+
+        public EmployeeDto? Employee { get; set; }
+        public int? EmployeeId { get; set; }
     }
 }

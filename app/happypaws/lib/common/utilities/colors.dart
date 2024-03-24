@@ -8,5 +8,12 @@ class AppColors {
   static const Color success = Color.fromARGB(255, 12, 146, 93);
   static const Color dimError = Color.fromARGB(128, 223, 191, 191);
   static const Color info = Color.fromARGB(255, 199, 181, 59);
+  static const List<Color> appointmentColors = [
+    Color(0xffE2EDDE),
+    Color(0xffEDDEDE),
+    Color(0xffDEE5ED),
+
+
+  ];
 
 }

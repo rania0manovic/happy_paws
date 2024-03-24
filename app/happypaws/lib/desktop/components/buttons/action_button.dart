@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class ActionButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
-  bool isRounded;
-  Color color;
-  Color iconColor;
-  double iconSize;
+  final bool isRounded;
+  final Color color;
+  final Color iconColor;
+  final double iconSize;
 
 
-  ActionButton(
+  const ActionButton(
       {super.key,
       required this.onPressed,
       required this.icon,

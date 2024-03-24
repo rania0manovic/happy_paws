@@ -27,11 +27,9 @@ namespace HappyPaws.Common.Services.CryptoService
         {
             byte[] randomBytes = new byte[128 / 8];
 
-            using (var generator = RandomNumberGenerator.Create())
-            {
-                generator.GetBytes(randomBytes);
-                return Convert.ToBase64String(randomBytes);
-            }
+            using var generator = RandomNumberGenerator.Create();
+            generator.GetBytes(randomBytes);
+            return Convert.ToBase64String(randomBytes);
         }
         public string CleanSalt(string salt)
         {

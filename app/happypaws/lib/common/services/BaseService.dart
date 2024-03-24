@@ -9,8 +9,25 @@ class BaseService {
     baseUrl = apiUrl != null ? "$apiUrl/$controllerName" : '';
   }
 
-  Future<dynamic> get(String endpoint) async {
-    final response = await http.get(Uri.parse('$baseUrl$endpoint'));
+  Future<dynamic> get(String endpoint,
+      {Map<String, dynamic>? searchObject}) async {
+    final response = await http.get(
+      Uri.parse(
+          '$baseUrl$endpoint'),
+    );
+    return processResponse(response);
+  }
+    Future<dynamic> getFromQuery(String endpoint,
+      {Map<String, dynamic>? searchObject}) async {
+    var queryString = '';
+
+    if (searchObject != null) {
+      queryString = Uri(queryParameters: searchObject).query;
+    }
+    final response = await http.get(
+      Uri.parse(
+          '$baseUrl$endpoint?$queryString'),
+    );
     return processResponse(response);
   }
 
@@ -52,8 +69,60 @@ class BaseService {
     return processResponse(response);
   }
 
-   dynamic processResponse(http.Response response) {
-    if (response.statusCode == 200) {
+  Future<dynamic> postMultiPartRequest(String endpoint, dynamic data) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(baseUrl),
+    );
+    if (data['PhotoFile'] != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'PhotoFile',
+          data["PhotoFile"],
+        ),
+      );
+    }
+    data.forEach((key, value) {
+      if (value != null) {
+        request.fields[key] = value.toString();
+      }
+    });
+    try {
+      var response = await request.send();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> putMultiPartRequest(String endpoint, dynamic data) async {
+    var request = http.MultipartRequest(
+      'PUT',
+      Uri.parse(baseUrl),
+    );
+    if (data['PhotoFile'] != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'PhotoFile',
+          data["PhotoFile"],
+        ),
+      );
+    }
+    data.forEach((key, value) {
+      if (value != null) {
+        request.fields[key] = value.toString();
+      }
+    });
+    try {
+      var response = await request.send();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  dynamic processResponse(http.Response response) {
+    if (response.statusCode == 200 || response.statusCode==406) {
       return response;
     } else {
       throw Exception(

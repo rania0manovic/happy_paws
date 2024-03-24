@@ -42,7 +42,7 @@ namespace HappyPaws.Api.Controllers
                 var user = await _usersService.GetByEmailAsync(model.Email, cancellationToken);
                 if (user == null)
                 {
-                    await _authService.SendEmailVerificationCodeAsync(model);
+                    await _authService.SendEmailVerificationCodeAsync(model, cancellationToken);
                     return Ok();
                 }
                 else

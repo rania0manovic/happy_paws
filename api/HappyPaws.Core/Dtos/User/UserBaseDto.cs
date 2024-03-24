@@ -18,5 +18,7 @@ namespace HappyPaws.Core.Dtos.User
 
         public ImageDto? ProfilePhoto { get; set; }
         public int? ProfilePhotoId { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

@@ -10,9 +10,9 @@ import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
-import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
-import 'package:happypaws/desktop/components/buttons/PrimaryIconButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:image_picker/image_picker.dart';
@@ -136,6 +136,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   }
 
   Future<void> fetchPetBreeds(String? newValue) async {
+    print(newValue);
     var responseSubcategories =
         await PetBreedsService().getBreedsForPetType(newValue);
     if (responseSubcategories.statusCode == 200) {
@@ -251,6 +252,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                   "weight"),
                               apiDropdownMenu(petTypes!, "Pet type:",
                                   (String? newValue) async {
+                                  print(newValue);
+
                                 setState(() {
                                   selectedPetBreed = null;
                                   selectedPetType = null;

@@ -5,9 +5,10 @@ import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/desktop/components/buttons/GoBackButton.dart';
-import 'package:happypaws/desktop/components/buttons/PrimaryButton.dart';
+import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+
 
 @RoutePage()
 class MakeAppointmentPage extends StatefulWidget {

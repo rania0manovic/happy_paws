@@ -57,7 +57,7 @@ namespace HappyPaws.Api.Auth.AuthService
                     Code = code,
                 };
                 await _emailVerificationRequestsService.AddAsync(request, cancellationToken);
-                await _emailService.Send("Verify your email", $"<p style='font-family: Calibri; margin-bottom:30px'>Hello {model.FirstName} {model.LastName},</p>\r\n<p style='font-family: Calibri'>In order to create your HappyPaws account you must verify your email address first. Here is your code: </p>\r\n<h2 style='font-family: Calibri'>{code}</h2>\r\n<p style='font-family: Calibri'>Your code will expire in 1 minute so make sure you use it right away.</p>\r\n<p style='font-family: Calibri'>For further enquiries, please feel free to contact our customer service team at happypaws_support@gmail.com.</p>\r\n<p style='font-family: Calibri;margin-top:30px'>Best regards<br/>HappyPaws Team </p><hr style='background-color:#78498d9e;border:none;height:0.5px' /><p style='font-family: Cambria'>This email is auto-generated. Please do not reply to this message.</p>\r\n", model.Email);
+                await _emailService.SendAsync("Verify your email", $"<p style='font-family: Calibri; margin-bottom:30px'>Hello {model.FirstName} {model.LastName},</p>\r\n<p style='font-family: Calibri'>In order to create your HappyPaws account you must verify your email address first. Here is your code: </p>\r\n<h2 style='font-family: Calibri'>{code}</h2>\r\n<p style='font-family: Calibri'>Your code will expire in 1 minute so make sure you use it right away.</p>\r\n<p style='font-family: Calibri'>For further enquiries, please feel free to contact our customer service team at happypaws_support@gmail.com.</p>\r\n<p style='font-family: Calibri;margin-top:30px'>Best regards<br/>HappyPaws Team </p><hr style='background-color:#78498d9e;border:none;height:0.5px' /><p style='font-family: Cambria'>This email is auto-generated. Please do not reply to this message.</p>\r\n", model.Email);
                 await UnitOfWork.CommitTransactionAsync(cancellationToken);
             }
             catch (Exception)
@@ -69,10 +69,7 @@ namespace HappyPaws.Api.Auth.AuthService
 
         public async Task<TokenModel> SignInAsync(SignInModel model, CancellationToken cancellationToken = default)
         {
-            var user = await _usersService.GetByEmailAsync(model.Email, cancellationToken);
-            if (user == null)
-                throw new UserNotFoundException();
-
+            var user = await _usersService.GetByEmailAsync(model.Email, cancellationToken) ?? throw new UserNotFoundException();
             if (!user.IsVerified)
                 throw new UserNotVerifiedException();
 
@@ -112,13 +109,13 @@ namespace HappyPaws.Api.Auth.AuthService
 
         static int CreateVerificationCode()
         {
-            Random random = new Random();
+            Random random = new();
             return random.Next(1000, 10000);
         }
 
         static long CreateCardNumber()
         {
-            Random random = new Random();
+            Random random = new();
             double randomDouble = random.NextDouble();
             long result = (long)(randomDouble * (9999999999999999 - 1000000000000000) + 1000000000000000);
 
