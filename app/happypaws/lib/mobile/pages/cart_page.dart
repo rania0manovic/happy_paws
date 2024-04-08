@@ -108,7 +108,7 @@ class _CartPageState extends State<CartPage> {
                 top: 100,
                 left: 0,
                 right: 0,
-                bottom: 170,
+                bottom: 130,
                 child: products!['items'].isEmpty
                     ? const Center(
                         child: Text(
@@ -280,7 +280,7 @@ class _CartPageState extends State<CartPage> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    height: 160,
+                    height: 110,
                     color: Colors.white,
                     child: Column(children: [
                       Padding(
@@ -292,8 +292,8 @@ class _CartPageState extends State<CartPage> {
                               'Total',
                               style: TextStyle(fontSize: 20),
                             ),
-                            Text(
-                                products!['items'].isNotEmpty
+                            Text("\$ " +
+                               ( products!['items'].isNotEmpty
                                     ? products!['items']
                                         .fold<double>(
                                             0.0,
@@ -304,7 +304,7 @@ class _CartPageState extends State<CartPage> {
                                                             item['quantity'])
                                                     as double)
                                         .toStringAsFixed(2)
-                                    : "0.00\$",
+                                    : "0.00\$"),
                                 style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.w600))
                           ],
@@ -326,24 +326,24 @@ class _CartPageState extends State<CartPage> {
                               fontWeight: FontWeight.w600),
                         )),
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: const Color(0xffffc439),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Image(
-                            image: AssetImage('assets/images/paypallogo.png'),
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      )
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      // Container(
+                      //   width: double.infinity,
+                      //   height: 50,
+                      //   decoration: BoxDecoration(
+                      //     color: const Color(0xffffc439),
+                      //     borderRadius: BorderRadius.circular(10),
+                      //   ),
+                      //   child: const Padding(
+                      //     padding: EdgeInsets.all(8.0),
+                      //     child: Image(
+                      //       image: AssetImage('assets/images/paypallogo.png'),
+                      //       fit: BoxFit.fitHeight,
+                      //     ),
+                      //   ),
+                      // )
                     ]),
                   ))
             ]),

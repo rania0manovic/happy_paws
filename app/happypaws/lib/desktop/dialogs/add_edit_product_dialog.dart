@@ -12,7 +12,7 @@ import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
-import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
+import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:image_picker/image_picker.dart';
 

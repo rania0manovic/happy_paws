@@ -27,7 +27,7 @@ class ViewAppointmentDetails extends StatefulHookWidget {
 
 class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
   bool isBooking = false;
-  List<Map<String, dynamic>>? employees;
+  Map<String, dynamic>? employees;
   Map<String, dynamic> data = {};
   String selectedEmployee = "";
 
@@ -46,12 +46,10 @@ class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
           "There are currently no free specialists available for the selected date/time. Please check the calendar again and pick a different date/time.");
     }
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = json.decode(response.body);
-      var data = List<Map<String, dynamic>>.from(jsonData['items']);
       setState(() {
-        employees = data;
-        selectedEmployee = data[0]['id'].toString();
-        this.data['employeeId'] = data[0]['id'].toString();
+        employees = response.data;
+        selectedEmployee = response.data['items'][0]['id'].toString();
+        this.data['employeeId'] = response.data['items'][0]['id'].toString();
         this.data['appointmentId'] = widget.appointment['id'].toString();
       });
     }
@@ -365,7 +363,7 @@ class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
                     });
                   },
                   items: [
-                    for (var item in employees!)
+                    for (var item in employees!['items'])
                       DropdownMenuItem<String>(
                         value: item['id'].toString(),
                         child: Text(item['fullName'] +

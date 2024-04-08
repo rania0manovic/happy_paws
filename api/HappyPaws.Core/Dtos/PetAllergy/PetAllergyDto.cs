@@ -11,12 +11,13 @@ namespace HappyPaws.Core.Dtos.PetAllergy
 {
     public class PetAllergyDto:BaseDto
     {
+        public required string Name { get; set; }
+      
         public AllergySeverity AllergySeverity { get; set; }
 
-        public required PetDto Pet { get; set; }
+        public PetDto? Pet { get; set; }
         public int PetId { get; set; }
 
-        public required AllergyDto Allergy { get; set; }
-        public int AllergyId { get; set; }
+       
     }
 }

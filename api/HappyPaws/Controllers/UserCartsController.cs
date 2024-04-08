@@ -13,6 +13,7 @@ namespace HappyPaws.Api.Controllers
         {
             _currentUser = currentUser;
         }
+
         [HttpGet("ProductAlreadyInCart")]
         public virtual async Task<IActionResult> ProductAlreadyInCart(int productId, CancellationToken cancellationToken = default)
         {

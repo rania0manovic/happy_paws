@@ -29,8 +29,18 @@ class ProductsService extends BaseService {
     }
   }
 
+  Future<dynamic> getRecommendedProductsForUser({int size = 5}) async {
+    try {
+      var response = await get("/RecommendedProductsForUser",
+          searchObject: {"size": size});
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
-  Future<dynamic> put(String endpoint,  data) async {
+  Future<dynamic> put(String endpoint, data) async {
     var request = http.MultipartRequest(
       'PUT',
       Uri.parse(baseUrl),
@@ -47,7 +57,7 @@ class ProductsService extends BaseService {
     }
     data.forEach((key, value) {
       if (value != null) {
-      request.fields[key] = value.toString();
+        request.fields[key] = value.toString();
       }
     });
     try {
@@ -57,5 +67,4 @@ class ProductsService extends BaseService {
       rethrow;
     }
   }
-
 }

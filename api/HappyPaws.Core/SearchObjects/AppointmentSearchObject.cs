@@ -8,10 +8,10 @@ namespace HappyPaws.Core.SearchObjects
 {
     public class AppointmentSearchObject:BaseSearchObject
     {
-        public int? UserId { get; set; }
         public int? EmployeeId { get; set; }
         public int? AppointmentId { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? MinDateTime { get; set; }
         public DateTime? StartDateTime { get; set; }
         public DateTime? EndDateTime { get; set; }
 

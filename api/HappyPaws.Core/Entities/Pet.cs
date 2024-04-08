@@ -25,6 +25,7 @@ namespace HappyPaws.Core.Entities
 
         public required ICollection<Appointment> Appointments { get; set; }
         public required ICollection<PetAllergy> PetAllergies { get; set; }
+        public required ICollection<PetMedication> PetMedications { get; set; }
 
     }
 }

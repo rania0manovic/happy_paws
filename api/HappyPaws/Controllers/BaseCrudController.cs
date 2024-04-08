@@ -30,7 +30,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with ID {0}", id);
+                Logger.LogError(e, "Problem when getting resource with ID {Id}", id);
                 return BadRequest();
             }
         }
@@ -45,7 +45,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting paged resources for page number {0}, with page size {1}", searchObject.PageNumber, searchObject.PageSize);
+                Logger.LogError(e, "Problem when getting paged resources for page number {PageNumber}, with page size {PageSize}", searchObject.PageNumber, searchObject.PageSize);
                 return BadRequest();
             }
         }

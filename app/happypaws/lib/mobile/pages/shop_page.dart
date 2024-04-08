@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
+import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -15,6 +16,8 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   Map<String, dynamic>? categories;
+  List<dynamic>? recommendedProducts;
+
   @override
   void initState() {
     super.initState();
@@ -22,67 +25,84 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await ProductCategoriesService().getPaged("", 1, 999);
-    if (response.statusCode == 200) {
+    var responseCategories =
+        await ProductCategoriesService().getPaged("", 1, 999);
+    if (responseCategories.statusCode == 200) {
       setState(() {
-        categories = response.data;
+        categories = responseCategories.data;
+      });
+    }
+    var responseRecommendedProducts =
+        await ProductsService().getRecommendedProductsForUser();
+    if (responseRecommendedProducts.statusCode == 200) {
+      setState(() {
+        recommendedProducts = responseRecommendedProducts.data;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // const Align(
-          //   alignment: Alignment.centerRight,
-          //   child: Padding(
-          //     padding: EdgeInsets.all(10),
-          //     child: Text(
-          //       "Previous orders",
-          //       style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.w500),
-          //     ),
-          //   ),
-          // ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.all(14),
-              child: Text(
-                "Categories",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-              ),
+    return categories == null || recommendedProducts == null
+        ? const Spinner()
+        : SingleChildScrollView(
+            child: Column(
+              children: [
+                // const Align(
+                //   alignment: Alignment.centerRight,
+                //   child: Padding(
+                //     padding: EdgeInsets.all(10),
+                //     child: Text(
+                //       "Previous orders",
+                //       style: TextStyle(
+                //           fontSize: 16,
+                //           fontWeight: FontWeight.w500),
+                //     ),
+                //   ),
+                // ),
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(14),
+                    child: Text(
+                      "Categories",
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+                categoriesSection(context),
+                // const Align(
+                //   alignment: Alignment.centerLeft,
+                //   child: Padding(
+                //     padding: EdgeInsets.all(14),
+                //     child: Text(
+                //       "Bestsellers",
+                //       style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                //     ),
+                //   ),
+                // ),
+                // bestsellersSection(),
+                if(recommendedProducts!.isNotEmpty)
+                Column(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.all(14),
+                        child: Text(
+                          "For you",
+                          style:
+                              TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                    forYouSection(),
+                  ],
+                ),
+              ],
             ),
-          ),
-          categoriesSection(context),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.all(14),
-              child: Text(
-                "Bestsellers",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-          bestsellersSection(),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: EdgeInsets.all(14),
-              child: Text(
-                "For you",
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-              ),
-            ),
-          ),
-          forYouSection(),
-        ],
-      ),
-    );
+          );
   }
 
   Container forYouSection() {
@@ -93,35 +113,28 @@ class _ShopPageState extends State<ShopPage> {
         bottom: 10,
         left: 14,
       ),
-      child: const Scrollbar(
+      child: Scrollbar(
           thickness: 12,
-          radius: Radius.circular(10),
+          radius: const Radius.circular(10),
           child: SingleChildScrollView(
-            padding: EdgeInsets.only(top: 10, bottom: 30),
+            padding: const EdgeInsets.only(top: 10, bottom: 30),
             scrollDirection: Axis.horizontal,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Image(
-                  image: AssetImage("assets/images/sample_dog_food.jpg"),
-                  height: 100,
-                  width: 100,
-                ),
-                Image(
-                  image: AssetImage("assets/images/sample_dog_food.jpg"),
-                  height: 100,
-                  width: 100,
-                ),
-                Image(
-                  image: AssetImage("assets/images/sample_dog_food.jpg"),
-                  height: 100,
-                  width: 100,
-                ),
-                Image(
-                  image: AssetImage("assets/images/sample_dog_food.jpg"),
-                  height: 100,
-                  width: 100,
-                ),
+                for (var product in recommendedProducts!)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: GestureDetector(
+                      onTap: () => context.router.push(ProductDetailsRoute(productId: product['id'])),
+                      child: Image.memory(
+                        base64.decode(product!['productImages'][0]['image']['data']
+                            .toString()),
+                        height: 100,
+                        width: 100,
+                      ),
+                    ),
+                  ),
               ],
             ),
           )),
@@ -289,10 +302,9 @@ class _ShopPageState extends State<ShopPage> {
                     )
                 else
                   SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 160,
-                    child: const Spinner())
-               
+                      width: MediaQuery.of(context).size.width,
+                      height: 160,
+                      child: const Spinner())
               ],
             ),
           )),

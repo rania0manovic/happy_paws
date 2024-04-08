@@ -15,6 +15,7 @@ using HappyPaws.Core.Dtos.Order;
 using HappyPaws.Core.Dtos.Pet;
 using HappyPaws.Core.Dtos.PetAllergy;
 using HappyPaws.Core.Dtos.PetBreed;
+using HappyPaws.Core.Dtos.PetMedication;
 using HappyPaws.Core.Dtos.PetType;
 using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.ProductCategory;
@@ -34,7 +35,6 @@ namespace HappyPaws.Application
         public static void AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IAddressesService, AddressesService>();
-            services.AddScoped<IAllergiesService, AllergiesService>();
             services.AddScoped<IAppointmentsService, AppointmentsService>();
             services.AddScoped<IBrandsService, BrandsService>();
             services.AddScoped<ICitiesService, CitiesService>();
@@ -43,6 +43,7 @@ namespace HappyPaws.Application
             services.AddScoped<IImagesService, ImagesService>();
             services.AddScoped<IOrdersService, OrdersService>();
             services.AddScoped<IPetAllergiesService, PetAllergiesService>();
+            services.AddScoped<IPetMedicationsService, PetMedicationsService>();
             services.AddScoped<IPetBreedsService, PetsBreedsService>();
             services.AddScoped<IPetsService, PetsService>();
             services.AddScoped<IPetTypesService, PetTypesService>();
@@ -61,7 +62,6 @@ namespace HappyPaws.Application
         public static void AddValidators(this IServiceCollection services)
         {
             services.AddScoped<IValidator<AddressDto>, AddressValidator>();
-            services.AddScoped<IValidator<AllergyDto>, AllergyValidator>();
             services.AddScoped<IValidator<AppointmentDto>, AppointmentValidator>();
             services.AddScoped<IValidator<BrandDto>, BrandValidator>();
             services.AddScoped<IValidator<CityDto>, CityValidator>();
@@ -70,6 +70,7 @@ namespace HappyPaws.Application
             services.AddScoped<IValidator<ImageDto>, ImageValidator>();
             services.AddScoped<IValidator<OrderDto>, OrderValidator>();
             services.AddScoped<IValidator<PetAllergyDto>, PetAllergyValidator>();
+            services.AddScoped<IValidator<PetMedicationDto>, PetMedicationValidator>();
             services.AddScoped<IValidator<PetBreedDto>, PetBreedValidator>();
             services.AddScoped<IValidator<PetDto>, PetValidator>();
             services.AddScoped<IValidator<PetTypeDto>, PetTypeValidator>();

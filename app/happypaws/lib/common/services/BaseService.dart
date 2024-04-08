@@ -88,7 +88,12 @@ class BaseService {
   }
 
   Future<dynamic> postMultiPartRequest(String endpoint, dynamic data) async {
-    final formData = FormData.fromMap(data);
+    final formData = FormData.fromMap({
+      ...data,
+      'photoFile': data['photoFile'] != null
+          ? await MultipartFile.fromFile(data['photoFile'])
+          : null,
+    });
     final response = await _dio.post(
       '$baseUrl$endpoint',
       data: formData,
@@ -97,7 +102,12 @@ class BaseService {
   }
 
   Future<dynamic> putMultiPartRequest(String endpoint, dynamic data) async {
-    final formData = FormData.fromMap(data);
+    final formData = FormData.fromMap({
+      ...data,
+      'photoFile': data['photoFile'] != null
+          ? await MultipartFile.fromFile(data['photoFile'])
+          : null,
+    });
     final response = await _dio.put(
       '$baseUrl$endpoint',
       data: formData,

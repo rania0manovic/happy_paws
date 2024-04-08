@@ -19,6 +19,12 @@ namespace HappyPaws.Application.Services
         public AppointmentsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<AppointmentDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
+        public override Task<AppointmentDto> UpdateAsync(AppointmentDto dto, CancellationToken cancellationToken = default)
+        {
+            dto.Employee = null;
+            dto.Pet = null;
+            return base.UpdateAsync(dto, cancellationToken);
+        }
         public async Task<bool> IsValidTime(AppointmentSearchObject searchObject)
         {
             DateTime startWorkingTime = searchObject.Date.Value.AddHours(8);

@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using HappyPaws.Core.Dtos.Allergy;
+using HappyPaws.Core.Dtos.PetMedication;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Validators
 {
-    public class AllergyValidator : AbstractValidator<AllergyDto>
+    public class PetMedicationValidator:AbstractValidator<PetMedicationDto>
     {
-        public AllergyValidator()
-        {
 
-        }
     }
 }

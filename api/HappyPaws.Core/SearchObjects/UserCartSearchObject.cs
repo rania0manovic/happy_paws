@@ -8,6 +8,5 @@ namespace HappyPaws.Core.SearchObjects
 {
     public class UserCartSearchObject : BaseSearchObject
     {
-        public int UserId { get; set; }
     }
 }

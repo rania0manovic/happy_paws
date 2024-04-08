@@ -7,7 +7,6 @@ namespace HappyPaws.Infrastructure
     public partial class DatabaseContext : DbContext
     {
         public DbSet<Address> Addresses { get; set; }
-        public DbSet<Allergy> Allergies { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<City> Cities { get; set; }
@@ -17,6 +16,7 @@ namespace HappyPaws.Infrastructure
         public DbSet<Order> Orders { get; set; }
         public DbSet<Pet> Pets { get; set; }
         public DbSet<PetAllergy> PetAllergies { get; set; }
+        public DbSet<PetMedication> PetMedications { get; set; }
         public DbSet<PetBreed> PetBreeds { get; set; }
         public DbSet<PetType> PetTypes { get; set; }
         public DbSet<Product> Products { get; set; }

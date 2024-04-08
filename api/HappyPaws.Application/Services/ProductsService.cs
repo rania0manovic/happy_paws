@@ -15,8 +15,10 @@ namespace HappyPaws.Application.Services
 {
     public class ProductsService : BaseService<Product, ProductDto, IProductsRepository, ProductSearchObject>, IProductsService
     {
-        public ProductsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<ProductDto> validator) : base(mapper, unitOfWork, validator)
+        private readonly IUserFavouritesService _userFavouritesService;
+        public ProductsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<ProductDto> validator, IUserFavouritesService userFavouritesService) : base(mapper, unitOfWork, validator)
         {
+            _userFavouritesService = userFavouritesService;
         }
 
         public override async Task<ProductDto> AddAsync(ProductDto dto, CancellationToken cancellationToken = default)
@@ -101,6 +103,19 @@ namespace HappyPaws.Application.Services
             }
 
             return result;
+        }
+
+        public async Task<List<ProductDto>> GetRecommendedProductsForUserAsync(int userId, int size, CancellationToken cancellationToken = default)
+        {
+            var favouriteProducts = await _userFavouritesService.GetPagedProductsAsync(new UserFavouriteSearchObject() { UserId = userId }, cancellationToken);
+            if (favouriteProducts != null && favouriteProducts.TotalCount>0)
+            {
+                var similarProducts = await CurrentRepository.FindSimilarProductsAsync(favouriteProducts.Items, size, cancellationToken);
+                if (similarProducts != null) { return Mapper.Map<List<ProductDto>>(similarProducts); }
+                else return new();
+            }
+            return new();
+
         }
     }
 }

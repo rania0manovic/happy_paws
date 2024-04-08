@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -43,12 +42,11 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
     try {
       final response = await AuthService().signIn(data);
       if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
         final Map<String, dynamic> decoded =
-            Jwt.parseJwt(jsonResponse['token']);
+            Jwt.parseJwt(response.data['token']);
         if (decoded['Role'] == 'Admin' || decoded['Role'] == 'Employee') {
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('token', jsonResponse['token'].toString());
+          prefs.setString('token', response.data['token'].toString());
           if (mounted) {
             context.router.push(const AdminLayout());
           }

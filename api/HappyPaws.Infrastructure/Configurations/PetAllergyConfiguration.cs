@@ -17,9 +17,9 @@ namespace HappyPaws.Infrastructure.Configurations
             base.Configure(builder);
 
             builder.Property(x => x.AllergySeverity).IsRequired().HasDefaultValue(AllergySeverity.Mild);
+            builder.Property(x => x.Name).IsRequired();
 
             builder.HasOne(x => x.Pet).WithMany(x => x.PetAllergies).HasForeignKey(x => x.PetId).IsRequired();
-            builder.HasOne(x => x.Allergy).WithMany(x => x.PetAllergies).HasForeignKey(x => x.AllergyId).IsRequired();
 
         }
     }

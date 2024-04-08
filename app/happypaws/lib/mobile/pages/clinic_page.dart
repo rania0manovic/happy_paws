@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
+import 'package:happypaws/common/services/PetMedicationsService.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:intl/intl.dart';
@@ -18,7 +19,7 @@ class ClinicPage extends StatefulWidget {
 
 class _ClinicPageState extends State<ClinicPage> {
   Map<String, dynamic>? upcomingAppointments;
-
+  Map<String, dynamic>? medicationReminders;
 
   @override
   void initState() {
@@ -30,11 +31,24 @@ class _ClinicPageState extends State<ClinicPage> {
     try {
       var user = await AuthService().getCurrentUser();
       if (user != null) {
-        var response = await AppointmentsService()
-            .getPaged('endpoint', 1, 2, searchObject: {'userId': user['Id']});
-        if (response.statusCode == 200) {
+        var appointmentsResponse = await AppointmentsService().getPaged(
+            '', 1, 2, searchObject: {
+          'userId': user['Id'],
+          'minDateTime': DateTime.now()
+        });
+        var medicationsResponse = await PetMedicationsService().getPaged(
+            'endpoint', 1, 999, searchObject: {
+          'userId': user['Id'],
+          'minDateTime': DateTime.now()
+        });
+        if (appointmentsResponse.statusCode == 200) {
           setState(() {
-            upcomingAppointments = response.data;
+            upcomingAppointments = appointmentsResponse.data;
+          });
+        }
+        if (medicationsResponse.statusCode == 200) {
+          setState(() {
+            medicationReminders = medicationsResponse.data;
           });
         }
       }
@@ -45,7 +59,7 @@ class _ClinicPageState extends State<ClinicPage> {
 
   @override
   Widget build(BuildContext context) {
-    return upcomingAppointments == null
+    return upcomingAppointments == null || medicationReminders == null
         ? const Spinner()
         : Stack(
             alignment: Alignment.topCenter,
@@ -93,17 +107,17 @@ class _ClinicPageState extends State<ClinicPage> {
                             ),
                           ],
                         ),
-                        if(upcomingAppointments!.isEmpty)
+                      if (upcomingAppointments!['items'].isEmpty)
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            LightText(label: "You have no upcoming appointments!"),
-                               const SizedBox(
-                        height: 20,)
+                            LightText(
+                                label: "You have no upcoming appointments!"),
+                            const SizedBox(
+                              height: 20,
+                            )
                           ],
-                      
-                      ),
-                        
+                        ),
                       const Text(
                         "Medication reminders",
                         style: TextStyle(
@@ -112,13 +126,25 @@ class _ClinicPageState extends State<ClinicPage> {
                       const SizedBox(
                         height: 8,
                       ),
-                      medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
-                          "After Breakfast"),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
-                          "After Breakfast"),
+                      for (var medication in medicationReminders!["items"])
+                        Column(
+                          children: [
+                            medicationContainer(
+                                "${medication['medicationName']} ${medication['dosage']} mg",
+                                "Every ${medication['dosageFrequency']} hours",
+                                medication['pet']['name'],
+                                "After Breakfast"),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+
+                      // medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
+                      //     "After Breakfast"),
+
+                      // medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
+                      //     "After Breakfast"),
                     ],
                   ),
                 ),
@@ -133,7 +159,7 @@ class _ClinicPageState extends State<ClinicPage> {
         bottom: 20,
         right: 20,
         child: GestureDetector(
-          onTap: () => context.router.push(const MakeAppointmentRoute()),
+          onTap: () => context.router.push(MakeAppointmentRoute()),
           child: Container(
             height: 54,
             width: 54,
@@ -232,7 +258,10 @@ class _ClinicPageState extends State<ClinicPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                dateTime == null ? "Date TBA" : DateFormat('EEEE, MMMM dd, yyyy').format( DateTime.parse( dateTime)),
+                dateTime == null
+                    ? "Date TBA"
+                    : DateFormat('EEEE, MMMM dd, yyyy')
+                        .format(DateTime.parse(dateTime)),
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,
@@ -240,7 +269,9 @@ class _ClinicPageState extends State<ClinicPage> {
                     fontWeight: FontWeight.w700),
               ),
               Text(
-                dateTime == null ? "Time TBA" : DateFormat("HH:mm").format(DateTime.parse(dateTime)),
+                dateTime == null
+                    ? "Time TBA"
+                    : DateFormat("HH:mm").format(DateTime.parse(dateTime)),
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,
@@ -256,7 +287,7 @@ class _ClinicPageState extends State<ClinicPage> {
                     fontWeight: FontWeight.w500),
               ),
               Text(
-                "Reason:" + ( reason.length>70 ? '${reason.substring(0, 70)}...' : reason),
+                "Reason:${reason.length > 70 ? '${reason.substring(0, 70)}...' : reason}",
                 textAlign: TextAlign.left,
                 style: const TextStyle(
                     color: Colors.white,

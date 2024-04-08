@@ -13,7 +13,6 @@ namespace HappyPaws.Infrastructure.Interfaces
     public interface IUserFavouritesRepository : IBaseRepository<UserFavourite, int, UserFavouriteSearchObject>
     {
         Task<PagedList<Product>> GetPagedProductsAsync(UserFavouriteSearchObject searchObject, CancellationToken cancellationToken = default);
-        Task<UserFavourite> IsAlreadyStored(int productId, int userId, CancellationToken cancellationToken = default);
 
     }
 }

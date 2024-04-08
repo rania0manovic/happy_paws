@@ -36,7 +36,6 @@ namespace HappyPaws.Application.Services
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
                 dto.PhotoId = photo.Id;
             }
-
             return await base.AddAsync(dto, cancellationToken);
         }
 
@@ -67,6 +66,9 @@ namespace HappyPaws.Application.Services
                     dto.PhotoId = photo.Id;
                 }
             }
+            dto.PetBreed.PetType = null;
+            dto.PetBreed = null;
+            dto.Owner = null;
             return await base.UpdateAsync(dto, cancellationToken);
         }
     }

@@ -9,7 +9,6 @@ namespace HappyPaws.Infrastructure
         public static void AddInfrastructure(this IServiceCollection services)
         {
             services.AddScoped<IAddressesRepository, AddressesRepository>();
-            services.AddScoped<IAllergiesRepository, AllergiesRepository>();
             services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             services.AddScoped<IBrandsRepository, BrandsRepository>();
             services.AddScoped<ICitiesRepository, CitiesRepository>();
@@ -18,6 +17,7 @@ namespace HappyPaws.Infrastructure
             services.AddScoped<IImagesRepository, ImagesRepository>();
             services.AddScoped<IOrdersRepository, OrdersRepository>();
             services.AddScoped<IPetAllergiesRepository, PetAllergiesRepository>();
+            services.AddScoped<IPetMedicationsRepository, PetMedicationsRepository>();
             services.AddScoped<IPetBreedsRepository, PetBreedsRepository>();
             services.AddScoped<IPetsRepository, PetsRepository>();
             services.AddScoped<IPetTypesRepository, PetTypesRepository>();

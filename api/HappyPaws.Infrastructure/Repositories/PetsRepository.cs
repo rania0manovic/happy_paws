@@ -20,13 +20,22 @@ namespace HappyPaws.Infrastructure.Repositories
         public override async Task<PagedList<Pet>> GetPagedAsync(PetSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             return await DbSet.Include(x => x.Photo)
+                .Include(x => x.PetBreed)
+                .ThenInclude(x => x.PetType)
+                .Include(x => x.PetAllergies)
+                .Include(x => x.PetMedications)
+                .Include(x => x.Owner)
                 .Where(x => searchObject.UserId == null || x.OwnerId == searchObject.UserId).ToPagedListAsync(searchObject, cancellationToken);
         }
         public override async Task<Pet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await DbSet
                 .Include(x => x.Photo)
-                .Include(x => x.PetBreed).ThenInclude(x => x.PetType)
+                .Include(x => x.PetBreed)
+                .ThenInclude(x => x.PetType)
+                .Include(x => x.PetAllergies)
+                .Include(x => x.PetMedications)
+                .Include(x => x.Owner)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
     }

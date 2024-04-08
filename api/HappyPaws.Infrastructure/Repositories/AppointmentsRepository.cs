@@ -22,13 +22,14 @@ namespace HappyPaws.Infrastructure.Repositories
             return await DbSet.Include(x => x.Pet).ThenInclude(x => x.Owner)
                 .Include(x=>x.Employee)
                 .Where(x => (searchObject.UserId == null || x.Pet.OwnerId == searchObject.UserId) &&
+                (searchObject.MinDateTime == null || x.StartDateTime> searchObject.MinDateTime) &&
                 (searchObject.Date == null || x.StartDateTime.Value.Date == searchObject.Date.Value.Date))
-                .OrderBy(x => x.StartDateTime)
+                .OrderByDescending(x => x.CreatedAt)
                 .ToPagedListAsync(searchObject, cancellationToken);
         }
         public override async Task<Appointment?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await DbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            return await DbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
         }
     }
 }

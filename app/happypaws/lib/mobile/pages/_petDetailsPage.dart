@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
@@ -13,8 +15,9 @@ import 'package:happypaws/common/utilities/constants.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
-import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
+import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/desktop/dialogs/add_allergy_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -58,17 +61,19 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       if (widget.petId != null) {
         var responsePetData = await PetsService().get('/${widget.petId}');
         if (responsePetData.statusCode == 200) {
-       
-          fetchPetBreeds(responsePetData.data['petBreed']['petType']['id'].toString());
+          fetchPetBreeds(
+              responsePetData.data['petBreed']['petType']['id'].toString());
           final formatter = DateFormat('dd.MM.yyyy');
           setState(() {
             data = responsePetData.data;
-            selectedDate =
-                formatter.format(DateTime.parse(responsePetData.data['birthDate']));
+            selectedDate = formatter
+                .format(DateTime.parse(responsePetData.data['birthDate']));
             profilePhoto = responsePetData.data['photo'];
             selectedGender = responsePetData.data['gender'];
-            selectedPetType = responsePetData.data['petBreed']['petType']['id'].toString();
-            selectedPetBreed = responsePetData.data['petBreed']['id'].toString();
+            selectedPetType =
+                responsePetData.data['petBreed']['petType']['id'].toString();
+            selectedPetBreed =
+                responsePetData.data['petBreed']['id'].toString();
           });
         }
       } else {
@@ -247,7 +252,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                   "weight"),
                               apiDropdownMenu(petTypes!['items'], "Pet type:",
                                   (String? newValue) async {
-                                  print(newValue);
+                                print(newValue);
 
                                 setState(() {
                                   selectedPetBreed = null;
@@ -268,11 +273,26 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                   selectedPetBreed,
                                   isDisabeled:
                                       selectedPetType == null ? true : false),
-                              birthDateInput(context),
                               dropdownMenu("Gender:", "gender"),
-                              // TODO: allergies and medication info
-                              // allergiesSection(),
-                              // medicationSection(),
+                              birthDateInput(context),
+                              if (!data['petAllergies'].isEmpty)
+                                allergiesSection()
+                              else
+                                GestureDetector(
+                                    onTap: () => showAddAllergyMenu(context),
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 10),
+                                      child: Text(
+                                        "Add new allergy",
+                                        style: TextStyle(
+                                            color: AppColors.primary,
+                                            decoration:
+                                                TextDecoration.underline),
+                                      ),
+                                    )),
+                              if (!data['petMedications'].isEmpty)
+                                medicationSection(),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -401,7 +421,9 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           child: Wrap(
             spacing: 18.0,
             runSpacing: 8.0,
-            children: [listItem("Vetmedin 5mg")],
+            children: [
+              for (var item in data['petMedications']) listItem(item['name'])
+            ],
           ),
         ),
       ],
@@ -423,25 +445,104 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           height: 10,
         ),
         SizedBox(
-          width: double.infinity,
-          child: Wrap(
-            spacing: 18.0,
-            runSpacing: 8.0,
-            children: [listItem("Soy"), listItem("Eggs")],
+          width: MediaQuery.of(context).size.width,
+          child: Row(
+            children: [
+              Expanded(
+                child: Wrap(
+                  spacing: 18.0,
+                  runSpacing: 8.0,
+                  children: [
+                    for (var item in data['petAllergies'])
+                      GestureDetector(
+                          onTap: () => showAddAllergyMenu(context, data: item),
+                          child: listItem(item['name'],
+                              severity: item['allergySeverity'])),
+                  ],
+                ),
+              ),
+              Transform.rotate(
+                angle: 90 * 3.1415926535 / 180,
+                child: PopupMenuButton(
+                  elevation: 0,
+                  color: AppColors.dimWhite,
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      const PopupMenuItem(
+                        value: 'add',
+                        child: Row(
+                          children: [
+                            Text('Add new allergy'),
+                          ],
+                        ),
+                      ),
+                    ];
+                  },
+                  onSelected: (value) {
+                    if (value == 'add') {
+                      showAddAllergyMenu(context);
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Wrap listItem(String allergy) {
+  void showAddAllergyMenu(BuildContext context, {Map<String, dynamic>? data}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          insetPadding:
+              const EdgeInsets.symmetric(vertical: 100, horizontal: 0),
+          contentPadding: const EdgeInsets.all(8),
+          content: AddAllergyMenu(
+            onAdd: (value) {
+              setState(() {
+                this.data['petAllergies'].add(value);
+              });
+            },
+            onEdit: (value) {
+              setState(() {
+                this.data['petAllergies'][this
+                    .data['petAllergies']
+                    .indexWhere((x) => x['id'] == value['id'])] = value;
+              });
+            },
+            onRemove: (value) {
+              setState(() {
+                this.data['petAllergies'].removeWhere((x) => x['id'] == value);
+              });
+            },
+            data: data,
+            petId: this.data['id'],
+            onClosed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Wrap listItem(String allergy, {String? severity}) {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Icon(
           Icons.circle,
           size: 8.0,
-          color: Colors.grey.shade400,
+          color: severity == null
+              ? Colors.grey.shade400
+              : severity == "Mild"
+                  ? AppColors.success
+                  : severity == 'Moderate'
+                      ? AppColors.info
+                      : AppColors.error,
         ),
         const SizedBox(width: 8.0),
         Text(

@@ -1,5 +1,6 @@
 ﻿using HappyPaws.Core.Entities;
 using HappyPaws.Core.SearchObjects;
+using HappyPaws.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Interfaces
 {
-    public interface IAllergiesRepository : IBaseRepository<Allergy, int, AllergySearchObject>
+    public interface IPetMedicationsRepository : IBaseRepository<PetMedication, int, PetMedicationSearchObject>
     {
     }
 }

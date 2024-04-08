@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -21,9 +20,8 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await AuthService().signIn(data);
       if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', jsonResponse['token'].toString());
+        prefs.setString('token', response.data['token'].toString());
         if(mounted) {
           context.router.push(const ClientLayout());
         }
@@ -33,6 +31,9 @@ class _LoginPageState extends State<LoginPage> {
         });
       }
     } catch (e) {
+      setState(() {
+          error = true;
+        });
       throw Exception(e);
     }
   }

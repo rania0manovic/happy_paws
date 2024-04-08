@@ -25,9 +25,6 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Where(x => x.UserId == searchObject.UserId).Select(x => x.Product).ToPagedListAsync(searchObject, cancellationToken);
         }
 
-        public async Task<UserFavourite> IsAlreadyStored(int productId, int userId, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+      
     }
 }

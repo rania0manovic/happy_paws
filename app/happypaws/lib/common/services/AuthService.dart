@@ -6,12 +6,12 @@ class AuthService extends BaseService {
   AuthService() : super("Auth");
 
   Future<dynamic> signIn(dynamic data) async {
-    final response = await post('SignIn', data);
+    final response = await post('/SignIn', data);
     return response;
   }
 
   Future<dynamic> sendEmailVerification(dynamic data) async {
-    final response = await post('SendEmailVerification', data);
+    final response = await post('/SendEmailVerification', data);
     return response;
   }
 

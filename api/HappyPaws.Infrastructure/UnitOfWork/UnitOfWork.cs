@@ -7,7 +7,6 @@ namespace HappyPaws.Infrastructure
     {
         private readonly DatabaseContext _databaseContext;
         public readonly IAddressesRepository AddressesRepository;
-        public readonly IAllergiesRepository AllergiesRepository;
         public readonly IAppointmentsRepository AppointmentsRepository;
         public readonly IBrandsRepository BrandsRepository;
         public readonly ICitiesRepository CitiesRepository;
@@ -16,6 +15,7 @@ namespace HappyPaws.Infrastructure
         public readonly IImagesRepository ImagesRepository;
         public readonly IOrdersRepository OrdersRepository;
         public readonly IPetAllergiesRepository PetAllergiesRepository;
+        public readonly IPetMedicationsRepository PetMedicationsRepository;
         public readonly IPetBreedsRepository PetBreedsRepository;
         public readonly IPetsRepository PetsRepository;
         public readonly IPetTypesRepository PetTypesRepository;
@@ -30,10 +30,9 @@ namespace HappyPaws.Infrastructure
         public readonly IEmailVerificationRequestsRepository EmailVerificationRequestsRepository;
         public readonly IProductCategorySubcategoriesRepository ProductCategorySubcategoriesRepository;
 
-        public UnitOfWork(DatabaseContext databaseContext, IAllergiesRepository allergiesRepository, IAppointmentsRepository appointmentsRepository, IAddressesRepository addressesRepository, IBrandsRepository brandsRepository, ICitiesRepository citiesRepository, ICountriesRepository countriesRepository, IEmployeesRepository employeesRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository)
+        public UnitOfWork(DatabaseContext databaseContext, IAppointmentsRepository appointmentsRepository, IAddressesRepository addressesRepository, IBrandsRepository brandsRepository, ICitiesRepository citiesRepository, ICountriesRepository countriesRepository, IEmployeesRepository employeesRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository, IPetMedicationsRepository petMedicationsRepository)
         {
             _databaseContext = databaseContext;
-            AllergiesRepository = allergiesRepository;
             AppointmentsRepository = appointmentsRepository;
             AddressesRepository = addressesRepository;
             BrandsRepository = brandsRepository;
@@ -56,6 +55,7 @@ namespace HappyPaws.Infrastructure
             UsersRepository = usersRepository;
             EmailVerificationRequestsRepository = emailVerificationRequestsRepository;
             ProductCategorySubcategoriesRepository = productCategorySubcategoryRepository;
+            PetMedicationsRepository = petMedicationsRepository;
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)

@@ -6,12 +6,13 @@ import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-
 
 @RoutePage()
 class MakeAppointmentPage extends StatefulWidget {
-  const MakeAppointmentPage({super.key});
+  final Map<String, dynamic>? data;
+  const MakeAppointmentPage({super.key, this.data});
 
   @override
   State<MakeAppointmentPage> createState() => _MakeAppointmentPageState();
@@ -20,13 +21,20 @@ class MakeAppointmentPage extends StatefulWidget {
 class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
   Map<String, dynamic>? userPets;
   Map<String, dynamic> data = {};
-
   String? selectedValue;
 
   @override
   initState() {
     super.initState();
-    fetchData();
+    if (widget.data != null) {
+      data = widget.data!;
+      userPets = {
+        'items': [widget.data!['pet']]
+      };
+      selectedValue = widget.data!['pet']['id'].toString();
+    } else {
+      fetchData();
+    }
   }
 
   Future<void> fetchData() async {
@@ -37,7 +45,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
       setState(() {
         userPets = response.data;
         selectedValue = userPets!['items'][0]['id'].toString();
-        data['petId']=userPets!['items'][0]['id'];
+        data['petId'] = userPets!['items'][0]['id'];
       });
     }
   }
@@ -100,6 +108,8 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                       padding: const EdgeInsets.only(top: 6),
                       height: 200,
                       child: TextFormField(
+                        readOnly: widget.data != null,
+                        initialValue: data['reason'],
                         onChanged: (value) => setState(() {
                           data['reason'] = value;
                         }),
@@ -134,6 +144,8 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                       padding: const EdgeInsets.only(top: 6),
                       height: 150,
                       child: TextFormField(
+                        readOnly: widget.data != null,
+                        initialValue: data['note'],
                         onChanged: (value) => setState(() {
                           data['note'] = value;
                         }),
@@ -159,20 +171,38 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                     SizedBox(
                       height: 20,
                     ),
-                    PrimaryButton(
-                      onPressed: () {
-                        bookAppointment();
-                      },
-                      label: "Send",
-                      width: double.infinity,
-                      fontSize: 18,
-                    ),
+                    if (widget.data == null)
+                      PrimaryButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return ConfirmationDialog(
+                                title: 'Confirmation',
+                                content:
+                                    'Keep in mind that once your request is made, you won\'t be able to update the inserted data. Do you wish to proceed?',
+                                onYesPressed: () {
+                                  Navigator.of(context).pop();
+                                  bookAppointment();
+                                },
+                                onNoPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          );
+                        },
+                        label: "Send",
+                        width: double.infinity,
+                        fontSize: 18,
+                      ),
                   ]),
             ),
           );
   }
 
-  Container dropdownMenu(dynamic items,
+  Container dropdownMenu(
+    dynamic items,
     void Function(String? newValue) onChanged,
     String? selectedOption,
   ) {
@@ -191,9 +221,12 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
               value: selectedOption,
               hint: const Text('Select'),
               underline: Container(),
+              disabledHint: widget.data == null
+                  ? null
+                  : Text(widget.data!["pet"]["name"]),
               borderRadius: BorderRadius.circular(10),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-              onChanged: onChanged,
+              onChanged: widget.data != null ? null : onChanged,
               items: [
                 for (var item in items)
                   DropdownMenuItem<String>(

@@ -69,35 +69,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("Addresses");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Allergy", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Allergies");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
                 {
                     b.Property<int>("Id")
@@ -491,9 +462,6 @@ namespace HappyPaws.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AllergyId")
-                        .HasColumnType("int");
-
                     b.Property<int>("AllergySeverity")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
@@ -510,12 +478,14 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PetId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AllergyId");
 
                     b.HasIndex("PetId");
 
@@ -554,6 +524,49 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PetTypeId");
 
                     b.ToTable("PetBreeds");
+                });
+
+            modelBuilder.Entity("HappyPaws.Core.Entities.PetMedication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Dosage")
+                        .HasColumnType("float");
+
+                    b.Property<int>("DosageFrequency")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("MedicationName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PetId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Until")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetId");
+
+                    b.ToTable("PetMedications");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.PetType", b =>
@@ -1049,19 +1062,11 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.PetAllergy", b =>
                 {
-                    b.HasOne("HappyPaws.Core.Entities.Allergy", "Allergy")
-                        .WithMany("PetAllergies")
-                        .HasForeignKey("AllergyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HappyPaws.Core.Entities.Pet", "Pet")
                         .WithMany("PetAllergies")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Allergy");
 
                     b.Navigation("Pet");
                 });
@@ -1075,6 +1080,17 @@ namespace HappyPaws.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("PetType");
+                });
+
+            modelBuilder.Entity("HappyPaws.Core.Entities.PetMedication", b =>
+                {
+                    b.HasOne("HappyPaws.Core.Entities.Pet", "Pet")
+                        .WithMany("PetMedications")
+                        .HasForeignKey("PetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pet");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Product", b =>
@@ -1219,11 +1235,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Allergy", b =>
-                {
-                    b.Navigation("PetAllergies");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -1255,6 +1266,8 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("PetAllergies");
+
+                    b.Navigation("PetMedications");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.PetBreed", b =>

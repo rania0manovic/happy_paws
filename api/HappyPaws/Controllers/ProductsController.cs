@@ -40,5 +40,22 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("RecommendedProductsForUser")]
+        public async Task<IActionResult> GetRecommendedProductsForUser(int size, CancellationToken cancellationToken = default)
+        {
+            var userId = _currentUser.Id;
+            try
+            {
+                if (!userId.HasValue) return StatusCode(403);
+                var dto = await Service.GetRecommendedProductsForUserAsync(userId.Value, size, cancellationToken);
+                return Ok(dto);
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resource for userId {UserId} ", userId);
+                return BadRequest();
+            }
+        }
     }
 }

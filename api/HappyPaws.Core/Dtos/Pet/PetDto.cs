@@ -1,5 +1,7 @@
 ﻿using HappyPaws.Core.Dtos.Image;
+using HappyPaws.Core.Dtos.PetAllergy;
 using HappyPaws.Core.Dtos.PetBreed;
+using HappyPaws.Core.Dtos.PetMedication;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Enums;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +29,8 @@ namespace HappyPaws.Core.Dtos.Pet
         public ImageDto? Photo { get; set; }
         public int? PhotoId { get; set; }
 
+        public ICollection<PetAllergyDto>? PetAllergies { get; set; }
+        public ICollection<PetMedicationDto>? PetMedications { get; set; }
         public IFormFile? PhotoFile { get; set; }
 
     }

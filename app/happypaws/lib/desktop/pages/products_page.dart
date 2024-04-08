@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:happypaws/desktop/components/dialogs/confirmationDialog.dart';
+import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductsService.dart';

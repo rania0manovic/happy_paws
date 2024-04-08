@@ -1,4 +1,4 @@
-﻿using HappyPaws.Core.Dtos.Allergy;
+﻿using HappyPaws.Core.Dtos.PetMedication;
 using HappyPaws.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Mappings
 {
-    public class AllergyProfile : BaseProfile
+    public class PetMedicationProfile:BaseProfile
     {
-        public AllergyProfile()
+        public PetMedicationProfile()
         {
-            CreateMap<Allergy, AllergyDto>().ReverseMap();
+            CreateMap<PetMedication, PetMedicationDto>().ReverseMap();
+
         }
     }
 }
