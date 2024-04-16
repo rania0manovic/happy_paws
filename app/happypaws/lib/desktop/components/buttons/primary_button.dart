@@ -9,11 +9,11 @@ class PrimaryButton extends StatelessWidget {
   final Color backgroundColor;
 
 
-  const PrimaryButton({super.key, 
+   const PrimaryButton({super.key, 
     required this.onPressed,
     required this.label,
     this.width, 
-    this.fontSize=14,
+    this.fontSize=  14,
     this.backgroundColor= AppColors.primary
   });
 

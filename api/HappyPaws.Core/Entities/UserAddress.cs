@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.Entities
 {
-    public class Address : BaseEntity
+    public class UserAddress : BaseEntity
     {
+        public required string FullName { get; set; }
         public required string AddressOne { get; set; }
         public string? AddressTwo { get; set; }
+        public required string City { get; set; }
+        public required string Country { get; set; }
         public required string PostalCode { get; set; }
+        public required string Phone { get; set; }
         public string? Note { get; set; }
+        public bool IsInitialUserAddress { get; set; }
 
-        public required City City { get; set; }
-        public int CityId { get; set; }
+        public required User User { get; set; }
+        public int UserId { get; set; }
 
         public required ICollection<Order> Orders { get; set; }
     }

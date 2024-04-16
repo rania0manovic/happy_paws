@@ -101,7 +101,7 @@ namespace HappyPaws.Application.Services
             var validationResult = await Validator.ValidateAsync(dto, cancellationToken);
             if (validationResult.IsValid == false)
             {
-                throw new Exception("Validation error");
+                throw new ValidationException("Validation error");
             }
 
         }

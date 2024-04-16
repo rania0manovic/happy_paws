@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.SearchObjects
 {
-    public class AddressSearchObject:BaseSearchObject
+    public class UserAddressSearchObject:BaseSearchObject
     {
     }
 }

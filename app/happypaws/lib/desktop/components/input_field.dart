@@ -7,13 +7,15 @@ class InputField extends StatefulWidget {
   final bool isObscure;
   final void Function(String value)? onChanged;
   final String? value;
+  final Color? fillColor;
 
   const InputField(
       {Key? key,
       required this.label,
       this.isObscure = false,
       this.onChanged,
-      this.value})
+      this.value,
+      this.fillColor = const Color.fromARGB(117, 255, 255, 255)})
       : super(key: key);
 
   @override
@@ -59,7 +61,7 @@ class _InputFieldState extends State<InputField> {
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor: Color.fromARGB(117, 255, 255, 255),
+                fillColor: widget.fillColor,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

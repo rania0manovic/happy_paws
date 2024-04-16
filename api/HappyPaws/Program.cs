@@ -13,6 +13,7 @@ builder.Services.AddValidators();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddOther();
+
 builder.Services.AddDatabase(connectionStringConfig);
 builder.Services.AddAuthenticationAndAuthorization(jwtTokenConfig);
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -25,6 +26,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
 var app = builder.Build();
+app.UseMiddlewares();
 
 if (app.Environment.IsDevelopment())
 {

@@ -22,53 +22,6 @@ namespace HappyPaws.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AddressOne")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("AddressTwo")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<string>("PostalCode")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CityId");
-
-                    b.ToTable("Addresses");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
                 {
                     b.Property<int>("Id")
@@ -378,7 +331,7 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Property<double?>("Shipping")
                         .HasColumnType("float");
 
-                    b.Property<int>("ShippingAddressId")
+                    b.Property<int?>("ShippingAddressId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -389,7 +342,7 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Property<double>("Total")
                         .HasColumnType("float");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -399,6 +352,46 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("HappyPaws.Core.Entities.OrderDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("UnitPrice")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Pet", b =>
@@ -895,6 +888,81 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("HappyPaws.Core.Entities.UserAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AddressOne")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("AddressTwo")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsInitialUserAddress")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAddresses");
+                });
+
             modelBuilder.Entity("HappyPaws.Core.Entities.UserCart", b =>
                 {
                     b.Property<int>("Id")
@@ -968,17 +1036,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("UserFavourites");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Address", b =>
-                {
-                    b.HasOne("HappyPaws.Core.Entities.City", "City")
-                        .WithMany("Addresses")
-                        .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("City");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
                 {
                     b.HasOne("HappyPaws.Core.Entities.Employee", "Employee")
@@ -1018,21 +1075,34 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Order", b =>
                 {
-                    b.HasOne("HappyPaws.Core.Entities.Address", "ShippingAddress")
+                    b.HasOne("HappyPaws.Core.Entities.UserAddress", "ShippingAddress")
                         .WithMany("Orders")
-                        .HasForeignKey("ShippingAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ShippingAddressId");
 
-                    b.HasOne("HappyPaws.Core.Entities.User", "User")
+                    b.HasOne("HappyPaws.Core.Entities.User", null)
                         .WithMany("Orders")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("ShippingAddress");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("HappyPaws.Core.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("HappyPaws.Core.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HappyPaws.Core.Entities.Product", "Product")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Pet", b =>
@@ -1192,6 +1262,21 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("ProfilePhoto");
                 });
 
+            modelBuilder.Entity("HappyPaws.Core.Entities.UserAddress", b =>
+                {
+                    b.HasOne("HappyPaws.Core.Entities.City", null)
+                        .WithMany("Addresses")
+                        .HasForeignKey("CityId");
+
+                    b.HasOne("HappyPaws.Core.Entities.User", "User")
+                        .WithMany("UserAddresses")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HappyPaws.Core.Entities.UserCart", b =>
                 {
                     b.HasOne("HappyPaws.Core.Entities.Product", "Product")
@@ -1230,11 +1315,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Address", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Products");
@@ -1261,6 +1341,11 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("HappyPaws.Core.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
             modelBuilder.Entity("HappyPaws.Core.Entities.Pet", b =>
                 {
                     b.Navigation("Appointments");
@@ -1282,6 +1367,8 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Product", b =>
                 {
+                    b.Navigation("OrderDetails");
+
                     b.Navigation("ProductImages");
 
                     b.Navigation("ProductReviews");
@@ -1312,9 +1399,16 @@ namespace HappyPaws.Infrastructure.Migrations
 
                     b.Navigation("Pets");
 
+                    b.Navigation("UserAddresses");
+
                     b.Navigation("UserCartItems");
 
                     b.Navigation("UserFavouriteItems");
+                });
+
+            modelBuilder.Entity("HappyPaws.Core.Entities.UserAddress", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

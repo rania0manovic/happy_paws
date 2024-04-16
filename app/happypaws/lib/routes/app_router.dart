@@ -35,12 +35,12 @@ class AppRouter extends $AppRouter {
           AutoRoute(path: "clinic", page: ClinicTab.page, children: [
             AutoRoute(path: '', page: ClinicRoute.page),
             AutoRoute(path: 'appointments', page: UserAppointmentsRoute.page),
-            AutoRoute(path: 'makeAppointment', page: MakeAppointmentRoute.page)
+            AutoRoute(path: 'make-appointment', page: MakeAppointmentRoute.page)
           ]),
           AutoRoute(path: "shop", page: ShopTab.page, children: [
             AutoRoute(path: '', page: ShopRoute.page),
             AutoRoute(
-              path: 'cart',
+              path: '',
               page: CartRoute.page,
             ),
             AutoRoute(
@@ -49,15 +49,22 @@ class AppRouter extends $AppRouter {
             AutoRoute(
                 path: "products/:categoryId/:subcategoryId",
                 page: CatalogRoute.page),
-            AutoRoute(path: "product/:id", page: ProductDetailsRoute.page)
+            AutoRoute(path: "product/:id", page: ProductDetailsRoute.page),
+             AutoRoute(
+              path: 'checkout',
+              page: CheckoutRoute.page,
+            ),
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
             AutoRoute(path: '', page: ProfileRoute.page),
             AutoRoute(
                 path: 'personalInformation',
                 page: PersonalInformationRoute.page),
-            AutoRoute(path: 'myPets', page: MyPetsRoute.page),
-            AutoRoute(path: 'petDetails', page: PetDetailsRoute.page),
+            AutoRoute(path: 'my-pets', page: MyPetsRoute.page),
+            AutoRoute(path: 'pet-details', page: PetDetailsRoute.page),
+            AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
+            AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
+
           ]),
         ]),
         AutoRoute(

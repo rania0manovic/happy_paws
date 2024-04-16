@@ -1,4 +1,4 @@
-﻿using HappyPaws.Core.Dtos.Address;
+﻿using HappyPaws.Core.Dtos;
 using HappyPaws.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Mappings
 {
-    public class AddressProfile : BaseProfile
+    public class OrderDetailProfile:BaseProfile
     {
-        public AddressProfile()
+        public OrderDetailProfile()
         {
-            CreateMap<Address, AddressDto>().ReverseMap();
+            CreateMap<OrderDetail, OrderDetailDto>().ReverseMap();
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using HappyPaws.Application.Interfaces;
+﻿using FluentValidation;
+using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos;
 using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace HappyPaws.Api.Controllers
 {
@@ -61,7 +61,7 @@ namespace HappyPaws.Api.Controllers
             catch (ValidationException e)
             {
                 Logger.LogError(e, "Problem when updating resource");
-                return BadRequest();
+                return StatusCode(403);
             }
             catch (Exception e)
             {
@@ -81,7 +81,7 @@ namespace HappyPaws.Api.Controllers
             catch (ValidationException e)
             {
                 Logger.LogError(e, "Problem when updating resource");
-                return BadRequest();
+                return StatusCode(403);
             }
             catch (Exception e)
             {

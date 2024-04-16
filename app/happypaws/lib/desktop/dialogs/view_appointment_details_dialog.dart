@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
@@ -49,8 +48,8 @@ class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
       setState(() {
         employees = response.data;
         selectedEmployee = response.data['items'][0]['id'].toString();
-        this.data['employeeId'] = response.data['items'][0]['id'].toString();
-        this.data['appointmentId'] = widget.appointment['id'].toString();
+        data['employeeId'] = response.data['items'][0]['id'].toString();
+        data['appointmentId'] = widget.appointment['id'].toString();
       });
     }
   }

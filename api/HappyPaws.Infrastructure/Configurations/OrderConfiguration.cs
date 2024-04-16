@@ -22,8 +22,7 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.Property(x => x.Shipping).IsRequired(false);
             builder.Property(x => x.Total).IsRequired();
 
-            builder.HasOne(x=>x.ShippingAddress).WithMany(x=>x.Orders).HasForeignKey(x=>x.ShippingAddressId).IsRequired();
-            builder.HasOne(x=>x.User).WithMany(x=>x.Orders).HasForeignKey(x=>x.UserId).IsRequired();
+            builder.HasOne(x=>x.ShippingAddress).WithMany(x=>x.Orders).HasForeignKey(x=>x.ShippingAddressId).IsRequired(false);
         }
     }
 }

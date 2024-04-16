@@ -9,9 +9,9 @@ using HappyPaws.Infrastructure.Interfaces;
 
 namespace HappyPaws.Application.Services
 {
-    public class AddressesService : BaseService<Address, AddressDto, IAddressesRepository, AddressSearchObject>, IAddressesService
+    public class UserAddressesService : BaseService<UserAddress, UserAddressDto, IUserAddressesRepository, UserAddressSearchObject>, IUserAddressesService
     {
-        public AddressesService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<AddressDto> validator) : base(mapper, unitOfWork, validator)
+        public UserAddressesService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<UserAddressDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
     }

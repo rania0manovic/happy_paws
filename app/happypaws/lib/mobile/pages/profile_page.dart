@@ -82,8 +82,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     GestureDetector(
+                      onTap: () => context.router.push( const OrderHistoryRoute()),
+
                       child: const Text(
-                        "Payment Information",
+                        "Order History",
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 20),

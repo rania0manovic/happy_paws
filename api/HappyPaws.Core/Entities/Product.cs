@@ -21,6 +21,7 @@ namespace HappyPaws.Core.Entities
 
 
         public required ICollection<ProductImage> ProductImages { get; set; }
+        public required ICollection<OrderDetail> OrderDetails { get; set; }
         public required ICollection<ProductReview> ProductReviews { get; set; }
         public required ICollection<UserCart> UserCartItems { get; set; }
         public required ICollection<UserFavourite> UserFavouriteItems { get; set; }

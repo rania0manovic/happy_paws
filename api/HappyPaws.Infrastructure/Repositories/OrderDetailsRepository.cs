@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
 {
-    public class AddressesRepository : BaseRepository<Address, int, AddressSearchObject>, IAddressesRepository
+    public class OrderDetailsRepository : BaseRepository<OrderDetail, int, OrderDetailSearchObject>, IOrderDetailsRepository
     {
-        public AddressesRepository(DatabaseContext databaseContext) : base(databaseContext)
+        public OrderDetailsRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
         }
     }

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -292,58 +292,47 @@ class _CartPageState extends State<CartPage> {
                               'Total',
                               style: TextStyle(fontSize: 20),
                             ),
-                            Text("\$ " +
-                               ( products!['items'].isNotEmpty
-                                    ? products!['items']
-                                        .fold<double>(
-                                            0.0,
-                                            (previousValue, item) =>
-                                                previousValue +
-                                                        (item['product']
-                                                                ['price'] *
-                                                            item['quantity'])
-                                                    as double)
-                                        .toStringAsFixed(2)
-                                    : "0.00\$"),
+                            // ignore: prefer_interpolation_to_compose_strings
+                            Text(
+                                "\$ " +
+                                    (products!['items'].isNotEmpty
+                                        ? products!['items']
+                                            .fold<double>(
+                                                0.0,
+                                                (previousValue, item) =>
+                                                    previousValue +
+                                                            (item['product']
+                                                                    ['price'] *
+                                                                item[
+                                                                    'quantity'])
+                                                        as double)
+                                            .toStringAsFixed(2)
+                                        : "0.00\$"),
                                 style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.w600))
                           ],
                         ),
                       ),
-                      Container(
+                      PrimaryButton(
+                        onPressed: () {
+                          if(products!['items'].isEmpty)
+                          return;
+                          context.router.push( CheckoutRoute(total:  products!['items']
+                                            .fold<double>(
+                                                0.0,
+                                                (previousValue, item) =>
+                                                    previousValue +
+                                                            (item['product']
+                                                                    ['price'] *
+                                                                item[
+                                                                    'quantity'])
+                                                        as double))
+                                            );
+                        },
+                        label: "Order",
+                        fontSize: 22,
                         width: double.infinity,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Center(
-                            child: Text(
-                          'Order',
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
-                        )),
-                      ),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                      // Container(
-                      //   width: double.infinity,
-                      //   height: 50,
-                      //   decoration: BoxDecoration(
-                      //     color: const Color(0xffffc439),
-                      //     borderRadius: BorderRadius.circular(10),
-                      //   ),
-                      //   child: const Padding(
-                      //     padding: EdgeInsets.all(8.0),
-                      //     child: Image(
-                      //       image: AssetImage('assets/images/paypallogo.png'),
-                      //       fit: BoxFit.fitHeight,
-                      //     ),
-                      //   ),
-                      // )
+                      )
                     ]),
                   ))
             ]),

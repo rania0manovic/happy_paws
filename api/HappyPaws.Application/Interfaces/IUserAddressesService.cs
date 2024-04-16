@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IAddressesService:IBaseService<int, AddressDto, AddressSearchObject>
+    public interface IUserAddressesService:IBaseService<int, UserAddressDto, UserAddressSearchObject>
     {
     }
 }

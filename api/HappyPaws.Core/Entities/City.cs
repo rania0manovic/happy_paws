@@ -13,6 +13,6 @@ namespace HappyPaws.Core.Entities
         public required Country Country { get; set; }
         public int CountryId { get; set; }
 
-        public required ICollection<Address> Addresses { get; set; }
+        public required ICollection<UserAddress> Addresses { get; set; }
     }
 }
