@@ -117,5 +117,10 @@ namespace HappyPaws.Application.Services
             return new();
 
         }
+
+        public async Task<List<ProductDto>> GetBestsellersAsync(int size,CancellationToken cancellationToken = default)
+        {
+            return  Mapper.Map<List<ProductDto>>(await CurrentRepository.GetBestsellersAsync( size, cancellationToken));
+        }
     }
 }

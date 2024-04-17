@@ -27,14 +27,6 @@ import 'package:happypaws/desktop/pages/product_categories_page.dart' as _i7;
 import 'package:happypaws/desktop/pages/product_subcategories_page.dart'
     as _i33;
 import 'package:happypaws/desktop/pages/products_page.dart' as _i26;
-import 'package:happypaws/mobile/pages/my_pets_page.dart' as _i17;
-import 'package:happypaws/mobile/pages/personal_info_page.dart' as _i21;
-import 'package:happypaws/mobile/pages/pet_details_page.dart' as _i23;
-import 'package:happypaws/mobile/pages/product_details_page.dart' as _i25;
-import 'package:happypaws/mobile/pages/register_page.dart' as _i29;
-import 'package:happypaws/mobile/pages/register_add_pets_page.dart' as _i28;
-import 'package:happypaws/mobile/pages/register_page_verification.dart' as _i30;
-import 'package:happypaws/mobile/pages/welcome_page.dart' as _i35;
 import 'package:happypaws/mobile/pages/appointments_page.dart' as _i34;
 import 'package:happypaws/mobile/pages/cart_page.dart' as _i5;
 import 'package:happypaws/mobile/pages/catalog_page.dart' as _i6;
@@ -43,12 +35,20 @@ import 'package:happypaws/mobile/pages/clinic_page.dart' as _i10;
 import 'package:happypaws/mobile/pages/home_page.dart' as _i13;
 import 'package:happypaws/mobile/pages/login_page.dart' as _i15;
 import 'package:happypaws/mobile/pages/make_appointment_page.dart' as _i16;
+import 'package:happypaws/mobile/pages/my_pets_page.dart' as _i17;
 import 'package:happypaws/mobile/pages/order_details_page.dart' as _i18;
 import 'package:happypaws/mobile/pages/order_history_page.dart' as _i19;
+import 'package:happypaws/mobile/pages/personal_info_page.dart' as _i21;
+import 'package:happypaws/mobile/pages/pet_details_page.dart' as _i23;
+import 'package:happypaws/mobile/pages/product_details_page.dart' as _i25;
 import 'package:happypaws/mobile/pages/profile_page.dart' as _i27;
+import 'package:happypaws/mobile/pages/register_add_pets_page.dart' as _i28;
+import 'package:happypaws/mobile/pages/register_page.dart' as _i29;
+import 'package:happypaws/mobile/pages/register_page_verification.dart' as _i30;
 import 'package:happypaws/mobile/pages/shop_category_subcategories_page.dart'
     as _i31;
 import 'package:happypaws/mobile/pages/shop_page.dart' as _i32;
+import 'package:happypaws/mobile/pages/welcome_page.dart' as _i35;
 import 'package:happypaws/routes/app_router.dart' as _i2;
 
 abstract class $AppRouter extends _i36.RootStackRouter {
@@ -120,6 +120,7 @@ abstract class $AppRouter extends _i36.RootStackRouter {
         child: _i8.CheckoutPage(
           key: args.key,
           total: args.total,
+          products: args.products,
         ),
       );
     },
@@ -510,12 +511,14 @@ class CheckoutRoute extends _i36.PageRouteInfo<CheckoutRouteArgs> {
   CheckoutRoute({
     _i37.Key? key,
     required double total,
+    required Map<String, dynamic> products,
     List<_i36.PageRouteInfo>? children,
   }) : super(
           CheckoutRoute.name,
           args: CheckoutRouteArgs(
             key: key,
             total: total,
+            products: products,
           ),
           initialChildren: children,
         );
@@ -530,15 +533,18 @@ class CheckoutRouteArgs {
   const CheckoutRouteArgs({
     this.key,
     required this.total,
+    required this.products,
   });
 
   final _i37.Key? key;
 
   final double total;
 
+  final Map<String, dynamic> products;
+
   @override
   String toString() {
-    return 'CheckoutRouteArgs{key: $key, total: $total}';
+    return 'CheckoutRouteArgs{key: $key, total: $total, products: $products}';
   }
 }
 

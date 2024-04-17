@@ -55,6 +55,15 @@ namespace HappyPaws.Infrastructure.Repositories
 
             return similarProducts;
         }
+
+        public async Task<List<Product>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .Include(x => x.ProductImages.Take(1)).ThenInclude(x => x.Image)
+             .OrderByDescending(p => p.OrderDetails.Sum(od => od.Quantity))
+             .Take(size)
+             .ToListAsync(cancellationToken: cancellationToken);
+        }
     }
 }
 

@@ -12,11 +12,12 @@ namespace HappyPaws.Core.Entities
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
+        public string? PayId { get; set; }
         public double? Shipping { get; set; }
         public double Total { get; set; }
 
-        public UserAddress ? ShippingAddress { get; set; }
-        public int ? ShippingAddressId { get; set; }
+        public UserAddress? ShippingAddress { get; set; }
+        public int? ShippingAddressId { get; set; }
 
         public required ICollection<OrderDetail> OrderDetails { get; set; }
 

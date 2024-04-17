@@ -17,6 +17,7 @@ namespace HappyPaws.Infrastructure.Repositories
         public OrdersRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
         }
+
         public override async Task<PagedList<Order>> GetPagedAsync(OrderSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             return await DbSet.Include(x=>x.OrderDetails).ThenInclude(x=>x.Product).ThenInclude(x=>x.ProductImages).ThenInclude(x=>x.Image)

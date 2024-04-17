@@ -275,24 +275,26 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                       selectedPetType == null ? true : false),
                               dropdownMenu("Gender:", "gender"),
                               birthDateInput(context),
-                              if (!data['petAllergies'].isEmpty)
-                                allergiesSection()
-                              else
-                                GestureDetector(
-                                    onTap: () => showAddAllergyMenu(context),
-                                    child: const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10),
-                                      child: Text(
-                                        "Add new allergy",
-                                        style: TextStyle(
-                                            color: AppColors.primary,
-                                            decoration:
-                                                TextDecoration.underline),
-                                      ),
-                                    )),
-                              if (!data['petMedications'].isEmpty)
-                                medicationSection(),
+                              if (widget.petId != null)
+                                if (!data['petAllergies'].isEmpty)
+                                  allergiesSection()
+                                else
+                                  GestureDetector(
+                                      onTap: () => showAddAllergyMenu(context),
+                                      child: const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: Text(
+                                          "Add new allergy",
+                                          style: TextStyle(
+                                              color: AppColors.primary,
+                                              decoration:
+                                                  TextDecoration.underline),
+                                        ),
+                                      )),
+                              if (widget.petId != null)
+                                if (!data['petMedications'].isEmpty)
+                                  medicationSection(),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -422,7 +424,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             spacing: 18.0,
             runSpacing: 8.0,
             children: [
-              for (var item in data['petMedications']) listItem(item['name'])
+              for (var item in data['petMedications'])
+                listItem(item['medicationName'])
             ],
           ),
         ),

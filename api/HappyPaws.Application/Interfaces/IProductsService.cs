@@ -12,5 +12,7 @@ namespace HappyPaws.Application.Interfaces
     {
         Task<ProductDto?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default);
         Task<List<ProductDto>> GetRecommendedProductsForUserAsync(int userId,int size, CancellationToken cancellationToken = default);
+        Task<List<ProductDto>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default);
+
     }
 }

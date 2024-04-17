@@ -33,37 +33,9 @@ namespace HappyPaws.Api
         {
             services.AddAutoMapper(typeof(Program), typeof(BaseProfile));
         }
-        public static IApplicationBuilder UseRequestValidationMiddlewares(this IApplicationBuilder app)
-        {
-            var dtoTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type.IsClass && !type.IsAbstract && type.Name.EndsWith("Dto"));
-
-            foreach (var dtoType in dtoTypes)
-            {
-                // Find validator for the DTO type
-                var validatorType = AppDomain.CurrentDomain.GetAssemblies()
-                    .SelectMany(assembly => assembly.GetTypes())
-                    .FirstOrDefault(type =>
-                        type.IsSubclassOf(typeof(AbstractValidator<>).MakeGenericType(dtoType)));
-
-                if (validatorType != null)
-                {
-                    // Construct the middleware type and validator instance
-                    var middlewareType = typeof(RequestValidationMiddleware<>).MakeGenericType(dtoType);
-                    var validatorInstance = Activator.CreateInstance(validatorType);
-
-                    // Register the middleware with the appropriate validator
-                    app.UseMiddleware(middlewareType, validatorInstance);
-                }
-            }
-
-            return app;
-        }
 
         public static void UseMiddlewares(this IApplicationBuilder app)
         {
-            //app.UseRequestValidationMiddlewares();
         }
         public static void AddDatabase(this IServiceCollection services, ConnectionStringConfig config)
         {
@@ -141,7 +113,7 @@ namespace HappyPaws.Api
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEnumsService, EnumsService>();
             services.AddHttpContextAccessor().AddScoped<CurrentUser>().AddSingleton<ClaimsPrincipalAccessor>();
-
+            services.AddMemoryCache();
 
         }
 

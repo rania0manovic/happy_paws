@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/services/UserAdressesService.dart';
 import 'package:happypaws/common/utilities/Toast.dart';
@@ -10,11 +13,13 @@ import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/mobile/components/input_field.dart';
+import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
 class CheckoutPage extends StatefulWidget {
   final double total;
-  const CheckoutPage({super.key, required this.total});
+  final  Map<String, dynamic> products;
+  const CheckoutPage({super.key, required this.total, required this.products});
 
   @override
   State<CheckoutPage> createState() => _CheckoutPageState();
@@ -57,13 +62,33 @@ class _CheckoutPageState extends State<CheckoutPage> {
       data['orderDate'] = DateTime.now().toIso8601String();
       data['paymentMethod'] = "InStore";
       data['total'] = widget.total;
-      data['shippingAddressId']=null;
+      data['shippingAddressId'] = null;
       var response = await OrdersService().post('', data);
       if (response.statusCode == 200) {
         setState(() {
           isLoading = false;
           ToastHelper.showToastSuccess(
               context, "Your order has been successfully created!");
+        });
+      }
+    } catch (e) {}
+  }
+    Future<void> placePaypalOrder(dynamic payId) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      data['orderDate'] = DateTime.now().toIso8601String();
+      data['paymentMethod'] = "Paypal";
+      data['total'] = widget.total;
+      data['payId'] =payId;
+      var response = await OrdersService().post('', data);
+      if (response.statusCode == 200) {
+        setState(() {
+          isLoading = false;
+          ToastHelper.showToastSuccess(
+              context, "Your order has been successfully created!");
+              context.router.push(OrderHistoryRoute());
         });
       }
     } catch (e) {}
@@ -382,19 +407,73 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         Visibility(
                           visible: data['shippingAddressId'] != null &&
                               isSavedAddress,
-                          child: Container(
-                            width: double.infinity,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: const Color(0xffffc439),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Image(
-                                image:
-                                    AssetImage('assets/images/paypallogo.png'),
-                                fit: BoxFit.fitHeight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    PaypalCheckoutView(
+                                  sandboxMode: true,
+                                  clientId:
+                                      "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r",
+                                  secretKey:
+                                      "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW",
+                                  transactions:  [
+                                    {
+                                      "amount": {
+                                        "total": widget.total.toString(),
+                                        "currency": "USD",
+                                        "details": {
+                                          "subtotal": widget.total.toString(),
+                                          "shipping": '0',
+                                          "shipping_discount": 0
+                                        }
+                                      },
+                                      "description":
+                                          "",
+                                      "item_list": {
+                                        "items": [
+                                        for(var item in widget.products['items'])
+                                          {
+                                            "name": item['product']['name'],
+                                            "quantity": item['quantity'],
+                                            "price": item['product']['price'],
+                                            "currency": "USD"
+                                          },
+                                         
+                                        ],
+                                      }
+                                    }
+                                  ],
+                                  note:
+                                      "Contact us for any questions on your order.",
+                                  onSuccess: (Map params) async {
+                                    Navigator.pop(context);
+                                    placePaypalOrder(params['id']);
+                                  },
+                                  onError: (error) {
+                                    log("onError: $error");
+                                    Navigator.pop(context);
+                                  },
+                                  onCancel: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ));
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: const Color(0xffffc439),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Image(
+                                  image: AssetImage(
+                                      'assets/images/paypallogo.png'),
+                                  fit: BoxFit.fitHeight,
+                                ),
                               ),
                             ),
                           ),

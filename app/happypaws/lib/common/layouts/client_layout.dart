@@ -211,7 +211,7 @@ class _ClientLayoutState extends State<ClientLayout> {
               children: [
                 const Text(
                   "Emergency call",
-                  style: TextStyle(color: Color(0xffBA1A36), fontSize: 20),
+                  style: TextStyle(color: Color(0xffBA1A36), fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 SvgPicture.asset(
                   "assets/icons/phone.svg",

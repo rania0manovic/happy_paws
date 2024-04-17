@@ -326,7 +326,7 @@ class _CartPageState extends State<CartPage> {
                                                                     ['price'] *
                                                                 item[
                                                                     'quantity'])
-                                                        as double))
+                                                        as double), products: products!)
                                             );
                         },
                         label: "Order",

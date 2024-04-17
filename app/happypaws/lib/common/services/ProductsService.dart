@@ -39,6 +39,16 @@ class ProductsService extends BaseService {
     }
   }
 
+   Future<dynamic> getBestsellers({int size = 4}) async {
+    try {
+      var response = await get("/Bestsellers",
+          searchObject: {"size": size});
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   Future<dynamic> put(String endpoint, data) async {
     var request = http.MultipartRequest(

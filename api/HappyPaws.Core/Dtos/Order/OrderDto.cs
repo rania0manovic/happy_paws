@@ -15,6 +15,7 @@ namespace HappyPaws.Core.Dtos.Order
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
+        public string? PayId { get; set; }
         public double? Shipping { get; set; }
         public double Total { get; set; }
 

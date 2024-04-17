@@ -54,6 +54,8 @@ class AppRouter extends $AppRouter {
               path: 'checkout',
               page: CheckoutRoute.page,
             ),
+             AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
+            AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
             AutoRoute(path: '', page: ProfileRoute.page),
@@ -62,8 +64,7 @@ class AppRouter extends $AppRouter {
                 page: PersonalInformationRoute.page),
             AutoRoute(path: 'my-pets', page: MyPetsRoute.page),
             AutoRoute(path: 'pet-details', page: PetDetailsRoute.page),
-            AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
-            AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
+           
 
           ]),
         ]),
