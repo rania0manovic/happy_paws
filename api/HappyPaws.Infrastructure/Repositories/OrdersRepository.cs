@@ -17,13 +17,32 @@ namespace HappyPaws.Infrastructure.Repositories
         public OrdersRepository(DatabaseContext databaseContext) : base(databaseContext)
         {
         }
+        public override Task<Order?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return DbSet
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Product)
+                     .ThenInclude(x => x.ProductImages).ThenInclude(x => x.Image)
+                .Include(x => x.ShippingAddress)
+                .Include(x => x.User)
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Product).ThenInclude(x => x.Brand)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
 
         public override async Task<PagedList<Order>> GetPagedAsync(OrderSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Include(x=>x.OrderDetails).ThenInclude(x=>x.Product).ThenInclude(x=>x.ProductImages).ThenInclude(x=>x.Image)
-                .Include(x=>x.ShippingAddress)
-                .Where(x=> searchObject.UserId==null || x.ShippingAddress.UserId==searchObject.UserId)
-                .ToPagedListAsync(searchObject, cancellationToken);   
+            var query = DbSet
+                .Include(x => x.ShippingAddress)
+                .Include(x => x.User)
+                .Include(x => x.OrderDetails).ThenInclude(x => x.Product).ThenInclude(x => x.Brand)
+                .AsQueryable();
+            if (searchObject.IncludePhotos == true)
+            {
+                query.Include(x => x.OrderDetails).ThenInclude(x => x.Product)
+                     .ThenInclude(x => x.ProductImages).ThenInclude(x => x.Image);
+            }
+            return await query.Where(x => searchObject.UserId == null || x.UserId == searchObject.UserId)
+             .ToPagedListAsync(searchObject, cancellationToken);
         }
+
     }
 }

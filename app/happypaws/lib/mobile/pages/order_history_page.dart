@@ -18,6 +18,7 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Map<String, dynamic>? orders;
+  bool isLoadingOrder = false;
 
   @override
   initState() {
@@ -28,8 +29,10 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Future<void> fetchData() async {
     var user = await AuthService().getCurrentUser();
     if (user == null) return;
-    var response = await OrdersService()
-        .getPaged("endpoint", 1, 9999, searchObject: {'userId': user['Id']});
+    var response =
+        await OrdersService().getPaged("endpoint", 1, 9999, searchObject: {
+      'userId': user['Id'],
+    });
     if (response.statusCode == 200) {
       setState(() {
         orders = response.data;
@@ -37,9 +40,23 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     }
   }
 
+  Future<void> fetchOrder(int id) async {
+    setState(() {
+      isLoadingOrder = true;
+    });
+    var response = await OrdersService().get("/$id");
+    if (response.statusCode == 200) {
+      setState(() {
+        isLoadingOrder = false;
+      });
+      if (!mounted) return;
+      context.router.push(OrderDetailsRoute(data: response.data));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return orders == null
+    return orders == null || isLoadingOrder
         ? const Spinner()
         : SingleChildScrollView(
             child: Column(
@@ -50,7 +67,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 ),
                 for (var order in orders!['items'])
                   GestureDetector(
-                    onTap: () => context.router.push(OrderDetailsRoute(data: order)),
+                    onTap: () => fetchOrder(order['id']),
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: const BoxDecoration(
@@ -59,7 +76,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                   width: 2, color: AppColors.dimWhite))),
                       child: Row(
                         children: [
-                           Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -68,10 +85,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                 style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.w600),
                               ),
-                             
-                               Text(
+                              Text(
                                 DateFormat('dd.MM.yyyy')
-                            .format(DateTime.parse(order['orderDate'])),
+                                    .format(DateTime.parse(order['orderDate'])),
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
@@ -84,25 +100,30 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              
-                               
                               Text(
                                 "\$${order['total']}",
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
-                               Text(
-                                order['status'],
-                                style: TextStyle(
+                              Text(order['status'],
+                                  style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
-                                    color:(order['status']== 'Pending' || order['status']=='Processing' || order['status']=='OnHold') ? AppColors.info :
-                                    (order['status']== 'ReadyToPickUp' || order['status']=='Dispatched' || order['status']=='Confirmed' || order['status']=='Delivered') ? AppColors.success : AppColors.error ,)
-                              ),
-                              
+                                    color: (order['status'] == 'Pending' ||
+                                            order['status'] == 'Processing' ||
+                                            order['status'] == 'OnHold')
+                                        ? AppColors.info
+                                        : (order['status'] == 'ReadyToPickUp' ||
+                                                order['status'] ==
+                                                    'Dispatched' ||
+                                                order['status'] ==
+                                                    'Confirmed' ||
+                                                order['status'] == 'Delivered')
+                                            ? AppColors.success
+                                            : AppColors.error,
+                                  )),
                             ],
                           ),
-                         
                         ],
                       ),
                     ),

@@ -78,6 +78,7 @@ class AppRouter extends $AppRouter {
             page: AdminLayout.page,
             children: [
               AutoRoute(path: 'dashboard', page: DashboardRoute.page, initial: true),
+                 AutoRoute(path: 'shop/orders', page: OrdersRoute.page),
               AutoRoute(path: 'appointments', page: AppointmentsRoute.page),
               AutoRoute(path: 'patients', page: PatientsRoute.page),
               AutoRoute(path: 'employees', page: EmployeesRoute.page),

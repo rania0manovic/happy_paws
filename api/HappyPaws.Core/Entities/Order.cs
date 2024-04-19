@@ -16,6 +16,9 @@ namespace HappyPaws.Core.Entities
         public double? Shipping { get; set; }
         public double Total { get; set; }
 
+        public required User User { get; set; }
+        public int UserId { get; set; }
+
         public UserAddress? ShippingAddress { get; set; }
         public int? ShippingAddressId { get; set; }
 

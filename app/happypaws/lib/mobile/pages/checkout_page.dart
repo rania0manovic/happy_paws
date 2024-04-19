@@ -17,7 +17,7 @@ import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
 class CheckoutPage extends StatefulWidget {
-  final double total;
+  final String total;
   final  Map<String, dynamic> products;
   const CheckoutPage({super.key, required this.total, required this.products});
 
@@ -409,6 +409,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               isSavedAddress,
                           child: GestureDetector(
                             onTap: () {
+                              print(widget.total);
+                              print(widget.products);
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (BuildContext context) =>
                                     PaypalCheckoutView(
@@ -420,10 +422,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   transactions:  [
                                     {
                                       "amount": {
-                                        "total": widget.total.toString(),
+                                        "total": widget.total,
                                         "currency": "USD",
                                         "details": {
-                                          "subtotal": widget.total.toString(),
+                                          "subtotal": widget.total,
                                           "shipping": '0',
                                           "shipping_discount": 0
                                         }
@@ -447,8 +449,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   note:
                                       "Contact us for any questions on your order.",
                                   onSuccess: (Map params) async {
+                                    log(params.toString());
                                     Navigator.pop(context);
-                                    placePaypalOrder(params['id']);
+                                    placePaypalOrder(params['data']['id']);
                                   },
                                   onError: (error) {
                                     log("onError: $error");

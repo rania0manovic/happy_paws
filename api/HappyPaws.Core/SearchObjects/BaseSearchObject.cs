@@ -12,5 +12,6 @@ namespace HappyPaws.Core.SearchObjects
         public int PageSize { get; set; } = 10;
 
         public int? UserId { get; set; }
+        public bool IncludePhotos { get; set; } = false;
     }
 }

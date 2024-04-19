@@ -237,6 +237,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     borderRadius: BorderRadius.circular(100)),
                 child: SvgPicture.asset(
                   "assets/icons/cart.svg",
+                  // ignore: deprecated_member_use
                   color: Colors.white,
                 )),
           ),

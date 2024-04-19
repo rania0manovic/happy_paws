@@ -6,4 +6,7 @@ class EnumsService extends BaseService {
   Future<dynamic> getEmployeePositions() async {
     return await get("/GetEmployeePositions");
   }
+   Future<dynamic> getOrderStatuses() async {
+    return await get("/GetOrderStatuses");
+  }
 }

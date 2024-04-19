@@ -26,5 +26,19 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest(e.Message);
             }
         }
+        [HttpGet("GetOrderStatuses")]
+        public async Task<IActionResult> GetOrderStatuses(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await _enumsService.GetOrderStatusesAsync(cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when signing up user");
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

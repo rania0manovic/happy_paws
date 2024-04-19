@@ -19,7 +19,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   Map<String, dynamic>? products;
-
+  String total = "0.00";
   @override
   initState() {
     super.initState();
@@ -36,6 +36,13 @@ class _CartPageState extends State<CartPage> {
           if (response.statusCode == 200) {
             setState(() {
               products = response.data;
+              total = products!['items']
+                  .fold<double>(
+                      0.0,
+                      (previousValue, item) => previousValue +
+                              (item['product']['price'] * item['quantity'])
+                          as double)
+                  .toStringAsFixed(2);
             });
           }
         }
@@ -76,6 +83,13 @@ class _CartPageState extends State<CartPage> {
           products!['items']
                   .firstWhere((element) => element['id'] == id)['quantity'] =
               int.parse(quantity!);
+              total = products!['items']
+                  .fold<double>(
+                      0.0,
+                      (previousValue, item) => previousValue +
+                              (item['product']['price'] * item['quantity'])
+                          as double)
+                  .toStringAsFixed(2);
         });
       }
     } catch (e) {
@@ -97,7 +111,7 @@ class _CartPageState extends State<CartPage> {
                     Center(
                       child: Text(
                         'CART',
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                     ),
                     SizedBox(
@@ -294,20 +308,9 @@ class _CartPageState extends State<CartPage> {
                             ),
                             // ignore: prefer_interpolation_to_compose_strings
                             Text(
-                                "\$ " +
-                                    (products!['items'].isNotEmpty
-                                        ? products!['items']
-                                            .fold<double>(
-                                                0.0,
-                                                (previousValue, item) =>
-                                                    previousValue +
-                                                            (item['product']
-                                                                    ['price'] *
-                                                                item[
-                                                                    'quantity'])
-                                                        as double)
-                                            .toStringAsFixed(2)
-                                        : "0.00\$"),
+                                "\$ ${products!['items'].isNotEmpty
+                                        ? total
+                                        : "0.00"}",
                                 style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.w600))
                           ],
@@ -315,19 +318,10 @@ class _CartPageState extends State<CartPage> {
                       ),
                       PrimaryButton(
                         onPressed: () {
-                          if(products!['items'].isEmpty)
-                          return;
-                          context.router.push( CheckoutRoute(total:  products!['items']
-                                            .fold<double>(
-                                                0.0,
-                                                (previousValue, item) =>
-                                                    previousValue +
-                                                            (item['product']
-                                                                    ['price'] *
-                                                                item[
-                                                                    'quantity'])
-                                                        as double), products: products!)
-                                            );
+                          if (products!['items'].isEmpty) return;
+                          context.router.push(CheckoutRoute(
+                              total: total,
+                              products: products!));
                         },
                         label: "Order",
                         fontSize: 22,

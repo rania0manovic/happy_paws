@@ -125,7 +125,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                   decoration: BoxDecoration(
                                     color: appointment['startDateTime'] == null
                                         ? AppColors.dimWhite
-                                        : Colors.white,
+                                        : Colors.transparent,
                                     border: Border(
                                       top: BorderSide(
                                           color: Colors.grey.shade300),

@@ -19,10 +19,12 @@ namespace HappyPaws.Core.Dtos.Order
         public double? Shipping { get; set; }
         public double Total { get; set; }
 
+        public UserDto? User { get; set; }
+        public int UserId { get; set; }
+
         public UserAddressDto? ShippingAddress { get; set; }
         public int? ShippingAddressId { get; set; }
 
-        public int UserId { get; set; }
         public ICollection<OrderDetailDto>? OrderDetails { get; set; }
 
     }

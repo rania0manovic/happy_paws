@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
@@ -252,8 +250,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                   "weight"),
                               apiDropdownMenu(petTypes!['items'], "Pet type:",
                                   (String? newValue) async {
-                                print(newValue);
-
                                 setState(() {
                                   selectedPetBreed = null;
                                   selectedPetType = null;
