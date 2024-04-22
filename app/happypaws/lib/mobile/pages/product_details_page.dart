@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
 @RoutePage()
@@ -111,6 +111,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         ToastHelper.showToastSuccess(
             context, "Successfully added product to favourites!");
         setState(() {
+          product!['userFavouriteItems'].add(response.data);
           product!["isFavourite"] = true;
         });
       } else {
@@ -203,61 +204,44 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   }
 
   Padding actionsSection() {
-    // TODO: Make buttons functional
-
     return Padding(
       padding: const EdgeInsets.only(left: 34, right: 34, top: 20, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 212,
-            height: 48,
-            decoration: BoxDecoration(
-                color: const Color(0xff3F0D84),
-                borderRadius: BorderRadius.circular(10)),
-            child: const Center(
-              child: Text(
-                "Buy now",
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => addProductToCart(),
-            child: Container(
-                height: 48,
-                width: 48,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    color: const Color(0xff3F0D84),
-                    borderRadius: BorderRadius.circular(100)),
-                child: SvgPicture.asset(
-                  "assets/icons/cart.svg",
-                  // ignore: deprecated_member_use
-                  color: Colors.white,
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Wrap(
+          direction: Axis.horizontal,
+           spacing: 10,
+          children: [
+            GestureDetector(
+                onTap: () => addProductToCart(),
+                child: FractionallySizedBox(
+                  widthFactor: 0.8,
+                  child: PrimaryIconButton(
+                    icon: Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 25,),
+                    label: "Add to cart",
+                    fontSize: 18,
+                    width: double.infinity,
+                    onPressed: () {addProductToCart();},
+                  ),
                 )),
-          ),
-          GestureDetector(
-            onTap: () => product!['isFavourite']
-                ? removeProductFromFavourites()
-                : addProductToFavourites(),
-            child: Container(
-                height: 48,
-                width: 48,
-                padding: const EdgeInsets.all(0),
-                child: Icon(
-                  product!['isFavourite']
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  size: 35,
-                  color: AppColors.primary,
-                )),
-          )
-        ],
+            GestureDetector(
+              onTap: () => product!['isFavourite']
+                  ? removeProductFromFavourites()
+                  : addProductToFavourites(),
+              child: Container(
+                  height: 48,
+                  width: 48,
+                  padding: const EdgeInsets.all(0),
+                  child: Icon(
+                    product!['isFavourite']
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    size: 35,
+                    color: AppColors.primary,
+                  )),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -362,7 +346,7 @@ class _DescriptionState extends State<Description> {
               trailing: IconButton(
                 icon: Icon(
                   isExpanded ? Icons.remove : Icons.add,
-                  color: const Color(0xff3F0D84),
+                  color:  AppColors.primary,
                 ),
                 onPressed: () {
                   setState(() {

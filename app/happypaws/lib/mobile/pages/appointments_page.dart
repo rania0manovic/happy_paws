@@ -2,8 +2,8 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
@@ -176,7 +176,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
             width: 104,
             decoration: BoxDecoration(
                 color: activeTab == 0
-                    ? const Color(0xff3F0D84)
+                    ? AppColors.primary
                     : const Color(0xffD9D9D9),
                 borderRadius: BorderRadius.circular(10)),
             child: Center(
@@ -198,7 +198,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
             width: 104,
             decoration: BoxDecoration(
                 color: activeTab == 1
-                    ? const Color(0xff3F0D84)
+                    ? AppColors.primary
                     : const Color(0xffD9D9D9),
                 borderRadius: BorderRadius.circular(10)),
             child: Center(
@@ -220,7 +220,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
             width: 104,
             decoration: BoxDecoration(
                 color: activeTab == 2
-                    ? const Color(0xff3F0D84)
+                    ?AppColors.primary
                     : const Color(0xffD9D9D9),
                 borderRadius: BorderRadius.circular(10)),
             child: Center(
@@ -244,7 +244,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
           height: 180,
           width: double.infinity,
           decoration: BoxDecoration(
-              color: const Color(0xff3F0D84),
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(20)),
           child: Padding(
             padding: const EdgeInsets.all(14),
@@ -284,7 +284,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                   ),
                   SizedBox(
                     width: activeTab == 0
-                        ? MediaQuery.of(context).size.width * 0.7
+                        ? MediaQuery.of(context).size.width * 0.6
                         : double.infinity,
                     child: Text(
                       "Reason:${data['reason'].length > 70 ? '${data['reason'].substring(0, 70)}...' : data['reason']}",

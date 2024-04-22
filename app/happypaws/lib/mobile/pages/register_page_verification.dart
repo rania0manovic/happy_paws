@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -99,7 +100,7 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                 "Happy paws",
                 style: TextStyle(
                   fontSize: 35,
-                  color: Color(0xff3F0D84),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -230,7 +231,7 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                             'assets/icons/long_right_arrow.svg',
                             height: 50,
                             width: 50,
-                            color: const Color(0xff3F0D84),
+                            color:  AppColors.primary,
                           ),
                         ),
                       )
@@ -268,7 +269,7 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
             focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
                   color:
-                      error ? const Color(0xffBA1A36) : const Color(0xff3F0D84),
+                      error ? const Color(0xffBA1A36) :  AppColors.primary,
                   width: 5.0, 
                 ),
                 borderRadius: BorderRadius.circular(5))),

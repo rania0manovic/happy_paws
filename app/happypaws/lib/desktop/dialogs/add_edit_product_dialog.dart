@@ -8,8 +8,8 @@ import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
@@ -119,8 +119,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
-         if(!mounted) return;
-        ToastHelper.showToastSuccess(context, "You have successfully added a new product!");
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully added a new product!");
       } else {
         throw Exception('Error occured');
       }
@@ -265,97 +266,98 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                 height: 40,
                               ),
                               Container(
-                                width: double.infinity,
-                                height: 210,
-                                decoration: BoxDecoration(
-                                    color: AppColors.dimWhite,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: productImages.isNotEmpty
-                                    ? Stack(children: [
-                                        Swiper(
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.all(32.0),
-                                              child: Image.memory(
-                                                base64.decode(
-                                                    productImages[index]
-                                                            ['image']['data']
-                                                        .toString()),
+                                  width: double.infinity,
+                                  height: 210,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: productImages.isNotEmpty
+                                      ? Stack(children: [
+                                          Swiper(
+                                            itemBuilder: (context, index) {
+                                              return Padding(
+                                                padding:
+                                                    const EdgeInsets.all(32.0),
+                                                child: Image.memory(
+                                                  base64.decode(
+                                                      productImages[index]
+                                                              ['image']['data']
+                                                          .toString()),
+                                                ),
+                                              );
+                                            },
+                                            onIndexChanged: (value) =>
+                                                setState(() {
+                                              if (productImages[value]['image']
+                                                      ['id'] !=
+                                                  null) {
+                                                activeImageId =
+                                                    productImages[value]
+                                                        ['image']['id'];
+                                              } else {
+                                                activeImageId = 0;
+                                              }
+                                              activeImageIndex = value;
+                                            }),
+                                            itemCount: productImages.length,
+                                            pagination: const SwiperPagination(
+                                              builder:
+                                                  DotSwiperPaginationBuilder(
+                                                activeColor: AppColors.primary,
                                               ),
-                                            );
-                                          },
-                                          onIndexChanged: (value) =>
-                                              setState(() {
-                                            if (productImages[value]['image']
-                                                    ['id'] !=
-                                                null) {
-                                              activeImageId =
-                                                  productImages[value]['image']
-                                                      ['id'];
-                                            } else {
-                                              activeImageId = 0;
-                                            }
-                                            activeImageIndex = value;
-                                          }),
-                                          itemCount: productImages.length,
-                                          pagination: const SwiperPagination(
-                                            builder: DotSwiperPaginationBuilder(
-                                              activeColor: AppColors.primary,
                                             ),
+                                            control: const SwiperControl(
+                                                color: AppColors.primary,
+                                                size: 16),
                                           ),
-                                          control: const SwiperControl(
-                                              color: AppColors.primary,
-                                              size: 16),
-                                        ),
-                                        Positioned(
-                                            bottom: 0,
-                                            right: 0,
-                                            child: ActionButton(
-                                              onPressed: _pickImage,
-                                              icon: Icons.add,
-                                              iconSize: 20,
-                                              iconColor: AppColors.primary,
-                                            )),
-                                        Positioned(
-                                            bottom: 0,
-                                            right: 20,
-                                            child: ActionButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return ConfirmationDialog(
-                                                      title: 'Confirmation',
-                                                      content:
-                                                          'Are you sure you want to delete this photo? This action cannot be undone and will take place immediatly.',
-                                                      onYesPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                        deleteImage();
-                                                      },
-                                                      onNoPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              icon:
-                                                  Icons.delete_forever_rounded,
-                                              iconSize: 20,
-                                              iconColor: AppColors.error,
-                                            ))
-                                      ])
-                                    : ActionButton(
-                                        onPressed: _pickImage,
-                                        icon: Icons.add,
-                                        iconSize: 20,
-                                        iconColor: AppColors.primary,
-                                      ),
-                              ),
+                                          Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              child: ActionButton(
+                                                onPressed: _pickImage,
+                                                icon: Icons.add,
+                                                iconSize: 20,
+                                                iconColor: AppColors.primary,
+                                              )),
+                                          Positioned(
+                                              bottom: 0,
+                                              right: 20,
+                                              child: ActionButton(
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return ConfirmationDialog(
+                                                        title: 'Confirmation',
+                                                        content:
+                                                            'Are you sure you want to delete this photo? This action cannot be undone and will take place immediatly.',
+                                                        onYesPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          deleteImage();
+                                                        },
+                                                        onNoPressed: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                                icon: Icons
+                                                    .delete_forever_rounded,
+                                                iconSize: 20,
+                                                iconColor: AppColors.error,
+                                              ))
+                                        ])
+                                      : GestureDetector(
+                                          onTap: _pickImage,
+                                          child: Icon(
+                                            Icons.add,
+                                            size: 20,
+                                            color: AppColors.primary,
+                                          ))),
                               const SizedBox(
                                 height: 50,
                               ),
@@ -396,34 +398,33 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         ),
         Container(
             padding: const EdgeInsets.only(top: 10),
-            width: 300,
+            width: double.infinity,
             height: 50,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
                 borderRadius: BorderRadius.circular(10),
+                color: Colors.grey.withOpacity(0.1),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedOption,
-                  hint: const Text('Select'),
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: isDisabeled ? null : onChanged,
-                  disabledHint: const Text("Select category first..."),
-                  items: [
-                    for (var item in items)
-                      DropdownMenuItem<String>(
-                        value: item['id'].toString(),
-                        child: items == productSubcategories
-                            ? Text(item['productSubcategory']['name'])
-                            : Text(item['name']),
-                      ),
-                  ],
-                ),
+              child: DropdownButton<String>(
+                isExpanded: true,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                value: selectedOption,
+                hint: const Text('Select'),
+                underline: Container(),
+                focusColor: Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                onChanged: isDisabeled ? null : onChanged,
+                disabledHint: const Text("Select category first..."),
+                items: [
+                  for (var item in items)
+                    DropdownMenuItem<String>(
+                      value: item['id'].toString(),
+                      child: items == productSubcategories
+                          ? Text(item['productSubcategory']['name'])
+                          : Text(item['name']),
+                    ),
+                ],
               ),
             )),
       ],
@@ -457,13 +458,12 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xfff2f2f2),
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color(0xff3F0D84),
+                      color: AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),
@@ -508,7 +508,6 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor: AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

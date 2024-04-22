@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -52,13 +53,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 "Happy paws",
                 style: TextStyle(
                   fontSize: 35,
-                  color: Color(0xff3F0D84),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 80, right: 80, top: 30),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: Text(
                 "Please fill out the form below with correct information to register",
                 textAlign: TextAlign.center,
@@ -70,7 +71,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 60, right: 60, top: 12),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Column(
@@ -91,13 +92,13 @@ class _RegisterPageState extends State<RegisterPage> {
                 'assets/icons/long_right_arrow.svg',
                 height: 50,
                 width: 50,
-                color: Color(0xff3F0D84),
+                color: AppColors.primary,
               ),
             ),
             GestureDetector(
               onTap: () => context.router.push(const LoginRoute()),
               child: Padding(
-                padding: const EdgeInsets.only(left: 80, right: 80, top: 10),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
                 child: Text(
                   "Already a member? Login here.",
                   textAlign: TextAlign.center,
@@ -148,7 +149,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color(0xff3F0D84),
+                      color: AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),

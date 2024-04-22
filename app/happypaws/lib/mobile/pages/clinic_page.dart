@@ -5,6 +5,7 @@ import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/PetMedicationsService.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:intl/intl.dart';
@@ -165,7 +166,7 @@ class _ClinicPageState extends State<ClinicPage> {
             width: 54,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
-                color: const Color(0xff3F0D84)),
+                color: AppColors.primary,),
             child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: SvgPicture.asset(
@@ -249,7 +250,7 @@ class _ClinicPageState extends State<ClinicPage> {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-          color: const Color(0xff3F0D84),
+          color: AppColors.primary,
           borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(14),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -33,15 +34,23 @@ class CatalogPage extends StatefulWidget {
 }
 
 class _CatalogPageState extends State<CatalogPage> {
+  late int currentPage = 1;
+  bool isLoadingMore = false;
   late String selectedValuePrice = "option0";
   late String selectedValueReview = "0";
   List<bool> selectedOptions = [false, false, false, false, false, false];
   Map<String, dynamic>? products;
   Map<String, dynamic> params = {};
+  late ScrollController _scrollController;
+  late ScrollController _scrollControllerGrid;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollControllerGrid = ScrollController();
+
+    _scrollController.addListener(_scrollListener);
     setState(() {
       params['categoryId'] = widget.categoryId?.toString();
       params['subcategoryId'] = widget.subcategoryId?.toString();
@@ -51,19 +60,43 @@ class _CatalogPageState extends State<CatalogPage> {
     fetchData();
   }
 
+  Future<void> _scrollListener() async {
+    double currentPosition = _scrollController.position.pixels;
+    double maxScrollExtent = _scrollController.position.maxScrollExtent;
+
+    double distanceFromBottom = maxScrollExtent - currentPosition;
+
+    if (distanceFromBottom <= 10 &&
+        currentPage <= products!['pageCount'] &&
+        !isLoadingMore) {
+      setState(() {
+        isLoadingMore = true;
+      });
+      await fetchData();
+      setState(() {
+        isLoadingMore = false;
+      });
+    }
+  }
+
   Future<void> fetchData() async {
-    var response;
+    dynamic response;
     if (widget.isShowingFavourites != null && widget.isShowingFavourites!) {
       var fetchedUser = await AuthService().getCurrentUser();
       response =
           await UserFavouritesService().getPagedProducts(fetchedUser?['Id']);
     } else {
-      response =
-          await ProductsService().getPaged('', 1, 999, searchObject: params);
+      response = await ProductsService()
+          .getPaged('', currentPage, 10, searchObject: params);
     }
     if (response.statusCode == 200) {
       setState(() {
-        products = response.data;
+        currentPage++;
+        if (products == null) {
+          products = response.data;
+        } else {
+          products!['items'].addAll(response.data['items']);
+        }
       });
     }
   }
@@ -74,6 +107,7 @@ class _CatalogPageState extends State<CatalogPage> {
       return const Spinner();
     } else {
       return SingleChildScrollView(
+        controller: _scrollController,
         child: Padding(
           padding: const EdgeInsets.all(14.0),
           child: Column(
@@ -90,7 +124,7 @@ class _CatalogPageState extends State<CatalogPage> {
                       header(context),
                     ],
                   ),
-                productsSection(),
+                if (products != null) productsSection(),
               ]),
         ),
       );
@@ -135,92 +169,95 @@ class _CatalogPageState extends State<CatalogPage> {
     Overlay.of(context).insert(overlayEntry);
   }
 
-  Wrap productsSection() {
-    return Wrap(
-      direction: Axis.horizontal,
-      children: [
-        if (products != null)
-          // TODO: Add pagination
-          for (var item in products!['items'])
-            GestureDetector(
-              onTap: () => context.router
-                  .push(ProductDetailsRoute(productId: item['id'])),
-              child: FractionallySizedBox(
-                widthFactor: 0.5,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 250,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.memory(
-                            base64.decode(
-                                item['productImages'][0]['image']['data']),
-                            height: 180),
-                        Text(
-                          item['name'].length > 40
-                              ? '${item['name'].substring(0, 40)}...'
-                              : item['name'],
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w500),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "\$ ${item['price']}",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 16),
-                            ),
-                            // TODO: Implement stars to match product reviews
-                            const Row(
-                              children: [
-                                Image(
-                                  image: AssetImage("assets/images/star.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                                Image(
-                                  image: AssetImage("assets/images/star.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                                Image(
-                                  image: AssetImage("assets/images/star.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                                Image(
-                                  image: AssetImage("assets/images/star.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                                Image(
-                                  image: AssetImage(
-                                      "assets/images/star-half-empty.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
+  dynamic productsSection() {
+    return GridView.builder(
+      controller: _scrollControllerGrid,
+      shrinkWrap: true,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1,
+      ),
+      itemCount: products!['items'].length + 1,
+      itemBuilder: (BuildContext context, int index) {
+        if (index < products!['items'].length) {
+          final item = products!['items'][index];
+          return GestureDetector(
+            onTap: () =>
+                context.router.push(ProductDetailsRoute(productId: item['id'])),
+            child: SizedBox.expand(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.memory(
+                    base64.decode(
+                      item['productImages'][0]['image']['data'],
                     ),
+                    height: 96,
                   ),
-                ),
+                  Text(
+                    item['name'].length > 40
+                        ? '${item['name'].substring(0, 40)}...'
+                        : item['name'],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    '\$ ${item['price']}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                ],
               ),
             ),
-        if (products != null && products!.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 36.0),
-            child: Center(child: Text('We found no products in this category')),
-          )
-      ],
+          );
+        } else if (isLoadingMore) {
+          return const Center(child: Spinner());
+        }
+      },
     );
+    //                   // TODO: Implement stars to match product reviews
+    //                   const Row(
+    //                     children: [
+    //                       Image(
+    //                         image: AssetImage("assets/images/star.png"),
+    //                         height: 14,
+    //                         width: 14,
+    //                       ),
+    //                       Image(
+    //                         image: AssetImage("assets/images/star.png"),
+    //                         height: 14,
+    //                         width: 14,
+    //                       ),
+    //                       Image(
+    //                         image: AssetImage("assets/images/star.png"),
+    //                         height: 14,
+    //                         width: 14,
+    //                       ),
+    //                       Image(
+    //                         image: AssetImage("assets/images/star.png"),
+    //                         height: 14,
+    //                         width: 14,
+    //                       ),
+    //                       Image(
+    //                         image: AssetImage(
+    //                             "assets/images/star-half-empty.png"),
+    //                         height: 14,
+    //                         width: 14,
+    //                       ),
+    //                     ],
+    //                   ),
+    //                 ],
+    //               ),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
   }
 
   Row header(BuildContext context) {
@@ -363,7 +400,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
     return Column(
       children: [
         RadioListTile<String>(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text(
             '1 star & Up',
             style: TextStyle(
@@ -378,7 +415,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           },
         ),
         RadioListTile<String>(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text(
             '2 star & Up',
             style: TextStyle(
@@ -393,7 +430,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           },
         ),
         RadioListTile<String>(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text(
             '3 star & Up',
             style: TextStyle(
@@ -408,7 +445,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           },
         ),
         RadioListTile<String>(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text(
             '4 star & Up',
             style: TextStyle(
@@ -430,7 +467,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
     return Column(
       children: [
         CheckboxListTile(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text('Aquariana'),
           value: widget.selectedOptions[0],
           onChanged: (value) {
@@ -438,7 +475,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           },
         ),
         CheckboxListTile(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text('King British'),
           value: widget.selectedOptions[1],
           onChanged: (value) {
@@ -446,7 +483,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           },
         ),
         CheckboxListTile(
-          activeColor: const Color(0xff3F0D84),
+          activeColor: AppColors.primary,
           title: const Text('Tetra'),
           value: widget.selectedOptions[2],
           onChanged: (value) {
@@ -462,7 +499,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
       children: [
         Expanded(
           child: RadioListTile<String>(
-            activeColor: const Color(0xff3F0D84),
+            activeColor: AppColors.primary,
             title: const Text(
               'Highest',
               style: TextStyle(
@@ -479,7 +516,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
         ),
         Expanded(
           child: RadioListTile<String>(
-            activeColor: const Color(0xff3F0D84),
+            activeColor: AppColors.primary,
             title: const Text(
               'Lowest',
               style: TextStyle(

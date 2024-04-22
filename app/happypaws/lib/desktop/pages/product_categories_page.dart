@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';

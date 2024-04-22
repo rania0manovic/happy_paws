@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetAllergiesService.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/input_field.dart';

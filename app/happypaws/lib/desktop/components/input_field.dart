@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 
 class InputField extends StatefulWidget {
   final String label;

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 
 @RoutePage()
 class RegisterAddPetsPage extends StatefulWidget {
@@ -35,7 +36,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                 "Happy paws",
                 style: TextStyle(
                   fontSize: 35,
-                  color: Color(0xff3F0D84),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -83,7 +84,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                             height: 50,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: const Color(0xff3F0D84)),
+                                color: AppColors.primary,),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -167,7 +168,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                               height: 50,
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: const Color(0xff3F0D84)),
+                                  color: AppColors.primary,),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -201,7 +202,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                                 'assets/icons/long_right_arrow.svg',
                                 height: 50,
                                 width: 50,
-                                color: Color(0xff3F0D84),
+                                color: AppColors.primary,
                               ),
                             )
                           ],
@@ -240,7 +241,7 @@ class _RegisterAddPetsPageState extends State<RegisterAddPetsPage> {
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color: Color(0xff3F0D84), 
+                      color: AppColors.primary, 
                       width: 5.0, 
                     ),
                     borderRadius: BorderRadius.circular(10))),

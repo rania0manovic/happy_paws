@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 80, right: 80, top: 30),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: Text(
                 "Please fill out the form below with correct information to login",
                 textAlign: TextAlign.center,
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 60, right: 60, top: 12),
+                padding: const EdgeInsets.only(left: 20, right:20, top: 20),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Column(
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
             GestureDetector(
               onTap: () => context.router.push(const RegisterRoute()),
               child: Padding(
-                padding: const EdgeInsets.only(left: 80, right: 80, top: 30),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Text(
                   "Not a member yet? Register here.",
                   textAlign: TextAlign.center,

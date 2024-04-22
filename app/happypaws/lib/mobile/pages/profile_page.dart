@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -114,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 50,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: const Color(0xff3F0D84)),
+              color:  AppColors.primary),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -175,7 +176,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Text(
                   formatedCardNumber!= Null ? formatedCardNumber : '',
-                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w600),
+                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
                 )
               ],
             ),

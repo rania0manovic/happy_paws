@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:happypaws/common/services/PetsService.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -92,7 +93,7 @@ class _MyPetsPageState extends State<MyPetsPage> {
                                     Text(
                                       pet['name'],
                                       style: const TextStyle(
-                                          color: Color(0xff3F0D84),
+                                          color: AppColors.primary,
                                           fontSize: 20,
                                           fontWeight: FontWeight.w700),
                                     ),
@@ -127,7 +128,7 @@ class _MyPetsPageState extends State<MyPetsPage> {
             width: 54,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
-                color: const Color(0xff3F0D84)),
+                color:  AppColors.primary),
             child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: SvgPicture.asset(

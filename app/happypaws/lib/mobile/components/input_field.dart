@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
 
 class InputField extends StatefulWidget {

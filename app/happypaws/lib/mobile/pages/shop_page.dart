@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 
@@ -163,8 +163,8 @@ class _ShopPageState extends State<ShopPage> {
             for (var product in bestsellers!)
               GestureDetector(
                 onTap: () => context.router.push(ProductDetailsRoute(productId: product['id'])),
-                child: SizedBox(
-                  width: 160,
+                child: FractionallySizedBox(
+                  widthFactor: 0.45,
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [

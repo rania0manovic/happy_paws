@@ -1,16 +1,21 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:happypaws/common/services/ProductCategoriesService.dart';
+import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
+import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import '../dialogs/add_edit_product_dialog.dart';
 
 @RoutePage()
-class ProductsPage extends StatefulWidget {
+class ProductsPage extends StatefulHookWidget {
   const ProductsPage({super.key});
 
   @override
@@ -19,18 +24,72 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   Map<String, dynamic>? products;
+  late ScrollController _scrollController;
+  late int currentPage = 1;
+  bool isLoadingMore = false;
+  Map<String, dynamic>? productCategories;
+  List<dynamic>? productSubcategories;
+  String? selectedCategory;
+  String? selectedSubCategory;
+  Map<String, dynamic> params = {};
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
     fetchData();
   }
 
-  Future<void> fetchData() async {
-    var responseProducts = await ProductsService().getPaged("", 1, 999);
+  Future<void> fetchProducts() async {
+    var responseProducts = await ProductsService()
+        .getPaged("", currentPage, 20, searchObject: params);
     if (responseProducts.statusCode == 200) {
       setState(() {
-        products = responseProducts.data;
+        currentPage++;
+        if (products == null) {
+          products = responseProducts.data;
+        } else {
+          products!['items'].addAll(responseProducts.data['items']);
+        }
+      });
+    }
+  }
+
+  Future<void> fetchData() async {
+    var responseCategories =
+        await ProductCategoriesService().getPaged("", 1, 999);
+    if (responseCategories.statusCode == 200) {
+      setState(() {
+        productCategories = responseCategories.data;
+      });
+    }
+  }
+
+  Future<void> fetchSubcategories(String? newValue) async {
+    var responseSubcategories =
+        await ProductCategorySubcategoriesService().getSubcategories(newValue);
+    if (responseSubcategories.statusCode == 200) {
+      setState(() {
+        productSubcategories = responseSubcategories.data;
+      });
+    }
+  }
+
+  Future<void> _scrollListener() async {
+    double currentPosition = _scrollController.position.pixels;
+    double maxScrollExtent = _scrollController.position.maxScrollExtent;
+    double distanceFromBottom = maxScrollExtent - currentPosition;
+
+    if (distanceFromBottom <= 10 &&
+        currentPage <= products!['pageCount'] &&
+        !isLoadingMore) {
+      setState(() {
+        isLoadingMore = true;
+      });
+      await fetchProducts();
+      setState(() {
+        isLoadingMore = false;
       });
     }
   }
@@ -69,6 +128,10 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   Widget build(BuildContext context) {
+    useEffect(() {
+      fetchProducts();
+      return null;
+    }, [params['categoryId']]);
     return Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 0),
         child: Card(
@@ -80,18 +143,47 @@ class _ProductsPageState extends State<ProductsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const Text(
                       'Product details',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600
-                      ),
+                          fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
+                    const Spacer(),
+                    if (productCategories != null)
+                      SizedBox(
+                        width: 200,
+                        child: ApiDataDropdownMenu(
+                          items: productCategories!['items'],
+                          onChanged: (String? newValue) async {
+                            // await fetchSubcategories(newValue);
+                            setState(() {
+                              currentPage = 1;
+                              products = null;
+                              selectedCategory = newValue;
+                              params['categoryId'] = newValue;
+                            });
+                          },
+                          selectedOption: selectedCategory,
+                          hint: "Select category...",
+                        ),
+                      ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    // ApiDataDropdownMenu(items:   productSubcategories == null
+                    //         ? List.empty()
+                    //         : productSubcategories!, label: "Subcategory", onChanged:  (String? newValue) => setState(() {
+                    //           selectedSubCategory = newValue;
+
+                    //         }), selectedOption: selectedSubCategory),
                     PrimaryIconButton(
                         onPressed: () => showAddEditProductMenu(context),
-                        icon: const Icon(Icons.add, color: Colors.white,),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
                         label: "Add new product"),
                   ],
                 ),
@@ -108,19 +200,22 @@ class _ProductsPageState extends State<ProductsPage> {
                           ))
                         : Expanded(
                             child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical, child: table()),
+                                controller: _scrollController,
+                                scrollDirection: Axis.vertical,
+                                child: table()),
                           ))
                     : const Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
-                            child: Spinner()))
+                            child: Spinner())),
+                if (isLoadingMore) const Spinner()
               ],
             ),
           ),
         ));
   }
 
-  Table table() {
+  dynamic table() {
     return Table(
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder(
@@ -157,7 +252,7 @@ class _ProductsPageState extends State<ProductsPage> {
               tableCell(product['inStock'].toString()),
               tableActions(product)
             ],
-          )
+          ),
       ],
     );
   }

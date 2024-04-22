@@ -4,7 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/EnumsService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';

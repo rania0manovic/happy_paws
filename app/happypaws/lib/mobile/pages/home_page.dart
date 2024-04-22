@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -12,6 +12,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  @override void initState() {
+    super.initState();
+    // NotificationService().showNotificationAndroid("Title", "Value");
+  }
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -25,7 +30,7 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ),
-        _cheritySection(),
+        _cheritySection(context),
         Column(
           children: [
             Padding(
@@ -60,7 +65,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-Column _cheritySection() {
+Column _cheritySection(BuildContext context) {
   return Column(
     children: [
       Padding(
@@ -75,35 +80,7 @@ Column _cheritySection() {
               image: AssetImage("assets/images/charity.jpg"),
               fit: BoxFit.contain,
             ),
-            Container(
-              width: 180,
-              height: 40,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xff3F0D84)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 0, left: 0),
-                    child: Text(
-                      "Donate now",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white),
-                    ),
-                  ),
-                  SvgPicture.asset(
-                    "assets/icons/long_right_arrow.svg",
-                    height: 40,
-                    width: 40,
-                    color: Colors.white,
-                  )
-                ],
-              ),
-            )
+           PrimaryButton(onPressed: (){}, label: " Donate now ➜ ", fontSize: 18,)
           ],
         ),
       ),

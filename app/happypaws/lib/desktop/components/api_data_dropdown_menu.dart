@@ -3,19 +3,21 @@ import 'package:happypaws/common/components/text/LightText.dart';
 
 class ApiDataDropdownMenu extends StatefulWidget {
   final dynamic items;
-  final String label;
+  final String? label;
   final void Function(String? newValue) onChanged;
   final String? selectedOption;
+  final String hint;
   final bool isDisabled;
   final String? propKey;
   const ApiDataDropdownMenu(
       {Key? key,
       required this.items,
-      required this.label,
+      this.label,
       required this.onChanged,
       required this.selectedOption,
       this.isDisabled = false,
-      this.propKey = 'name'})
+      this.propKey = 'name',
+      this.hint="Select..."})
       : super(key: key);
 
   @override
@@ -29,16 +31,21 @@ class _ApiDataDropdownMenuState extends State<ApiDataDropdownMenu> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: widget.label,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
+        if (widget.label != null)
+          Column(
+            children: [
+              const SizedBox(
+                height: 16,
+              ),
+              LightText(
+                label: widget.label!,
+                fontSize: 14,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
         Container(
           height: 40,
           width: double.infinity,
@@ -50,7 +57,7 @@ class _ApiDataDropdownMenuState extends State<ApiDataDropdownMenu> {
             padding: EdgeInsets.symmetric(horizontal: 10),
             isExpanded: true,
             value: widget.selectedOption,
-            hint: const Text('Select'),
+            hint:  Text(widget.hint),
             underline: Container(),
             borderRadius: BorderRadius.circular(10),
             icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),

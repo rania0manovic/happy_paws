@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:happypaws/common/utilities/Toast.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -78,50 +78,50 @@ class _ClientLayoutState extends State<ClientLayout> {
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/home.svg",
-            height: 40,
-            width: 40,
+            height: 30,
+            width: 30,
             color: tabsRouter.activeIndex == 0
-                ? const Color(0xff3F0D84)
+                ? AppColors.primary
                 : Colors.grey,
           ),
           title: const Text("Home"),
-          selectedColor: const Color(0xff3F0D84),
+          selectedColor: AppColors.primary
         ),
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/vaccines.svg",
-            height: 40,
-            width: 40,
+            height: 30,
+            width: 30,
             color: tabsRouter.activeIndex == 1
-                ? const Color(0xff3F0D84)
+                ? AppColors.primary
                 : Colors.grey,
           ),
           title: const Text("Clinic"),
-          selectedColor: const Color(0xff3F0D84),
+          selectedColor: AppColors.primary
         ),
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/storefront.svg",
-            height: 40,
-            width: 40,
+            height: 30,
+            width: 30,
             color: tabsRouter.activeIndex == 2
-                ? const Color(0xff3F0D84)
+                ? AppColors.primary
                 : Colors.grey,
           ),
           title: const Text("Shop"),
-          selectedColor: const Color(0xff3F0D84),
+          selectedColor: AppColors.primary
         ),
         SalomonBottomBarItem(
           icon: SvgPicture.asset(
             "assets/icons/account.svg",
-            height: 40,
-            width: 40,
+            height: 30,
+            width: 30,
             color: tabsRouter.activeIndex == 3
-                ? const Color(0xff3F0D84)
+                ? AppColors.primary
                 : Colors.grey,
           ),
           title: const Text("Profile"),
-          selectedColor: const Color(0xff3F0D84),
+          selectedColor: AppColors.primary
         ),
       ],
     );
@@ -134,7 +134,7 @@ class _ClientLayoutState extends State<ClientLayout> {
         Visibility(
             visible: tabsRouter.activeIndex == 2,
             child: SizedBox(
-              width: 150,
+              width: 140,
               child: TextField(
                 onChanged: (value) {
                   setState(() {
@@ -148,14 +148,9 @@ class _ClientLayoutState extends State<ClientLayout> {
                         fontWeight: FontWeight.w500),
                     suffixIcon: GestureDetector(
                       onTap: () => search(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SvgPicture.asset(
-                          "assets/icons/search.svg",
-                          height: 20,
-                          width: 20,
-                          color: const Color(0xff3F0D84),
-                        ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(Icons.search, size: 25, color: AppColors.primary,)
                       ),
                     )),
               ),
@@ -164,7 +159,6 @@ class _ClientLayoutState extends State<ClientLayout> {
           visible: tabsRouter.activeIndex == 2,
           child: GestureDetector(
             onTap: () {
-              print(context.router.current.path);
               if (context.router.current.name == 'cart') return;
               context.router.push(const CartRoute());
             },
@@ -172,9 +166,9 @@ class _ClientLayoutState extends State<ClientLayout> {
               padding: const EdgeInsets.all(8.0),
               child: SvgPicture.asset(
                 "assets/icons/cart.svg",
-                height: 35,
-                width: 35,
-                color: const Color(0xff3F0D84),
+                height: 25,
+                width: 25,
+                color: AppColors.primary
               ),
             ),
           ),
@@ -187,7 +181,7 @@ class _ClientLayoutState extends State<ClientLayout> {
             },
             child: const Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.favorite, size: 35, color: AppColors.primary,)
+              child: Icon(Icons.favorite, size: 25, color: AppColors.primary,)
             ),
           ),
         ),
@@ -197,8 +191,8 @@ class _ClientLayoutState extends State<ClientLayout> {
             padding: const EdgeInsets.all(8.0),
             child: SvgPicture.asset(
               "assets/icons/notifications.svg",
-              height: 35,
-              width: 35,
+              height: 25,
+              width: 25,
               color: Colors.grey,
             ),
           ),
@@ -215,8 +209,8 @@ class _ClientLayoutState extends State<ClientLayout> {
                 ),
                 SvgPicture.asset(
                   "assets/icons/phone.svg",
-                  height: 24,
-                  width: 24,
+                  height: 25,
+                  width: 25,
                   color: const Color(0xffBA1A36),
                 )
               ],
@@ -233,9 +227,10 @@ class _ClientLayoutState extends State<ClientLayout> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 150,
+          padding: EdgeInsets.only(left: 10),
+          width: 120,
           child: const Image(
-            image: AssetImage("assets/images/logo_1.png"),
+            image: AssetImage("assets/images/logo_1.jpg"),
             fit: BoxFit.contain,
           ),
         ),
