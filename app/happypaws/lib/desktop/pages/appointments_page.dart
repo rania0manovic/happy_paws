@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
@@ -92,112 +93,115 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             Expanded(
                 child: SizedBox(
                     height: MediaQuery.of(context).size.height,
-                    child: Card(
-                      color: Colors.white,
-                      surfaceTintColor: Colors.transparent,
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            width: double.infinity,
-                            height: 50,
-                            child: const Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                "New appointments",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700),
+                    child: SingleChildScrollView(
+                      child: Card(
+                        color: Colors.white,
+                        surfaceTintColor: Colors.transparent,
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              width: double.infinity,
+                              height: 50,
+                              child: const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "New appointments",
+                                  style: TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.w700),
+                                ),
                               ),
                             ),
-                          ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: appointments!['totalCount'],
-                            itemBuilder: (context, index) {
-                              var appointment = appointments!['items'][index];
-                              return GestureDetector(
-                                onTap: () {
-                                  if (appointment['startDateTime'] == null)
-                                    return;
-                                  showAppointmentDetails(context, appointment);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: appointment['startDateTime'] == null
-                                        ? AppColors.dimWhite
-                                        : Colors.transparent,
-                                    border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300),
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade300),
+                            ListView.builder(
+                              controller: ScrollController(),
+                              shrinkWrap: true,
+                              itemCount: appointments!['totalCount'],
+                              itemBuilder: (context, index) {
+                                var appointment = appointments!['items'][index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (appointment['startDateTime'] == null)
+                                      return;
+                                    showAppointmentDetails(context, appointment);
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: appointment['startDateTime'] == null
+                                          ? AppColors.dimWhite
+                                          : Colors.transparent,
+                                      border: Border(
+                                        top: BorderSide(
+                                            color: Colors.grey.shade300),
+                                        bottom: BorderSide(
+                                            color: Colors.grey.shade300),
+                                      ),
                                     ),
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  width: double.infinity,
-                                  height: 100,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        appointment['pet']['owner']['fullName'],
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
+                                    padding: const EdgeInsets.all(10),
+                                    width: double.infinity,
+                                    height: 100,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          appointment['pet']['owner']['fullName'],
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                         ),
-                                      ),
-                                      Text(
-                                        DateFormat('dd/MM/yyyy HH:mm').format(
-                                          DateTime.parse(
-                                              appointment['createdAt']),
+                                        Text(
+                                          DateFormat('dd/MM/yyyy HH:mm').format(
+                                            DateTime.parse(
+                                                appointment['createdAt']),
+                                          ),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                "Reason: ${appointment['reason']}",
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  "Reason: ${appointment['reason']}",
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                            appointment['startDateTime'] == null
-                                                ? PrimaryButton(
-                                                    onPressed: () =>
-                                                        showAppointmentDetails(
-                                                            context,
-                                                            appointment),
-                                                    label: "View",
-                                                    width: 80,
-                                                  )
-                                                : const Align(
-                                                    alignment:
-                                                        Alignment.bottomRight,
-                                                    child: LightText(
-                                                      label:
-                                                          "Appointment booked",
-                                                      color: AppColors.primary,
-                                                      fontSize: 14,
+                                              appointment['startDateTime'] == null
+                                                  ? PrimaryButton(
+                                                      onPressed: () =>
+                                                          showAppointmentDetails(
+                                                              context,
+                                                              appointment),
+                                                      label: "View",
+                                                      width: 80,
+                                                    )
+                                                  : const Align(
+                                                      alignment:
+                                                          Alignment.bottomRight,
+                                                      child: LightText(
+                                                        label:
+                                                            "Appointment booked",
+                                                        color: AppColors.primary,
+                                                        fontSize: 14,
+                                                      ),
                                                     ),
-                                                  ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          )
-                        ],
+                                );
+                              },
+                            )
+                          ],
+                        ),
                       ),
                     ))),
             const SizedBox(

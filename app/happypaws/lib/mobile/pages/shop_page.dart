@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -203,16 +204,17 @@ class _ShopPageState extends State<ShopPage> {
         top: 10,
         bottom: 10,
         left: 14,
+        right: 14
       ),
-      color: const Color(0xffFAFAFC),
+      color: Color.fromARGB(255, 255, 255, 255),
       child: Scrollbar(
           thickness: 12,
           radius: const Radius.circular(10),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 10, bottom: 20),
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
             scrollDirection: Axis.horizontal,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Wrap(
+              spacing: 10,
               children: [
                 if (categories != null)
                   for (var category in categories!['items'])
@@ -223,27 +225,27 @@ class _ShopPageState extends State<ShopPage> {
                             categoryName: category['name'],
                             categoryPhoto: category['photo']['data']))
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.memory(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          ClipOval(
+                            child: Image.memory(
                               base64
                                   .decode(category['photo']['data'].toString()),
-                              height: 128,
+                              height: 120,
+                                  fit: BoxFit.cover,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                category['name'],
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                    fontSize: 25, fontWeight: FontWeight.w700),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              category['name'],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.w700),
+                            ),
+                          )
+                        ],
                       ),
                     )
                 else

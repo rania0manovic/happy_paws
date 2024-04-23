@@ -35,7 +35,8 @@ class _ClinicPageState extends State<ClinicPage> {
         var appointmentsResponse = await AppointmentsService().getPaged(
             '', 1, 2, searchObject: {
           'userId': user['Id'],
-          'minDateTime': DateTime.now()
+          'minDateTime': DateTime.now(),
+          'isCancelled' : false
         });
         var medicationsResponse = await PetMedicationsService().getPaged(
             'endpoint', 1, 999, searchObject: {

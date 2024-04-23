@@ -46,18 +46,18 @@ class _HomePageState extends State<HomePage> {
                   "At our establishment, we pride ourselves on offering an unparalleled array of pet essentials, ensuring that every need of your beloved companion is met with utmost care and dedication. Our esteemed shop proudly showcases an exquisite selection of top-quality nourishment, surpassing what ordinary stores can provide. Moreover, our exceptional team comprises meticulously handpicked doctors who possess extensive expertise and years of invaluable experience in the realm of animal care.",
             ),
             const QuestionSectionItem(
-                title: "Can I make a reservation online?", content: ""),
+                title: "Can I book an appointment online?", content: "Absolutely! Booking an appointment online is not just convenient, it's a leap forward in efficiency and accessibility. With just a few clicks or taps, you can secure your spot without the hassle of waiting in queues or making multiple phone calls."),
             const QuestionSectionItem(
-                title: "Can I order products online?", content: ""),
+                title: "Can I order products online?", content: "Of course! Ordering products online brings a world of possibilities right to your fingertips. It's an incredibly convenient way to shop, allowing you to explore a vast array of products without ever leaving your home."),
             const QuestionSectionItem(
                 title:
                     "What if the date of the appointment isn’t convenient for me?",
-                content: ""),
+                content: " Before making the appointment, you can always leave a note in the 'Notes' field specifying what time would be more suitable for you. This way, the scheduling team can take your preferences into consideration when arranging your appointment.However, if you've already received the appointment date and it still isn't convenient for you, there's no need to stress. You can simply cancel the appointment and try to book it again for another day.Remember, your comfort and convenience are important, and scheduling should be a stress-free process. So feel free to communicate your preferences and make changes as needed to ensure your appointment fits seamlessly into your busy life."),
             const QuestionSectionItem(
                 title: "What if my pet needs assistance urgently?",
-                content: ""),
+                content: "In our clinic section, we have an emergency call button readily available. With just a tap, you can connect directly with our clinic, ensuring swift and immediate assistance for your little friend. Our dedicated team is always prepared to provide prompt and compassionate care, ensuring the well-being of your furry friend is our top priority."),
             const QuestionSectionItem(
-                title: "What is MyPaw card used for?", content: "")
+                title: "What is MyPaw card used for?", content: "Essentially functioning as an ID card for every pet parent, it helps our team identify you more easily, streamlining the process and ensuring a smooth experience for both you and your furry companion.")
           ],
         )
       ]),

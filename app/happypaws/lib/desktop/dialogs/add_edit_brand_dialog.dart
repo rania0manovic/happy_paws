@@ -155,7 +155,6 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor:  AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

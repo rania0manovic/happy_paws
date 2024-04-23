@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
@@ -68,8 +69,10 @@ class _ShopCategorySubcategoriesPageState
             height: 14,
           ),
           Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Image.memory(base64.decode(widget.categoryPhoto.toString()),
-                height: 55),
+            ClipOval(
+              child: Image.memory(base64.decode(widget.categoryPhoto.toString()),
+                  height: 55, fit: BoxFit.cover,),
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: Text(
@@ -120,8 +123,8 @@ class _ShopCategorySubcategoriesPageState
                       child: Text(
                         subcategory['productSubcategory']['name'],
                         style: const TextStyle(
-                          fontWeight: FontWeight.w500,
                           fontSize: 20,
+                          fontWeight: FontWeight.w600
                         ),
                       ),
                     ),

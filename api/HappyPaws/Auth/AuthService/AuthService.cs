@@ -32,7 +32,7 @@ namespace HappyPaws.Api.Auth.AuthService
         private readonly IEmailService _emailService;
         protected readonly IUnitOfWork UnitOfWork;
         private readonly IEmailVerificationRequestsService _emailVerificationRequestsService;
-
+        static readonly Random random = new();
 
         public AuthService(IUsersService usersService, IOptions<JwtTokenConfig> jwtTokenConfig, ICryptoService cryptoService, IMapper mapper, IEmailVerificationRequestsService emailVerificationRequestsService, IEmailService emailService, IUnitOfWork unitOfWork)
         {
@@ -115,7 +115,6 @@ namespace HappyPaws.Api.Auth.AuthService
 
         static long CreateCardNumber()
         {
-            Random random = new();
             double randomDouble = random.NextDouble();
             long result = (long)(randomDouble * (9999999999999999 - 1000000000000000) + 1000000000000000);
 

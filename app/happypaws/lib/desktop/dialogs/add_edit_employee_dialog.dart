@@ -20,7 +20,9 @@ class AddEditEmployeeMenu extends StatefulWidget {
   const AddEditEmployeeMenu({
     Key? key,
     required this.onClose,
-    this.data, required this.onAdd, required this.onEdit,
+    this.data,
+    required this.onAdd,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -249,36 +251,34 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
             height: 40,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
+                color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedRole,
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedRole = newValue!;
-                      data['employeePosition'] = newValue;
-                    });
-                  },
-                  items: [
-                    for (var item in employeePositions!)
-                      DropdownMenuItem<String>(
-                        value: item['value'].toString(),
-                        child: Text(item['value'][0] +
-                            item['value']
-                                .split(RegExp(r'(?=[A-Z])'))
-                                .join(' ')
-                                .toLowerCase()
-                                .substring(1)),
-                      ),
-                  ],
-                ),
+              child: DropdownButton<String>(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                isExpanded: true,
+                value: selectedRole,
+                underline: Container(),
+                borderRadius: BorderRadius.circular(10),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedRole = newValue!;
+                    data['employeePosition'] = newValue;
+                  });
+                },
+                items: [
+                  for (var item in employeePositions!)
+                    DropdownMenuItem<String>(
+                      value: item['value'].toString(),
+                      child: Text(item['value'][0] +
+                          item['value']
+                              .split(RegExp(r'(?=[A-Z])'))
+                              .join(' ')
+                              .toLowerCase()
+                              .substring(1)),
+                    ),
+                ],
               ),
             )),
       ],
@@ -304,36 +304,34 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
             height: 40,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
+                color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedGender,
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedGender = newValue!;
-                      data['gender'] = newValue;
-                    });
-                  },
-                  items: <String>[
-                    'Unknown',
-                    'Female',
-                    'Male',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500)),
-                    );
-                  }).toList(),
-                ),
+              child: DropdownButton<String>(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                isExpanded: true,
+                value: selectedGender,
+                underline: Container(),
+                borderRadius: BorderRadius.circular(10),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedGender = newValue!;
+                    data['gender'] = newValue;
+                  });
+                },
+                items: <String>[
+                  'Unknown',
+                  'Female',
+                  'Male',
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value,
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500)),
+                  );
+                }).toList(),
               ),
             )),
       ],
@@ -375,7 +373,6 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor: AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

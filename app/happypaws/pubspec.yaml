@@ -54,6 +54,7 @@ dependencies:
   dio: ^5.4.1
   flutter_paypal_payment: ^1.0.6
   flutter_local_notifications: ^17.0.1
+  async: ^2.11.0
 
 dev_dependencies:
   auto_route_generator: ^7.1.1

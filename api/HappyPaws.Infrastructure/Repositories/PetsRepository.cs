@@ -25,7 +25,9 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x => x.PetAllergies)
                 .Include(x => x.PetMedications)
                 .Include(x => x.Owner)
-                .Where(x => searchObject.UserId == null || x.OwnerId == searchObject.UserId).ToPagedListAsync(searchObject, cancellationToken);
+                .Where(x => (searchObject.UserId == null || x.OwnerId == searchObject.UserId) &&
+                (searchObject.MyPawNumber == null || x.Owner.MyPawNumber.StartsWith(searchObject.MyPawNumber))
+                ).ToPagedListAsync(searchObject, cancellationToken);
         }
         public override async Task<Pet?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {

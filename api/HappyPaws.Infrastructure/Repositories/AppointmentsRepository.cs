@@ -23,6 +23,7 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x=>x.Employee)
                 .Where(x => (searchObject.UserId == null || x.Pet.OwnerId == searchObject.UserId) &&
                 (searchObject.MinDateTime == null || x.StartDateTime> searchObject.MinDateTime) &&
+                (searchObject.IsCancelled == null || x.IsCancelled==searchObject.IsCancelled) &&
                 (searchObject.Date == null || x.StartDateTime.Value.Date == searchObject.Date.Value.Date))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToPagedListAsync(searchObject, cancellationToken);

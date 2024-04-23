@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
@@ -188,28 +190,26 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
             height: 50,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
+                color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedOption,
-                  hint: const Text('Select'),
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: isDisabeled ? null : onChanged,
-                  disabledHint: const Text("Select category first..."),
-                  items: [
-                    for (var item in items)
-                      DropdownMenuItem<String>(
-                        value: item['id'].toString(),
-                        child: Text(item['name']),
-                      ),
-                  ],
-                ),
+              child: DropdownButton<String>(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                isExpanded: true,
+                value: selectedOption,
+                hint: const Text('Select'),
+                underline: Container(),
+                borderRadius: BorderRadius.circular(10),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                onChanged: isDisabeled ? null : onChanged,
+                disabledHint: const Text("Select category first..."),
+                items: [
+                  for (var item in items)
+                    DropdownMenuItem<String>(
+                      value: item['id'].toString(),
+                      child: Text(item['name']),
+                    ),
+                ],
               ),
             )),
       ],
@@ -249,7 +249,6 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor: AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

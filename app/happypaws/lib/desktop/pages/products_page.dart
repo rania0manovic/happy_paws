@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -32,6 +33,7 @@ class _ProductsPageState extends State<ProductsPage> {
   String? selectedCategory;
   String? selectedSubCategory;
   Map<String, dynamic> params = {};
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -54,6 +56,17 @@ class _ProductsPageState extends State<ProductsPage> {
         }
       });
     }
+  }
+
+  onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () {
+      setState(() {
+        products = null;
+        currentPage=1;
+      });
+      fetchProducts();
+    });
   }
 
   Future<void> fetchData() async {
@@ -151,6 +164,34 @@ class _ProductsPageState extends State<ProductsPage> {
                           fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
+                   
+                    SizedBox(
+                      width: 250,
+                      height:50,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['productOrBrandName'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by brand or name...",
+                            labelStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
+                      ),
+                    ),
+                     const SizedBox(
+                      width: 20,
+                    ),
                     if (productCategories != null)
                       SizedBox(
                         width: 200,
@@ -172,12 +213,6 @@ class _ProductsPageState extends State<ProductsPage> {
                     const SizedBox(
                       width: 20,
                     ),
-                    // ApiDataDropdownMenu(items:   productSubcategories == null
-                    //         ? List.empty()
-                    //         : productSubcategories!, label: "Subcategory", onChanged:  (String? newValue) => setState(() {
-                    //           selectedSubCategory = newValue;
-
-                    //         }), selectedOption: selectedSubCategory),
                     PrimaryIconButton(
                         onPressed: () => showAddEditProductMenu(context),
                         icon: const Icon(

@@ -23,7 +23,6 @@ namespace HappyPaws.Api.Controllers
         {
             try
             {
-               
                 var response = await Service.GetSubcategoryIdsForCategoryAsync(categoryId, cancellationToken);
                 return Ok(response);
             }

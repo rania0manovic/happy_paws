@@ -10,6 +10,7 @@ namespace HappyPaws.Core.SearchObjects
     {
         public int? EmployeeId { get; set; }
         public int? AppointmentId { get; set; }
+        public bool? IsCancelled { get; set; }
         public DateTime? Date { get; set; }
         public DateTime? MinDateTime { get; set; }
         public DateTime? StartDateTime { get; set; }

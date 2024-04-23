@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,6 +53,9 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
     try {
       final response = await ProductSubcategoriesService().post("", data);
       if (response.statusCode == 200) {
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have succesfully added a new subcategory. Keep in mind that it may take up to 24 hours for changes to take place.");
         widget.onClose();
         widget.fetchData();
       } else {
@@ -66,6 +70,9 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
     try {
       final response = await ProductSubcategoriesService().put("", widget.data);
       if (response.statusCode == 200) {
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have succesfully updated subcategory information. Keep in mind that it may take up to 24 hours for changes to take place.");
         widget.onClose();
         widget.fetchData();
       } else {}
@@ -136,7 +143,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                               width: double.infinity,
                               height: 200,
                               decoration: BoxDecoration(
-                                  color: AppColors.dimWhite,
+                                  color: Colors.grey.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(10)),
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
@@ -213,14 +220,13 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
               });
             },
             style: const TextStyle(
-                color:  Colors.black,
-              ),
+              color: Colors.black,
+            ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor:  AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

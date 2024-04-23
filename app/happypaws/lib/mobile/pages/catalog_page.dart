@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
@@ -124,7 +125,16 @@ class _CatalogPageState extends State<CatalogPage> {
                       header(context),
                     ],
                   ),
-                if (products != null) productsSection(),
+                if (products != null) 
+                if(products!['items'].isNotEmpty)
+                productsSection()
+                else 
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top:100.0),
+                    child: Text("We found no active products ˙◠˙", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w500),),
+                  ),
+                )
               ]),
         ),
       );
@@ -262,7 +272,7 @@ class _CatalogPageState extends State<CatalogPage> {
 
   Row header(BuildContext context) {
     return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      Image.memory(base64.decode(widget.categoryPhoto.toString()), height: 55),
+      ClipOval(child: Image.memory(base64.decode(widget.categoryPhoto.toString()), height: 55,fit: BoxFit.cover,)),
       Padding(
         padding: const EdgeInsets.only(left: 10),
         child: Text(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -21,6 +22,18 @@ class PatientsPage extends StatefulWidget {
 
 class _PatientsPageState extends State<PatientsPage> {
   Map<String, dynamic>? patients;
+  Map<String, dynamic> params = {};
+  Timer? _debounce;
+
+  onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () {
+      setState(() {
+        patients=null;
+      });
+      fetchData();
+    });
+  }
 
   @override
   void initState() {
@@ -29,7 +42,7 @@ class _PatientsPageState extends State<PatientsPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await PetsService().getPaged("", 1, 999);
+    var response = await PetsService().getPaged("", 1, 999, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         patients = response.data;
@@ -101,6 +114,36 @@ class _PatientsPageState extends State<PatientsPage> {
                       'Patient details',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 250,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['myPawNumber'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Enter MyPaw number...",
+                            labelStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: GestureDetector(
+                              onTap: () => null,
+                              child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.search,
+                                    size: 25,
+                                    color: AppColors.primary,
+                                  )),
+                            )),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditPatientMenu(context),

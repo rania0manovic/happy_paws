@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:image_picker/image_picker.dart';
@@ -46,7 +47,8 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
       isCheckedList = List.generate(
           widget.subcategories!['totalCount'],
           (index) => widget.data != null && widget.listIds != null
-              ? widget.listIds!.contains(widget.subcategories!['items'][index]['id'])
+              ? widget.listIds!
+                  .contains(widget.subcategories!['items'][index]['id'])
               : false);
       listIds = [...widget.listIds!];
     }
@@ -70,6 +72,9 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
       data['addedIds'] = listIds;
       final response = await ProductCategoriesService().post("", data);
       if (response.statusCode == 200) {
+         if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have succesfully added a new category. Keep in mind that it may take up to 24 hours for changes to take place.");
         widget.onClose();
         widget.fetchData();
       } else {
@@ -93,6 +98,9 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
       widget.data!['removedIds'] = removedValues;
       final response = await ProductCategoriesService().put("", widget.data);
       if (response.statusCode == 200) {
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have succesfully updated category information. Keep in mind that it may take up to 24 hours for changes to take place.");
         widget.onClose();
         widget.fetchData();
       } else {}
@@ -170,7 +178,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                     width: double.infinity,
                                     height: 150,
                                     decoration: BoxDecoration(
-                                        color: AppColors.dimWhite,
+                                        color: Colors.grey.withOpacity(0.1),
                                         borderRadius:
                                             BorderRadius.circular(10)),
                                     child: Padding(
@@ -218,8 +226,7 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Checkbox(
-                                                activeColor:
-                                                    AppColors.primary,
+                                                activeColor: AppColors.primary,
                                                 value: isCheckedList[index],
                                                 onChanged: (bool? value) {
                                                   setState(() {
@@ -227,20 +234,23 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                                                       isCheckedList[index] =
                                                           value!;
                                                       if (value) {
-                                                        listIds.add(widget
-                                                                .subcategories!['items'][
-                                                            index]['id']);
+                                                        listIds.add(
+                                                            widget.subcategories![
+                                                                    'items']
+                                                                [index]['id']);
                                                       } else {
-                                                        listIds.remove(widget
-                                                                .subcategories!['items'][
-                                                            index]['id']);
+                                                        listIds.remove(
+                                                            widget.subcategories![
+                                                                    'items']
+                                                                [index]['id']);
                                                       }
                                                     });
                                                   });
                                                 },
                                               ),
-                                              Text(widget.subcategories!['items'][index]
-                                                  ['name']),
+                                              Text(
+                                                  widget.subcategories!['items']
+                                                      [index]['name']),
                                             ],
                                           ),
                                         ),
@@ -300,21 +310,19 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
               });
             },
             style: const TextStyle(
-                color:  Colors.black,
-                ),
+              color: Colors.black,
+            ),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
                 contentPadding:
                     const EdgeInsets.only(bottom: 5, left: 10, right: 10),
                 filled: true,
-                fillColor:  AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
                     borderSide: const BorderSide(
-                      color:
-                          AppColors.primary,
+                      color: AppColors.primary,
                       width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),
