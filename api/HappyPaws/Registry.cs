@@ -2,6 +2,7 @@
 using HappyPaws.Api.Auth.AuthService;
 using HappyPaws.Api.Auth.CurrentUserClaims;
 using HappyPaws.Api.Config;
+using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application.Mappings;
 using HappyPaws.Common.Services.AuthService;
 using HappyPaws.Common.Services.CryptoService;
@@ -114,7 +115,8 @@ namespace HappyPaws.Api
             services.AddScoped<IEnumsService, EnumsService>();
             services.AddHttpContextAccessor().AddScoped<CurrentUser>().AddSingleton<ClaimsPrincipalAccessor>();
             services.AddMemoryCache();
-
+            services.AddSignalR();
+            services.AddScoped<MessageHub>();
         }
 
     }

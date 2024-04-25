@@ -23,6 +23,11 @@ namespace HappyPaws.Application.Services
             return Mapper.Map<UserSensitiveDto>(user);
         }
 
+        public async Task<string?> GetConnectionId(int userId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.GetConnectionId(userId, cancellationToken);
+        }
+
         public override async Task<UserDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken = default)
         {
             var user = await CurrentRepository.GetByIdAsync(dto.Id, cancellationToken) ?? throw new Exception("User not found");
@@ -56,7 +61,7 @@ namespace HappyPaws.Application.Services
             Mapper.Map(dto, user);
             user.IsVerified = true;
             CurrentRepository.Update(user);
-
+            await UnitOfWork.SaveChangesAsync(cancellationToken);
             return Mapper.Map<UserDto>(user);
         }
     }

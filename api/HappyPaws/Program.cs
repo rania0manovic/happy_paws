@@ -1,5 +1,6 @@
 using HappyPaws.Api;
 using HappyPaws.Api.Config;
+using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application;
 using HappyPaws.Infrastructure;
 using System.Text.Json.Serialization;
@@ -13,7 +14,6 @@ builder.Services.AddValidators();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddOther();
-
 builder.Services.AddDatabase(connectionStringConfig);
 builder.Services.AddAuthenticationAndAuthorization(jwtTokenConfig);
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -28,14 +28,17 @@ builder.Services.AddSwagger();
 var app = builder.Build();
 app.UseMiddlewares();
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
+app.MapHub<MessageHub>("/messageHub");
 app.Run();

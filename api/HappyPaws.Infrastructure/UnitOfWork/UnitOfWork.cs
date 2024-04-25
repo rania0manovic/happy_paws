@@ -30,8 +30,9 @@ namespace HappyPaws.Infrastructure
         public readonly IUsersRepository UsersRepository;
         public readonly IEmailVerificationRequestsRepository EmailVerificationRequestsRepository;
         public readonly IProductCategorySubcategoriesRepository ProductCategorySubcategoriesRepository;
+        public readonly INotificationsRepository NotificationsRepository;
 
-        public UnitOfWork(DatabaseContext databaseContext, IAppointmentsRepository appointmentsRepository, IBrandsRepository brandsRepository, ICitiesRepository citiesRepository, ICountriesRepository countriesRepository, IEmployeesRepository employeesRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository, IPetMedicationsRepository petMedicationsRepository, IUserAddressesRepository userAddressesRepository, IOrderDetailsRepository orderDetailsRepository)
+        public UnitOfWork(DatabaseContext databaseContext, IAppointmentsRepository appointmentsRepository, IBrandsRepository brandsRepository, ICitiesRepository citiesRepository, ICountriesRepository countriesRepository, IEmployeesRepository employeesRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository, IPetMedicationsRepository petMedicationsRepository, IUserAddressesRepository userAddressesRepository, IOrderDetailsRepository orderDetailsRepository, INotificationsRepository notificationsRepository)
         {
             _databaseContext = databaseContext;
             AppointmentsRepository = appointmentsRepository;
@@ -58,6 +59,7 @@ namespace HappyPaws.Infrastructure
             PetMedicationsRepository = petMedicationsRepository;
             UserAddressesRepository = userAddressesRepository;
             OrderDetailsRepository = orderDetailsRepository;
+            NotificationsRepository = notificationsRepository;
         }
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)

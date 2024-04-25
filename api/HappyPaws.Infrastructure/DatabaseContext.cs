@@ -30,6 +30,7 @@ namespace HappyPaws.Infrastructure
         public DbSet<UserFavourite> UserFavourites { get; set; }
         public DbSet<EmailVerificationRequest> EmailVerificationRequests { get; set; }
         public DbSet<ProductCategorySubcategory> ProductCategorySubcategories { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {

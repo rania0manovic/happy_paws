@@ -30,7 +30,9 @@ namespace HappyPaws.Infrastructure.Repositories
         }
         public override async Task<Appointment?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            return await DbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+            return await DbSet
+                .Include(x=>x.Pet).ThenInclude(y=>y.Owner)
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
                 .Where(x => (searchObject.SubcategoryId == null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
+                && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
                 && (searchObject.ProductOrBrandName == null || (x.Name.Contains(searchObject.ProductOrBrandName) || x.Brand.Name.Contains(searchObject.ProductOrBrandName)))
                 ).ToPagedListAsync(searchObject, cancellationToken);
         }

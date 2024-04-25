@@ -19,6 +19,13 @@ class ProductsService extends BaseService {
       );
     }
     data.forEach((key, value) {
+      if (key == 'price') {
+        if (value is double) {
+          value = value.toString().replaceAll('.', ',');
+        } else {
+          value = value.replaceAll('.', ',');
+        }
+      }
       request.fields[key] = value.toString();
     });
     try {
@@ -39,10 +46,9 @@ class ProductsService extends BaseService {
     }
   }
 
-   Future<dynamic> getBestsellers({int size = 4}) async {
+  Future<dynamic> getBestsellers({int size = 4}) async {
     try {
-      var response = await get("/Bestsellers",
-          searchObject: {"size": size});
+      var response = await get("/Bestsellers", searchObject: {"size": size});
       return response;
     } catch (e) {
       rethrow;
@@ -67,6 +73,13 @@ class ProductsService extends BaseService {
     }
     data.forEach((key, value) {
       if (value != null) {
+        if (key == 'price') {
+          if (value is double) {
+            value = value.toString().replaceAll('.', ',');
+          } else {
+            value = value.replaceAll('.', ',');
+          }
+        }
         request.fields[key] = value.toString();
       }
     });

@@ -35,6 +35,16 @@ class AuthService extends BaseService {
 
     return null;
   }
+  Future<dynamic> getToken() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString("token");
+
+    if (token != null) {
+     return token;
+    }
+
+    return null;
+  }
 
   Future<void> logOut() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

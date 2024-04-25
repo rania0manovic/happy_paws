@@ -11,5 +11,7 @@ namespace HappyPaws.Application.Interfaces
     public interface IUsersService : IBaseService<int, UserDto, UserSearchObject>
     {
         Task<UserSensitiveDto> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+        Task<string?> GetConnectionId(int userId, CancellationToken cancellationToken = default);
+
     }
 }

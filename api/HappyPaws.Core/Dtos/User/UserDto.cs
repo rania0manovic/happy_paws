@@ -11,6 +11,8 @@ namespace HappyPaws.Core.Dtos.User
     {
         public required string MyPawNumber { get; set; }
         public bool IsVerified { get; set; }
+        public string? ConnectionId { get; set; }
+
         public IFormFile? PhotoFile { get; set; }
 
     }

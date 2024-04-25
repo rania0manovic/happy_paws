@@ -20,8 +20,8 @@ namespace HappyPaws.Infrastructure.Repositories
         }
         public override async Task<PagedList<User>> GetPagedAsync(UserSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Where(x => searchObject.FullName == null 
-            || (x.FirstName.ToLower().StartsWith(searchObject.FullName.ToLower()) 
+            return await DbSet.Where(x => searchObject.FullName == null
+            || (x.FirstName.ToLower().StartsWith(searchObject.FullName.ToLower())
             || x.LastName.ToLower().StartsWith(searchObject.FullName.ToLower())))
                 .ToPagedListAsync(searchObject, cancellationToken);
         }
@@ -29,6 +29,13 @@ namespace HappyPaws.Infrastructure.Repositories
         {
             return await DbSet.AsNoTracking().FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
 
+        }
+
+        public async Task<string?> GetConnectionId(int userId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.Where(x => x.Id == userId)
+                .Select(x => x.ConnectionId)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

@@ -32,6 +32,7 @@ namespace HappyPaws.Infrastructure
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<IEmailVerificationRequestsRepository, EmailVerificationRequestsRepository>();
             services.AddScoped<IProductCategorySubcategoriesRepository, ProductCategorySubcategoriesRepository>();
+            services.AddScoped<INotificationsRepository, NotificationsRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

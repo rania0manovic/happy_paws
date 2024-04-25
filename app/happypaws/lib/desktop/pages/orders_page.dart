@@ -68,7 +68,7 @@ class _OrdersPageState extends State<OrdersPage> {
       selectedOrder['status'] = newValue;
     });
     var response =
-        await OrdersService().put("/${selectedOrder['id']}/$newValue", null);
+        await OrdersService().put("/${selectedOrder['id']}/$newValue/${selectedOrder['userId']}", null);
     if (response.statusCode == 200) {
       setState(() {
         selectedStatus = newValue;

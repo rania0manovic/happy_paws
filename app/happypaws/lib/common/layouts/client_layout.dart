@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:happypaws/common/utilities/message_notifier.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
+import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 @RoutePage()
@@ -14,11 +17,23 @@ class ClientLayout extends StatefulWidget {
   State<ClientLayout> createState() => _ClientLayoutState();
 }
 
-class _ClientLayoutState extends State<ClientLayout> {
+class _ClientLayoutState extends State<ClientLayout>
+    with SingleTickerProviderStateMixin {
   final _pageController = PageController(
     initialPage: 0,
   );
+  late AnimationController _animationController;
   String searchInput = "";
+  bool newNotification = false;
+
+  @override
+  void initState() {
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _animationController.repeat(reverse: true);
+    super.initState();
+  }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -30,8 +45,7 @@ class _ClientLayoutState extends State<ClientLayout> {
       if (!mounted) return;
       ToastHelper.showToastError(context, "Input field can not be empty!");
       return;
-    }
-    else {
+    } else {
       context.router.push(CatalogRoute(searchInput: searchInput));
     }
   }
@@ -76,53 +90,45 @@ class _ClientLayoutState extends State<ClientLayout> {
       },
       items: [
         SalomonBottomBarItem(
-          icon: SvgPicture.asset(
-            "assets/icons/home.svg",
-            height: 30,
-            width: 30,
-            color: tabsRouter.activeIndex == 0
-                ? AppColors.primary
-                : Colors.grey,
-          ),
-          title: const Text("Home"),
-          selectedColor: AppColors.primary
-        ),
+            icon: SvgPicture.asset(
+              "assets/icons/home.svg",
+              height: 30,
+              width: 30,
+              color:
+                  tabsRouter.activeIndex == 0 ? AppColors.primary : Colors.grey,
+            ),
+            title: const Text("Home"),
+            selectedColor: AppColors.primary),
         SalomonBottomBarItem(
-          icon: SvgPicture.asset(
-            "assets/icons/vaccines.svg",
-            height: 30,
-            width: 30,
-            color: tabsRouter.activeIndex == 1
-                ? AppColors.primary
-                : Colors.grey,
-          ),
-          title: const Text("Clinic"),
-          selectedColor: AppColors.primary
-        ),
+            icon: SvgPicture.asset(
+              "assets/icons/vaccines.svg",
+              height: 30,
+              width: 30,
+              color:
+                  tabsRouter.activeIndex == 1 ? AppColors.primary : Colors.grey,
+            ),
+            title: const Text("Clinic"),
+            selectedColor: AppColors.primary),
         SalomonBottomBarItem(
-          icon: SvgPicture.asset(
-            "assets/icons/storefront.svg",
-            height: 30,
-            width: 30,
-            color: tabsRouter.activeIndex == 2
-                ? AppColors.primary
-                : Colors.grey,
-          ),
-          title: const Text("Shop"),
-          selectedColor: AppColors.primary
-        ),
+            icon: SvgPicture.asset(
+              "assets/icons/storefront.svg",
+              height: 30,
+              width: 30,
+              color:
+                  tabsRouter.activeIndex == 2 ? AppColors.primary : Colors.grey,
+            ),
+            title: const Text("Shop"),
+            selectedColor: AppColors.primary),
         SalomonBottomBarItem(
-          icon: SvgPicture.asset(
-            "assets/icons/account.svg",
-            height: 30,
-            width: 30,
-            color: tabsRouter.activeIndex == 3
-                ? AppColors.primary
-                : Colors.grey,
-          ),
-          title: const Text("Profile"),
-          selectedColor: AppColors.primary
-        ),
+            icon: SvgPicture.asset(
+              "assets/icons/account.svg",
+              height: 30,
+              width: 30,
+              color:
+                  tabsRouter.activeIndex == 3 ? AppColors.primary : Colors.grey,
+            ),
+            title: const Text("Profile"),
+            selectedColor: AppColors.primary),
       ],
     );
   }
@@ -149,9 +155,12 @@ class _ClientLayoutState extends State<ClientLayout> {
                     suffixIcon: GestureDetector(
                       onTap: () => search(),
                       child: const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Icon(Icons.search, size: 25, color: AppColors.primary,)
-                      ),
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.search,
+                            size: 25,
+                            color: AppColors.primary,
+                          )),
                     )),
               ),
             )),
@@ -164,36 +173,69 @@ class _ClientLayoutState extends State<ClientLayout> {
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: SvgPicture.asset(
-                "assets/icons/cart.svg",
-                height: 25,
-                width: 25,
-                color: AppColors.primary
-              ),
+              child: SvgPicture.asset("assets/icons/cart.svg",
+                  height: 25, width: 25, color: AppColors.primary),
             ),
           ),
         ),
-         Visibility(
+        Visibility(
           visible: tabsRouter.activeIndex == 2,
           child: GestureDetector(
             onTap: () {
-              context.router.push( CatalogRoute(isShowingFavourites: true));
+              context.router.push(CatalogRoute(isShowingFavourites: true));
             },
             child: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Icon(Icons.favorite, size: 25, color: AppColors.primary,)
-            ),
+                padding: EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.favorite,
+                  size: 25,
+                  color: AppColors.primary,
+                )),
           ),
         ),
         Visibility(
           visible: tabsRouter.activeIndex == 0,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: SvgPicture.asset(
-              "assets/icons/notifications.svg",
-              height: 25,
-              width: 25,
-              color: Colors.grey,
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    final notificationStatus =
+                        Provider.of<NotificationStatus>(context, listen: false);
+                    notificationStatus.setHasNewNotification(false);
+                    notificationStatus.setIsShowingNotifications(
+                        !notificationStatus.isShowingNotifications);
+                  },
+                  child: Icon(
+                    Icons.notifications_none_outlined,
+                    size: 25,
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Consumer<NotificationStatus>(
+                    builder: (context, value, child) {
+                      return value.hasNewNotification
+                          ? FadeTransition(
+                              opacity: _animationController,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      AppColors.error, // Change color as needed
+                                ),
+                              ),
+                            )
+                          : const SizedBox();
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -205,7 +247,10 @@ class _ClientLayoutState extends State<ClientLayout> {
               children: [
                 const Text(
                   "Emergency call",
-                  style: TextStyle(color: Color(0xffBA1A36), fontSize: 20, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Color(0xffBA1A36),
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600),
                 ),
                 SvgPicture.asset(
                   "assets/icons/phone.svg",
@@ -227,7 +272,7 @@ class _ClientLayoutState extends State<ClientLayout> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          padding: EdgeInsets.only(left: 10),
+          padding: const EdgeInsets.only(left: 10),
           width: 120,
           child: const Image(
             image: AssetImage("assets/images/logo_1.jpg"),

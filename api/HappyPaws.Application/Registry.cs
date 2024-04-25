@@ -11,6 +11,7 @@ using HappyPaws.Core.Dtos.Country;
 using HappyPaws.Core.Dtos.EmailVerificationRequest;
 using HappyPaws.Core.Dtos.Employee;
 using HappyPaws.Core.Dtos.Image;
+using HappyPaws.Core.Dtos.Notification;
 using HappyPaws.Core.Dtos.Order;
 using HappyPaws.Core.Dtos.Pet;
 using HappyPaws.Core.Dtos.PetAllergy;
@@ -58,6 +59,7 @@ namespace HappyPaws.Application
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IEmailVerificationRequestsService, EmailVerificationRequestsService>();
             services.AddScoped<IProductCategorySubcategoriesService, ProductCategorySubcategoriesService>();
+            services.AddScoped<INotificationsService, NotificationsService>();
         }
 
         public static void AddValidators(this IServiceCollection services)
@@ -86,6 +88,7 @@ namespace HappyPaws.Application
             services.AddScoped<IValidator<UserDto>, UserValidator>();
             services.AddScoped<IValidator<EmailVerificationRequestDto>, EmailVerificationRequestValidator>();
             services.AddScoped<IValidator<ProductCategorySubcategoryDto>, ProductCategorySubcategoryValidator>();
+            services.AddScoped<IValidator<NotificationDto>, NotificationValidator>();
         }
     }
 }

@@ -128,6 +128,17 @@ class _ClinicPageState extends State<ClinicPage> {
                       const SizedBox(
                         height: 8,
                       ),
+                       if (medicationReminders!['items'].isEmpty)
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LightText(
+                                label: "You have no medication reminders!"),
+                            const SizedBox(
+                              height: 20,
+                            )
+                          ],
+                        ),
                       for (var medication in medicationReminders!["items"])
                         Column(
                           children: [

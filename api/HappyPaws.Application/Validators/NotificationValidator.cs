@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using HappyPaws.Core.Dtos.Product;
+using HappyPaws.Core.Dtos.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Validators
 {
-    public class ProductValidator : AbstractValidator<ProductDto>
+    public class NotificationValidator : AbstractValidator<NotificationDto>
     {
-        public ProductValidator()
+        public NotificationValidator()
         {
 
         }
