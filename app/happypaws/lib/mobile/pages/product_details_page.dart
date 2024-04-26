@@ -8,6 +8,7 @@ import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
@@ -204,24 +205,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           direction: Axis.horizontal,
           spacing: 10,
           children: [
-            GestureDetector(
-                onTap: () => addProductToCart(),
-                child: FractionallySizedBox(
-                  widthFactor: 0.8,
-                  child: PrimaryIconButton(
-                    icon: Icon(
-                      Icons.shopping_bag_outlined,
-                      color: Colors.white,
-                      size: 25,
+            if (product!['inStock'] > 0)
+              GestureDetector(
+                  onTap: () => addProductToCart(),
+                  child: FractionallySizedBox(
+                    widthFactor: 0.8,
+                    child: PrimaryIconButton(
+                      icon: Icon(
+                        Icons.shopping_bag_outlined,
+                        color: Colors.white,
+                        size: 25,
+                      ),
+                      label: "Add to cart",
+                      fontSize: 18,
+                      width: double.infinity,
+                      onPressed: () {
+                        addProductToCart();
+                      },
                     ),
-                    label: "Add to cart",
+                  ))
+            else
+              FractionallySizedBox(
+                  widthFactor: 0.8,
+                  child: PrimaryButton(
+                    onPressed: () {},
+                    label: "Out of stock",
                     fontSize: 18,
                     width: double.infinity,
-                    onPressed: () {
-                      addProductToCart();
-                    },
-                  ),
-                )),
+                    backgroundColor: AppColors.primary.withOpacity(0.5),
+                  )),
             GestureDetector(
               onTap: () => product!['isFavourite']
                   ? removeProductFromFavourites()
