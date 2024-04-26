@@ -67,7 +67,6 @@ namespace HappyPaws.Application.Services
             await _emailService.SendAsync("Order confirmation", invoiceHtml, order.User.Email);
         }
 
-
         public async Task UpdateAsync(int id, OrderStatus status, CancellationToken cancellationToken = default)
         {
             var order = await CurrentRepository.GetByIdAsync(id, cancellationToken) ?? throw new Exception("Order with provided id not found");

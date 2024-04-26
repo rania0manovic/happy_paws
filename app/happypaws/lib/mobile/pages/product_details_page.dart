@@ -158,37 +158,29 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   style: const TextStyle(
                       fontWeight: FontWeight.w700, fontSize: 24),
                 ),
-                // TODO: Implement stars to match product reviews
-
-                const Row(
-                  children: [
-                    Image(
-                      image: AssetImage("assets/images/star.png"),
-                      height: 30,
-                      width: 30,
-                    ),
-                    Image(
-                      image: AssetImage("assets/images/star.png"),
-                      height: 30,
-                      width: 30,
-                    ),
-                    Image(
-                      image: AssetImage("assets/images/star.png"),
-                      height: 30,
-                      width: 30,
-                    ),
-                    Image(
-                      image: AssetImage("assets/images/star.png"),
-                      height: 30,
-                      width: 30,
-                    ),
-                    Image(
-                      image: AssetImage("assets/images/star-half-empty.png"),
-                      height: 30,
-                      width: 30,
-                    ),
-                  ],
-                ),
+                if (product!['review'] == 0)
+                  const Text('No reviews yet')
+                else
+                  Row(
+                    children: List.generate(5, (index) {
+                      if (index < product!['review']) {
+                        return const Image(
+                          image: AssetImage("assets/images/star.png"),
+                          height: 25,
+                          width: 25,
+                        );
+                      } else {
+                        return const Opacity(
+                          opacity: 0.5,
+                          child: Image(
+                            image: AssetImage("assets/images/star-empty.png"),
+                            height: 25,
+                            width: 25,
+                          ),
+                        );
+                      }
+                    }),
+                  ),
               ],
             ),
           ),
@@ -210,18 +202,24 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         width: MediaQuery.of(context).size.width,
         child: Wrap(
           direction: Axis.horizontal,
-           spacing: 10,
+          spacing: 10,
           children: [
             GestureDetector(
                 onTap: () => addProductToCart(),
                 child: FractionallySizedBox(
                   widthFactor: 0.8,
                   child: PrimaryIconButton(
-                    icon: Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 25,),
+                    icon: Icon(
+                      Icons.shopping_bag_outlined,
+                      color: Colors.white,
+                      size: 25,
+                    ),
                     label: "Add to cart",
                     fontSize: 18,
                     width: double.infinity,
-                    onPressed: () {addProductToCart();},
+                    onPressed: () {
+                      addProductToCart();
+                    },
                   ),
                 )),
             GestureDetector(
@@ -346,7 +344,7 @@ class _DescriptionState extends State<Description> {
               trailing: IconButton(
                 icon: Icon(
                   isExpanded ? Icons.remove : Icons.add,
-                  color:  AppColors.primary,
+                  color: AppColors.primary,
                 ),
                 onPressed: () {
                   setState(() {

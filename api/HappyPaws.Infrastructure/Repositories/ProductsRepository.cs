@@ -22,6 +22,7 @@ namespace HappyPaws.Infrastructure.Repositories
         {
             return await DbSet.Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
                 .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
+                .Include(x=>x.ProductReviews)
                 .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
                 .Where(x => (searchObject.SubcategoryId == null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
@@ -35,6 +36,7 @@ namespace HappyPaws.Infrastructure.Repositories
             return await DbSet
                 .Include(x => x.ProductImages).ThenInclude(x => x.Image)
                 .Include(x => x.UserFavouriteItems.Where(x => x.UserId == userId))
+                .Include(x => x.ProductReviews)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 

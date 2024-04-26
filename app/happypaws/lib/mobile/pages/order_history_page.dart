@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -19,6 +20,7 @@ class OrderHistoryPage extends StatefulWidget {
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Map<String, dynamic>? orders;
   bool isLoadingOrder = false;
+  bool newFirst = true;
 
   @override
   initState() {
@@ -34,10 +36,24 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       'userId': user['Id'],
     });
     if (response.statusCode == 200) {
+      response.data['items'].sort((a, b) => DateTime.parse(b['createdAt'])
+          .compareTo(DateTime.parse(a['createdAt'])));
       setState(() {
         orders = response.data;
       });
     }
+  }
+
+  void sortData() {
+    setState(() {
+      if (newFirst) {
+        orders!['items'].sort((a, b) => DateTime.parse(b['createdAt'])
+            .compareTo(DateTime.parse(a['createdAt'])));
+      } else {
+        orders!['items'].sort((a, b) => DateTime.parse(a['createdAt'])
+            .compareTo(DateTime.parse(b['createdAt'])));
+      }
+    });
   }
 
   Future<void> fetchOrder(int id) async {
@@ -61,9 +77,34 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         : SingleChildScrollView(
             child: Column(
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(16),
-                  child: GoBackButton(),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const GoBackButton(),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            newFirst = !newFirst;
+                          });
+                          sortData();
+                        },
+                        child: Row(
+                          children: [
+                            Text(
+                              newFirst ? 'Oldest first' : 'Newest first',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 16),
+                            ),
+                            const Icon(
+                              Icons.sort,
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
                 for (var order in orders!['items'])
                   GestureDetector(
@@ -88,7 +129,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                               Text(
                                 DateFormat('dd.MM.yyyy')
                                     .format(DateTime.parse(order['orderDate'])),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
                                     color: AppColors.gray),
@@ -105,7 +146,13 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600),
                               ),
-                              Text(order['status'],
+                              Text(
+                                  order['status'][0] +
+                                      order['status']
+                                          .split(RegExp(r'(?=[A-Z])'))
+                                          .join(' ')
+                                          .toLowerCase()
+                                          .substring(1),
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,

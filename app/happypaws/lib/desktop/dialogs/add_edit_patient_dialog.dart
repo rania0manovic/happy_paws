@@ -15,12 +15,12 @@ import 'package:happypaws/desktop/components/buttons/secondary_button.dart';
 import 'package:happypaws/desktop/components/gender_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-import 'package:happypaws/desktop/dialogs/add_medication_dialog.dart';
+import 'package:happypaws/desktop/dialogs/add_edit_medication_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-import 'add_allergy_dialog.dart';
+import 'add_edit_allergy_dialog.dart';
 
 class AddEditPatientMenu extends StatefulWidget {
   final VoidCallback onClose;

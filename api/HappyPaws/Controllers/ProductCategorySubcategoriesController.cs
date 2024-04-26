@@ -37,7 +37,7 @@ namespace HappyPaws.Api.Controllers
         {
             try
             {
-                string cacheKey = $"SubcategoriesForCategory_{categoryId}";
+                string cacheKey = $"SubcategoriesForCategory_{categoryId}_includePhotos_{includePhotos}";
                 if (_memoryCache.TryGetValue<List<ProductCategorySubcategoryDto>>(cacheKey, out var subcategories))
                 {
                     return Ok(subcategories);

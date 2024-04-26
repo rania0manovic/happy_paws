@@ -21,8 +21,9 @@ namespace HappyPaws.Core.Dtos.Product
         public string Description { get; set; } = null!;
         public int InStock { get; set; }
         public bool IsFavourite { get; set; }
+        public bool HasReview { get; set; }
+        public int Review { get; set; }
         public int UserFavouriteId { get; set; }
-
 
         public BrandDto? Brand { get; set; }
         public int BrandId { get; set; }

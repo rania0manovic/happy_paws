@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
+import 'package:happypaws/mobile/dialogs/leave_review_dialog.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:intl/intl.dart';
 
@@ -69,6 +71,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                   height: 10,
                                 ),
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       "\$ ${item['unitPrice']}",
@@ -77,7 +81,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
                                     ),
-                                    const Spacer(),
                                     Text(
                                       "x${item['quantity']}",
                                       style: const TextStyle(
@@ -85,18 +88,48 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500),
                                     ),
-                                    const Spacer(),
                                     Text(
-                                      // ignore: prefer_interpolation_to_compose_strings
-                                      "\$ " +
-                                          (item['unitPrice'] * item['quantity'])
-                                              .toStringAsFixed(2),
+                                      "\$ ${(item['unitPrice'] * item['quantity']).toStringAsFixed(2)}",
                                       style: const TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.w600),
                                     ),
                                   ],
                                 ),
+                                if (widget.data['status'] == "Delivered")
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      if (item['product']['hasReview'])
+                                        Text(
+                                          'Already left a review',
+                                          style:
+                                              TextStyle(color: AppColors.gray),
+                                        )
+                                      else
+                                        GestureDetector(
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return LeaveReviewMenu(
+                                                  onClosed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  onAdd: (value) {},
+                                                  data: item['product'],
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: Text(
+                                            'Leave a review',
+                                            style: TextStyle(
+                                                color: AppColors.primary),
+                                          ),
+                                        )
+                                    ],
+                                  )
                               ],
                             ),
                           ),
@@ -145,13 +178,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     ),
                     const Spacer(),
                     Text(
-                      DateFormat('dd.MM.yyyy, HH:mm').format(DateTime.parse(widget.data['orderDate'])),
+                      DateFormat('dd.MM.yyyy, HH:mm')
+                          .format(DateTime.parse(widget.data['orderDate'])),
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(
@@ -163,13 +197,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     ),
                     const Spacer(),
                     Text(
-                      " ${widget.data['paymentMethod']}",
+                      widget.data['paymentMethod'][0] +
+                          widget.data['paymentMethod']
+                              .split(RegExp(r'(?=[A-Z])'))
+                              .join(' ')
+                              .toLowerCase()
+                              .substring(1),
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(
@@ -181,7 +220,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                           TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
                     const Spacer(),
-                    Text(widget.data['status'],
+                    Text(
+                        widget.data['status'][0] +
+                            widget.data['status']
+                                .split(RegExp(r'(?=[A-Z])'))
+                                .join(' ')
+                                .toLowerCase()
+                                .substring(1),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -198,7 +243,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         )),
                   ],
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Row(

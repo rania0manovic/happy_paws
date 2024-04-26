@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
@@ -9,6 +8,8 @@ import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
+
+import 'filter_menu_overlay.dart';
 
 @RoutePage()
 class CatalogPage extends StatefulWidget {
@@ -37,10 +38,10 @@ class CatalogPage extends StatefulWidget {
 class _CatalogPageState extends State<CatalogPage> {
   late int currentPage = 1;
   bool isLoadingMore = false;
-  late String selectedValuePrice = "option0";
+  late String selectedValuePrice = "none";
   late String selectedValueReview = "0";
-  List<bool> selectedOptions = [false, false, false, false, false, false];
   Map<String, dynamic>? products;
+  List<dynamic>? copyOfProducts;
   Map<String, dynamic> params = {};
   late ScrollController _scrollController;
   late ScrollController _scrollControllerGrid;
@@ -64,7 +65,6 @@ class _CatalogPageState extends State<CatalogPage> {
   Future<void> _scrollListener() async {
     double currentPosition = _scrollController.position.pixels;
     double maxScrollExtent = _scrollController.position.maxScrollExtent;
-
     double distanceFromBottom = maxScrollExtent - currentPosition;
 
     if (distanceFromBottom <= 10 &&
@@ -102,6 +102,31 @@ class _CatalogPageState extends State<CatalogPage> {
     }
   }
 
+  void sortData() {
+    var parsedValue = int.parse(selectedValueReview);
+    setState(() {
+      copyOfProducts = List.from(products!['items']);
+      if (selectedValuePrice == 'highest') {
+        products!['items'].sort(
+            (a, b) => (b['price'] as double).compareTo(a['price'] as double));
+      } else if (selectedValuePrice == 'lowest') {
+        products!['items'].sort(
+            (a, b) => (a['price'] as double).compareTo(b['price'] as double));
+      }
+      if (selectedValueReview != "0") {
+        products!['items']
+            .removeWhere((item) => item['review'] < parsedValue as bool);
+      }
+    });
+  }
+  void resetFilters(){
+    setState(() {
+     products!['items'] = List.from(copyOfProducts!);
+      selectedValuePrice='none';
+      selectedValueReview='0';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (products == null) {
@@ -115,26 +140,45 @@ class _CatalogPageState extends State<CatalogPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const GoBackButton(),
+                Row(
+                  children: [
+                    const GoBackButton(),
+                    const Spacer(),
+                    IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: () {
+                        _showFilterMenu(context);
+                      },
+                      color: (selectedValuePrice != "none" ||
+                              selectedValueReview != '0')
+                          ? AppColors.primary
+                          : Colors.grey,
+                    ),
+                    if((selectedValuePrice != "none" ||
+                              selectedValueReview != '0'))
+                    GestureDetector(
+                      onTap: () => resetFilters(),
+                      child: const Icon(Icons.close, color: AppColors.error,)),
+                  ],
+                ),
                 if (widget.categoryName != null && widget.categoryPhoto != null)
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 14,
+                  Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: header(context)),
+                if (products != null)
+                  if (products!['items'].isNotEmpty)
+                    productsSection()
+                  else
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 100.0),
+                        child: Text(
+                          "We found no active products ˙◠˙",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
                       ),
-                      header(context),
-                    ],
-                  ),
-                if (products != null) 
-                if(products!['items'].isNotEmpty)
-                productsSection()
-                else 
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top:100.0),
-                    child: Text("We found no active products ˙◠˙", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w500),),
-                  ),
-                )
+                    )
               ]),
         ),
       );
@@ -148,29 +192,18 @@ class _CatalogPageState extends State<CatalogPage> {
       builder: (context) => Material(
         color: Colors.transparent,
         child: FilterMenuOverlay(
-          selectedValuePrice: selectedValuePrice,
-          selectedValueReview: selectedValueReview,
-          selectedOptions: selectedOptions,
-          onClose: () {
+          sort: (price, review) {
+            setState(() {
+              selectedValuePrice = price;
+              selectedValueReview = review;
+            });
+            sortData();
             overlayEntry.remove();
           },
-          onPriceFilterChanged: (value) {
-            overlayEntry.markNeedsBuild();
-            setState(() {
-              selectedValuePrice = value;
-            });
-          },
-          onReviewFilterChanged: (value) {
-            overlayEntry.markNeedsBuild();
-            setState(() {
-              selectedValueReview = value;
-            });
-          },
-          onBrandChanged: (option, position) {
-            overlayEntry.markNeedsBuild();
-            setState(() {
-              selectedOptions[position] = option;
-            });
+          selectedValuePrice: selectedValuePrice,
+          selectedValueReview: selectedValueReview,
+          onClose: () {
+            overlayEntry.remove();
           },
         ),
       ),
@@ -183,12 +216,11 @@ class _CatalogPageState extends State<CatalogPage> {
     return GridView.builder(
       controller: _scrollControllerGrid,
       shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 1,
-      ),
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 200,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          mainAxisExtent: 200),
       itemCount: products!['items'].length + 1,
       itemBuilder: (BuildContext context, int index) {
         if (index < products!['items'].length) {
@@ -198,13 +230,13 @@ class _CatalogPageState extends State<CatalogPage> {
                 context.router.push(ProductDetailsRoute(productId: item['id'])),
             child: SizedBox.expand(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Image.memory(
                     base64.decode(
                       item['productImages'][0]['image']['data'],
                     ),
-                    height: 96,
+                    height: 110,
                   ),
                   Text(
                     item['name'].length > 40
@@ -214,11 +246,42 @@ class _CatalogPageState extends State<CatalogPage> {
                     style: const TextStyle(
                         fontSize: 15, fontWeight: FontWeight.w500),
                   ),
-                  Text(
-                    '\$ ${item['price']}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        '\$ ${item['price']}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16),
+                      ),
+                      if (item!['review'] == 0)
+                        const Text(
+                          'No reviews ',
+                          style: TextStyle(fontSize: 12, color: AppColors.gray),
+                        )
+                      else
+                        Row(
+                          children: List.generate(5, (index) {
+                            if (index < item['review']) {
+                              return const Image(
+                                image: AssetImage("assets/images/star.png"),
+                                height: 14,
+                                width: 14,
+                              );
+                            } else {
+                              return const Opacity(
+                                opacity: 0.5,
+                                child: Image(
+                                  image: AssetImage(
+                                      "assets/images/star-empty.png"),
+                                  height: 14,
+                                  width: 14,
+                                ),
+                              );
+                            }
+                          }),
+                        ),
+                    ],
                   ),
                 ],
               ),
@@ -226,53 +289,21 @@ class _CatalogPageState extends State<CatalogPage> {
           );
         } else if (isLoadingMore) {
           return const Center(child: Spinner());
+        } else {
+          return const SizedBox();
         }
       },
     );
-    //                   // TODO: Implement stars to match product reviews
-    //                   const Row(
-    //                     children: [
-    //                       Image(
-    //                         image: AssetImage("assets/images/star.png"),
-    //                         height: 14,
-    //                         width: 14,
-    //                       ),
-    //                       Image(
-    //                         image: AssetImage("assets/images/star.png"),
-    //                         height: 14,
-    //                         width: 14,
-    //                       ),
-    //                       Image(
-    //                         image: AssetImage("assets/images/star.png"),
-    //                         height: 14,
-    //                         width: 14,
-    //                       ),
-    //                       Image(
-    //                         image: AssetImage("assets/images/star.png"),
-    //                         height: 14,
-    //                         width: 14,
-    //                       ),
-    //                       Image(
-    //                         image: AssetImage(
-    //                             "assets/images/star-half-empty.png"),
-    //                         height: 14,
-    //                         width: 14,
-    //                       ),
-    //                     ],
-    //                   ),
-    //                 ],
-    //               ),
-    //             ],
-    //           ),
-    //         ),
-    //       ),
-    //     ),
-    //   ),
   }
 
   Row header(BuildContext context) {
     return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-      ClipOval(child: Image.memory(base64.decode(widget.categoryPhoto.toString()), height: 55,fit: BoxFit.cover,)),
+      ClipOval(
+          child: Image.memory(
+        base64.decode(widget.categoryPhoto.toString()),
+        height: 55,
+        fit: BoxFit.cover,
+      )),
       Padding(
         padding: const EdgeInsets.only(left: 10),
         child: Text(
@@ -290,258 +321,6 @@ class _CatalogPageState extends State<CatalogPage> {
           ),
         ),
       ),
-      const Spacer(),
-      IconButton(
-        icon: const Icon(Icons.filter_list),
-        onPressed: () {
-          _showFilterMenu(context);
-        },
-        color: Colors.grey,
-      ),
     ]);
-  }
-}
-
-class FilterMenuOverlay extends StatefulWidget {
-  final String selectedValuePrice;
-  final String selectedValueReview;
-  final List<bool> selectedOptions;
-  final Function(String) onPriceFilterChanged;
-  final Function(String) onReviewFilterChanged;
-  final Function(bool option, int position) onBrandChanged;
-  final VoidCallback onClose;
-
-  const FilterMenuOverlay({
-    Key? key,
-    required this.selectedValuePrice,
-    required this.selectedOptions,
-    required this.onPriceFilterChanged,
-    required this.onBrandChanged,
-    required this.onClose,
-    required this.selectedValueReview,
-    required this.onReviewFilterChanged,
-  }) : super(key: key);
-
-  @override
-  _FilterMenuOverlayState createState() => _FilterMenuOverlayState();
-}
-
-//TODO: Implement filters
-class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: widget.onClose,
-          child: Container(
-            color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
-          ),
-        ),
-        Positioned(
-          top: 50,
-          width: MediaQuery.of(context).size.width,
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-              ),
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      const IconButton(
-                        icon: Icon(Icons.filter_list),
-                        onPressed: null,
-                        color: Colors.grey,
-                      ),
-                      const Text(
-                        "Filter & sort products",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Spacer(),
-                      IconButton(
-                        onPressed: widget.onClose,
-                        icon: const Icon(Icons.close),
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, top: 16),
-                    child: Text(
-                      "Price",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  priceSorting(),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, top: 16),
-                    child: Text(
-                      "Brands",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  brandFilters(),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 16, top: 16),
-                    child: Text(
-                      "Customer review",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  reviewFilters(),
-                ],
-              ),
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Column reviewFilters() {
-    return Column(
-      children: [
-        RadioListTile<String>(
-          activeColor: AppColors.primary,
-          title: const Text(
-            '1 star & Up',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          value: '1',
-          groupValue: widget.selectedValueReview,
-          onChanged: (value) {
-            widget.onReviewFilterChanged(value!);
-          },
-        ),
-        RadioListTile<String>(
-          activeColor: AppColors.primary,
-          title: const Text(
-            '2 star & Up',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          value: '2',
-          groupValue: widget.selectedValueReview,
-          onChanged: (value) {
-            widget.onReviewFilterChanged(value!);
-          },
-        ),
-        RadioListTile<String>(
-          activeColor: AppColors.primary,
-          title: const Text(
-            '3 star & Up',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          value: '3',
-          groupValue: widget.selectedValueReview,
-          onChanged: (value) {
-            widget.onReviewFilterChanged(value!);
-          },
-        ),
-        RadioListTile<String>(
-          activeColor: AppColors.primary,
-          title: const Text(
-            '4 star & Up',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          value: '4',
-          groupValue: widget.selectedValueReview,
-          onChanged: (value) {
-            widget.onReviewFilterChanged(value!);
-          },
-        ),
-      ],
-    );
-  }
-
-  Column brandFilters() {
-    return Column(
-      children: [
-        CheckboxListTile(
-          activeColor: AppColors.primary,
-          title: const Text('Aquariana'),
-          value: widget.selectedOptions[0],
-          onChanged: (value) {
-            widget.onBrandChanged(value!, 0);
-          },
-        ),
-        CheckboxListTile(
-          activeColor: AppColors.primary,
-          title: const Text('King British'),
-          value: widget.selectedOptions[1],
-          onChanged: (value) {
-            widget.onBrandChanged(value!, 1);
-          },
-        ),
-        CheckboxListTile(
-          activeColor: AppColors.primary,
-          title: const Text('Tetra'),
-          value: widget.selectedOptions[2],
-          onChanged: (value) {
-            widget.onBrandChanged(value!, 2);
-          },
-        ),
-      ],
-    );
-  }
-
-  Row priceSorting() {
-    return Row(
-      children: [
-        Expanded(
-          child: RadioListTile<String>(
-            activeColor: AppColors.primary,
-            title: const Text(
-              'Highest',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            value: 'option1',
-            groupValue: widget.selectedValuePrice,
-            onChanged: (value) {
-              widget.onPriceFilterChanged(value!);
-            },
-          ),
-        ),
-        Expanded(
-          child: RadioListTile<String>(
-            activeColor: AppColors.primary,
-            title: const Text(
-              'Lowest',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            value: 'option2',
-            groupValue: widget.selectedValuePrice,
-            onChanged: (value) {
-              widget.onPriceFilterChanged(value!);
-            },
-          ),
-        ),
-      ],
-    );
   }
 }

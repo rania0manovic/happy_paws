@@ -22,6 +22,8 @@ namespace HappyPaws.Infrastructure.Repositories
             return DbSet
                 .Include(x => x.OrderDetails).ThenInclude(x => x.Product)
                      .ThenInclude(x => x.ProductImages).ThenInclude(x => x.Image)
+                      .Include(x => x.OrderDetails).ThenInclude(x => x.Product)
+                      .ThenInclude(x => x.ProductReviews)
                 .Include(x => x.ShippingAddress)
                 .Include(x => x.User)
                 .Include(x => x.OrderDetails).ThenInclude(x => x.Product).ThenInclude(x => x.Brand)

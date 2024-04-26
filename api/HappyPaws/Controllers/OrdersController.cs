@@ -38,6 +38,34 @@ namespace HappyPaws.Api.Controllers
             return Ok(dto);
 
         }
+        //TODO: temporary approach, make sure query checks at database whether there's reviews left by user (now it fetches all reviews from db and checks on api layer which slows down server)
+        public override async Task<IActionResult> Get(int id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.GetByIdAsync(id, cancellationToken);
+                if (response != null && _currentUser.Id.HasValue)
+                {
+                    foreach (var item in response.OrderDetails)
+                    {
+                        foreach (var review in item.Product.ProductReviews)
+                        {
+                            if (review.ProductId == item.ProductId && review.ReviewerId == _currentUser.Id.Value)
+                            {
+                                item.Product.HasReview = true;
+                            }
+                        }
+                    }
+                    return Ok(response);
+                }
+                else throw new UnauthorizedAccessException();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when fetching resources.");
+                return BadRequest();
+            }
+        }
         [HttpPut("{id}/{status}/{userId}")]
         public async Task<IActionResult> Put(int id, OrderStatus status, int userId, CancellationToken cancellationToken = default)
         {
