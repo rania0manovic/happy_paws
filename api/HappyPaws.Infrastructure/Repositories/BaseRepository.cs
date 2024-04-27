@@ -39,7 +39,7 @@ namespace HappyPaws.Infrastructure.Repositories
 
         public async virtual Task<TEntity?> GetByIdAsync(TPrimaryKey id, CancellationToken cancellationToken = default)
         {
-            return await DbSet.FindAsync(id, cancellationToken);
+            return await DbSet.FindAsync(new object?[] { id, cancellationToken }, cancellationToken: cancellationToken);
         }
 
         public void Remove(TEntity entity)

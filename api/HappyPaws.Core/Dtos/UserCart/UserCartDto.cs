@@ -17,5 +17,6 @@ namespace HappyPaws.Core.Dtos.UserCart
 
         public ProductDto ? Product { get; set; } 
         public int ProductId { get; set; }
+
     }
 }

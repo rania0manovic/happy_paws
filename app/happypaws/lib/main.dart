@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
-import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/utilities/notification_service.dart';
 import 'package:happypaws/common/utilities/platform_info.dart';
 import 'package:happypaws/routes/app_router.dart';
-import 'package:signalr_netcore/hub_connection_builder.dart';
 import 'mobile/app_mobile.dart';
 import 'desktop/app_desktop.dart';
 

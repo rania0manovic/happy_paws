@@ -9,6 +9,7 @@ namespace HappyPaws.Core.Entities
     public class Product : BaseEntity
     {
         public required string Name { get; set; }
+        public required string UPC { get; set; }
         public double Price { get; set; }
         public required string Description { get; set; }
         public int InStock { get; set; }
@@ -18,7 +19,6 @@ namespace HappyPaws.Core.Entities
 
         public required ProductCategorySubcategory ProductCategorySubcategory { get; set; }
         public required int ProductCategorySubcategoryId { get; set; }
-
 
         public required ICollection<ProductImage> ProductImages { get; set; }
         public required ICollection<OrderDetail> OrderDetails { get; set; }

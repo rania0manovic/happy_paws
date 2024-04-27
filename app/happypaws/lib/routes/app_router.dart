@@ -50,11 +50,11 @@ class AppRouter extends $AppRouter {
                 path: "products/:categoryId/:subcategoryId",
                 page: CatalogRoute.page),
             AutoRoute(path: "product/:id", page: ProductDetailsRoute.page),
-             AutoRoute(
+            AutoRoute(
               path: 'checkout',
               page: CheckoutRoute.page,
             ),
-             AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
+            AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
             AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
           ]),
           AutoRoute(path: "profile", page: ProfileTab.page, children: [
@@ -64,8 +64,6 @@ class AppRouter extends $AppRouter {
                 page: PersonalInformationRoute.page),
             AutoRoute(path: 'my-pets', page: MyPetsRoute.page),
             AutoRoute(path: 'pet-details', page: PetDetailsRoute.page),
-           
-
           ]),
         ]),
         AutoRoute(
@@ -77,8 +75,10 @@ class AppRouter extends $AppRouter {
             guards: [AuthGuardDesktop()],
             page: AdminLayout.page,
             children: [
-              AutoRoute(path: 'dashboard', page: DashboardRoute.page, initial: true),
-                 AutoRoute(path: 'shop/orders', page: OrdersRoute.page),
+              AutoRoute(
+                  path: 'dashboard', page: DashboardRoute.page, initial: true),
+              AutoRoute(path: 'shop/orders', page: OrdersRoute.page),
+              AutoRoute(path: 'shop/inventory', page: InventoryRoute.page),
               AutoRoute(path: 'appointments', page: AppointmentsRoute.page),
               AutoRoute(path: 'patients', page: PatientsRoute.page),
               AutoRoute(path: 'employees', page: EmployeesRoute.page),
@@ -92,8 +92,6 @@ class AppRouter extends $AppRouter {
               AutoRoute(path: 'settings/brands', page: BrandsRoute.page),
               AutoRoute(path: 'settings/pet-types', page: PetTypesRoute.page),
               AutoRoute(path: 'settings/pet-breeds', page: PetBreedsRoute.page),
-
-
             ]),
       ];
 }

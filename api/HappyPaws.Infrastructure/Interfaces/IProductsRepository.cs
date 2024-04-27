@@ -15,6 +15,7 @@ namespace HappyPaws.Infrastructure.Interfaces
     {
         Task<Product?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default);
         Task<List<Product>> FindSimilarProductsAsync(List<ProductDto> favouriteProducts, int size, CancellationToken cancellationToken = default);
-        Task<List<Product>> GetBestsellersAsync(int size,CancellationToken cancellationToken = default);
+        Task<List<Product>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default);
+        Task UpdateStockAsync(int id, int size, CancellationToken cancellation = default);
     }
 }

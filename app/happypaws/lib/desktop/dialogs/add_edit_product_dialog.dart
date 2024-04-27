@@ -210,9 +210,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                           widthFactor: 0.33,
                           child: Column(
                             children: [
-                              inputField("Name", "name"),
-                              inputField("Price", "price"),
-                              textBox("Description", "description"),
+                              inputField("Name:", "name"),
+                              inputField("Price:", "price"),
+                              textBox("Description:", "description"),
                             ],
                           ),
                         ),
@@ -221,9 +221,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              inputField("In Stock", "inStock"),
+                              inputField("UPC:", "upc"),
                               dropdownMenu(
-                                  productCategories!['items'], "Category",
+                                  productCategories!['items'], "Category:",
                                   (String? newValue) async {
                                 setState(() {
                                   selectedSubCategory = null;
@@ -238,7 +238,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                   productSubcategories == null
                                       ? List.empty()
                                       : productSubcategories!,
-                                  "Subcategory",
+                                  "Subcategory:",
                                   (String? newValue) => setState(() {
                                         selectedSubCategory = newValue;
                                         data['productCategorySubcategoryId'] =
@@ -249,7 +249,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                       selectedCategory == null ? true : false),
                               dropdownMenu(
                                   productBrands!['items'],
-                                  "Brand",
+                                  "Brand:",
                                   (String? newValue) => setState(() {
                                         selectedBrand = newValue;
                                         data['brandId'] = newValue;

@@ -141,5 +141,10 @@ namespace HappyPaws.Application.Services
         {
             return Mapper.Map<List<ProductDto>>(await CurrentRepository.GetBestsellersAsync(size, cancellationToken));
         }
+
+        public async Task UpdateStockAsync(int id, int size, CancellationToken cancellation = default)
+        {
+            await CurrentRepository.UpdateStockAsync(id, size, cancellation);
+        }
     }
 }

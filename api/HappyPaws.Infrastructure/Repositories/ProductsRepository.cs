@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HappyPaws.Infrastructure.Repositories
@@ -22,12 +23,12 @@ namespace HappyPaws.Infrastructure.Repositories
         {
             return await DbSet.Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
                 .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
-                .Include(x=>x.ProductReviews)
+                .Include(x => x.ProductReviews)
                 .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
                 .Where(x => (searchObject.SubcategoryId == null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
-                && (searchObject.ProductOrBrandName == null || (x.Name.Contains(searchObject.ProductOrBrandName) || x.Brand.Name.Contains(searchObject.ProductOrBrandName)))
+                && (searchObject.SearchParams == null || x.UPC.StartsWith(searchObject.SearchParams) || x.Name.Contains(searchObject.SearchParams) || x.Brand.Name.Contains(searchObject.SearchParams))
                 ).ToPagedListAsync(searchObject, cancellationToken);
         }
 
@@ -47,8 +48,8 @@ namespace HappyPaws.Infrastructure.Repositories
             var averagePrice = favouriteProducts.Average(p => p.Price);
 
 
-            var filteredProducts = await DbSet.Include(x=>x.ProductImages).ThenInclude(x => x.Image)
-                  .Where(p => !favouriteProducts.Select(x=>x.Id).Contains(p.Id)
+            var filteredProducts = await DbSet.Include(x => x.ProductImages).ThenInclude(x => x.Image)
+                  .Where(p => !favouriteProducts.Select(x => x.Id).Contains(p.Id)
                   && favoriteCategorySubcategoryIds.Contains(p.ProductCategorySubcategoryId)
                   && favoriteBrandIds.Contains(p.BrandId)).
                   OrderBy(p => Math.Abs(p.Price - averagePrice))
@@ -67,6 +68,13 @@ namespace HappyPaws.Infrastructure.Repositories
              .Take(size)
              .ToListAsync(cancellationToken: cancellationToken);
         }
+
+        public async Task UpdateStockAsync(int id, int size, CancellationToken cancellationToken = default)
+        {
+            await DbSet.Where(e => e.Id.Equals(id)).ExecuteUpdateAsync(p => p
+                  .SetProperty(e => e.InStock, size), cancellationToken);
+        }
     }
 }
+
 

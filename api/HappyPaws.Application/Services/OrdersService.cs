@@ -8,6 +8,7 @@ using HappyPaws.Core.Enums;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
+using Microsoft.Identity.Client;
 using System.Text;
 
 namespace HappyPaws.Application.Services
@@ -40,6 +41,13 @@ namespace HappyPaws.Application.Services
                         UnitPrice = item.Product.Price,
 
                     };
+                    var product = await UnitOfWork.ProductsRepository.GetByIdAsync(item.ProductId, cancellationToken);
+                    if (product != null)
+                    {
+                        product.InStock -= item.Quantity;
+                        UnitOfWork.ProductsRepository.Update(product);
+                    }
+                    else throw new Exception();
                     await UnitOfWork.OrderDetailsRepository.AddAsync(orderDetail, cancellationToken);
                     await UnitOfWork.UserCartsRepository.RemoveByIdAsync(item.Id, cancellationToken);
                 }

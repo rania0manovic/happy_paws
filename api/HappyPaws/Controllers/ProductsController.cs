@@ -46,6 +46,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet("RecommendedProductsForUser")]
         public async Task<IActionResult> GetRecommendedProductsForUser(int size, CancellationToken cancellationToken = default)
         {
@@ -89,6 +90,22 @@ namespace HappyPaws.Api.Controllers
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when getting bestsellers");
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("{id}/{stock}")]
+        public async Task<IActionResult> Update(int id, int stock, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Service.UpdateStockAsync(id, stock, cancellationToken);
+                return Ok();
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when updating stock resources for id {id}", id);
                 return BadRequest();
             }
         }

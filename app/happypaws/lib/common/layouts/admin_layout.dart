@@ -129,7 +129,7 @@ class _AdminLayoutState extends State<AdminLayout> {
               barTile(1, context, "Orders", "assets/icons/none.svg",
                   const OrdersRoute()),
               barTile(2, context, "Inventory", "assets/icons/none.svg",
-                  const AppointmentsRoute()),
+                  const InventoryRoute()),
             ],
           ),
           barTile(3, context, "Appointments", "assets/icons/calender.svg",

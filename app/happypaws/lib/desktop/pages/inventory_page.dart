@@ -1,37 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:happypaws/common/services/ProductCategoriesService.dart';
-import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
-import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
-import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/services/BaseService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
-import 'package:happypaws/desktop/components/buttons/action_button.dart';
-import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-import '../dialogs/add_edit_product_dialog.dart';
 
 @RoutePage()
-class ProductsPage extends StatefulHookWidget {
-  const ProductsPage({super.key});
+class InventoryPage extends StatefulHookWidget {
+  const InventoryPage({super.key});
 
   @override
-  State<ProductsPage> createState() => _ProductsPageState();
+  State<InventoryPage> createState() => _InventoryPageState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
+class _InventoryPageState extends State<InventoryPage> {
   Map<String, dynamic>? products;
   late ScrollController _scrollController;
   late int currentPage = 1;
   bool isLoadingMore = false;
-  Map<String, dynamic>? productCategories;
-  List<dynamic>? productSubcategories;
-  String? selectedCategory;
-  String? selectedSubCategory;
   Map<String, dynamic> params = {};
   Timer? _debounce;
 
@@ -40,7 +31,7 @@ class _ProductsPageState extends State<ProductsPage> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
-    fetchData();
+    fetchProducts();
   }
 
   Future<void> fetchProducts() async {
@@ -58,35 +49,31 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
+  Future<void> updateStock(int id, int newStockValue) async {
+    var response =
+        await BaseService("Products").put('/$id/$newStockValue', null);
+    if (response.statusCode == 200) {
+      setState(() {
+        final item = products!['items'].firstWhere((x) => x['id'] == id);
+        if (item != null) {
+          item['inStock'] = newStockValue;
+          item['updated'] = true;
+        }
+        ToastHelper.showToastSuccess(context,
+            "You have successfully updates stock value for product with id $id!");
+      });
+    }
+  }
+
   onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 1000), () {
       setState(() {
         products = null;
-        currentPage=1;
+        currentPage = 1;
       });
       fetchProducts();
     });
-  }
-
-  Future<void> fetchData() async {
-    var responseCategories =
-        await ProductCategoriesService().getPaged("", 1, 999);
-    if (responseCategories.statusCode == 200) {
-      setState(() {
-        productCategories = responseCategories.data;
-      });
-    }
-  }
-
-  Future<void> fetchSubcategories(String? newValue) async {
-    var responseSubcategories =
-        await ProductCategorySubcategoriesService().getSubcategories(newValue);
-    if (responseSubcategories.statusCode == 200) {
-      setState(() {
-        productSubcategories = responseSubcategories.data;
-      });
-    }
   }
 
   Future<void> _scrollListener() async {
@@ -107,44 +94,8 @@ class _ProductsPageState extends State<ProductsPage> {
     }
   }
 
-  void showAddEditProductMenu(BuildContext context,
-      {Map<String, dynamic>? data}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(vertical: 100, horizontal: 200),
-          contentPadding: const EdgeInsets.all(8),
-          content: AddEditProductMenu(
-            data: data,
-            fetchData: fetchData,
-            onClose: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> deleteProduct(int id) async {
-    try {
-      var response = await ProductsService().delete('/$id');
-      if (response.statusCode == 200) {
-        fetchData();
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      fetchProducts();
-      return null;
-    }, [params['categoryId']]);
     return Padding(
         padding: const EdgeInsets.only(top: 0, bottom: 0),
         child: Card(
@@ -159,15 +110,14 @@ class _ProductsPageState extends State<ProductsPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const Text(
-                      'Product details',
+                      'Inventory',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
-                   
                     SizedBox(
                       width: 250,
-                      height:50,
+                      height: 50,
                       child: TextField(
                         onChanged: (value) {
                           setState(() {
@@ -178,7 +128,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         decoration: InputDecoration(
                             labelText: "Search by brand, name or UPC...",
                             labelStyle: TextStyle(
-                              fontSize: 12,
+                                fontSize: 12,
                                 color: Colors.grey.shade400,
                                 fontWeight: FontWeight.w500),
                             suffixIcon: const Padding(
@@ -190,37 +140,9 @@ class _ProductsPageState extends State<ProductsPage> {
                                 ))),
                       ),
                     ),
-                     const SizedBox(
-                      width: 20,
-                    ),
-                    if (productCategories != null)
-                      SizedBox(
-                        width: 200,
-                        child: ApiDataDropdownMenu(
-                          items: productCategories!['items'],
-                          onChanged: (String? newValue) async {
-                            // await fetchSubcategories(newValue);
-                            setState(() {
-                              currentPage = 1;
-                              products = null;
-                              selectedCategory = newValue;
-                              params['categoryId'] = newValue;
-                            });
-                          },
-                          selectedOption: selectedCategory,
-                          hint: "Select category...",
-                        ),
-                      ),
                     const SizedBox(
                       width: 20,
                     ),
-                    PrimaryIconButton(
-                        onPressed: () => showAddEditProductMenu(context),
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
-                        label: "Add new product"),
                   ],
                 ),
                 const SizedBox(height: 16.0),
@@ -266,26 +188,85 @@ class _ProductsPageState extends State<ProductsPage> {
             color: Colors.grey.withOpacity(0.1),
           ),
           children: [
-            tableHead('Item Id.'),
-            tableHead('Photo'),
             tableHead('Item name'),
-            tableHead('Item category'),
-            tableHead('Item subcategory'),
             tableHead('UPC'),
+            tableHead('In stock'),
+            const TableCell(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 12, bottom: 12),
+                  child: Tooltip(
+                    message:
+                        "If you wish to subtract products just add '-' before number (e.g. '-10').",
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Add',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.info_outline,
+                          color: AppColors.gray,
+                          size: 14,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
             tableHead('Actions'),
           ],
         ),
         for (var product in products!['items'])
           TableRow(
             children: [
-              tableCell(product['id'].toString()),
-              tableCellPhoto(product['productImages'][0]['image']['data']),
               tableCell(product['name']),
-              tableCell(product['productCategorySubcategory']['productCategory']
-                  ['name']),
-              tableCell(product['productCategorySubcategory']
-                  ['productSubcategory']['name']),
               tableCell(product['upc']),
+              tableCell(product['inStock'].toString(),
+                  updated: product['updated'] ?? false),
+              TableCell(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  height: 40,
+                  width: 50,
+                  child: TextFormField(
+                    onChanged: (newValue) {
+                      if (int.tryParse(newValue) == null) return;
+                      setState(() {
+                        product['newStockValue'] =
+                            product['inStock'] + int.parse(newValue);
+                      });
+                      print(product['newStockValue']);
+                    },
+                    style: const TextStyle(
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                        hintText: '0',
+                        hintStyle: const TextStyle(color: AppColors.gray),
+                        floatingLabelBehavior: FloatingLabelBehavior.never,
+                        contentPadding: const EdgeInsets.only(
+                            bottom: 5, left: 10, right: 10),
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                            borderRadius: BorderRadius.circular(10)),
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: AppColors.primary,
+                              width: 5.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10))),
+                  ),
+                ),
+              ),
               tableActions(product)
             ],
           ),
@@ -293,7 +274,7 @@ class _ProductsPageState extends State<ProductsPage> {
     );
   }
 
-  TableCell tableCell(String data) {
+  TableCell tableCell(String data, {bool updated = false}) {
     return TableCell(
       child: Padding(
         padding: const EdgeInsets.only(top: 20, bottom: 20),
@@ -302,7 +283,10 @@ class _ProductsPageState extends State<ProductsPage> {
           message: data.length > 20 ? data : '',
           child: Text(
             data.length > 20 ? '${data.substring(0, 20)}...' : data,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: updated ? AppColors.success : Colors.black),
           ),
         )),
       ),
@@ -325,35 +309,9 @@ class _ProductsPageState extends State<ProductsPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ActionButton(
-              onPressed: () {
-                showAddEditProductMenu(context, data: data);
-              },
-              icon: Icons.edit_outlined,
-              iconColor: AppColors.gray,
-            ),
-            ActionButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ConfirmationDialog(
-                      title: 'Confirmation',
-                      content: 'Are you sure you want to delete this product?',
-                      onYesPressed: () {
-                        Navigator.of(context).pop();
-                        deleteProduct(data['id']);
-                      },
-                      onNoPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  },
-                );
-              },
-              icon: Icons.delete_outline_outlined,
-              iconColor: AppColors.error,
-            ),
+            PrimaryButton(
+                onPressed: () => updateStock(data['id'], data['newStockValue']),
+                label: "Save")
           ],
         ),
       ),

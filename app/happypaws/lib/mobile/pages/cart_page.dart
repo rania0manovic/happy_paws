@@ -3,6 +3,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
@@ -19,6 +20,7 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   Map<String, dynamic>? products;
+  bool unableToOrder = false;
   String total = "0.00";
   @override
   initState() {
@@ -33,18 +35,23 @@ class _CartPageState extends State<CartPage> {
         var response = await UserCartsService()
             .getPaged('', 1, 999, searchObject: {'userId': user['Id']});
         if (response.statusCode == 200) {
-          if (response.statusCode == 200) {
+          if (response.data['items']
+              .any((e) => e['quantity'] > e['product']['inStock'] as bool)) {
             setState(() {
-              products = response.data;
-              total = products!['items']
-                  .fold<double>(
-                      0.0,
-                      (previousValue, item) => previousValue +
-                              (item['product']['price'] * item['quantity'])
-                          as double)
-                  .toStringAsFixed(2);
+              unableToOrder = true;
             });
+            ToastHelper.showToastError(context,
+                "One or more products are out of stock. You won't be able to complete your order unless you remove them from cart or wait until they're back in stock.");
           }
+          setState(() {
+            products = response.data;
+            total = products!['items']
+                .fold<double>(
+                    0.0,
+                    (previousValue, item) => previousValue +
+                        (item['product']['price'] * item['quantity']) as double)
+                .toStringAsFixed(2);
+          });
         }
       }
     } catch (e) {
@@ -83,13 +90,12 @@ class _CartPageState extends State<CartPage> {
           products!['items']
                   .firstWhere((element) => element['id'] == id)['quantity'] =
               int.parse(quantity!);
-              total = products!['items']
-                  .fold<double>(
-                      0.0,
-                      (previousValue, item) => previousValue +
-                              (item['product']['price'] * item['quantity'])
-                          as double)
-                  .toStringAsFixed(2);
+          total = products!['items']
+              .fold<double>(
+                  0.0,
+                  (previousValue, item) => previousValue +
+                      (item['product']['price'] * item['quantity']) as double)
+              .toStringAsFixed(2);
         });
       }
     } catch (e) {
@@ -111,7 +117,8 @@ class _CartPageState extends State<CartPage> {
                     Center(
                       child: Text(
                         'CART',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                     ),
                     SizedBox(
@@ -127,7 +134,7 @@ class _CartPageState extends State<CartPage> {
                     ? const Center(
                         child: Text(
                         "No products in the cart yet!",
-                        style: const TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 20),
                       ))
                     : ListView.builder(
                         shrinkWrap: true,
@@ -159,7 +166,7 @@ class _CartPageState extends State<CartPage> {
                                           productId: item['productId'])),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 16, bottom: 16),
+                                        top: 10, bottom: 5),
                                     child: Wrap(
                                       children: [
                                         FractionallySizedBox(
@@ -276,6 +283,21 @@ class _CartPageState extends State<CartPage> {
                                     ),
                                   ),
                                 ),
+                                if (item['product']['inStock'] <
+                                    item['quantity'])
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Out of stock",
+                                        style:
+                                            TextStyle(color: AppColors.error),
+                                      )
+                                    ],
+                                  ),
+                                SizedBox(
+                                  height: 5,
+                                ),
                                 Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -308,20 +330,19 @@ class _CartPageState extends State<CartPage> {
                             ),
                             // ignore: prefer_interpolation_to_compose_strings
                             Text(
-                                "\$ ${products!['items'].isNotEmpty
-                                        ? total
-                                        : "0.00"}",
+                                "\$ ${products!['items'].isNotEmpty ? total : "0.00"}",
                                 style: const TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.w600))
                           ],
                         ),
                       ),
                       PrimaryButton(
+                        isDisabled: unableToOrder,
                         onPressed: () {
+                          if (unableToOrder) return;
                           if (products!['items'].isEmpty) return;
-                          context.router.push(CheckoutRoute(
-                              total: total,
-                              products: products!));
+                          context.router.push(
+                              CheckoutRoute(total: total, products: products!));
                         },
                         label: "Order",
                         fontSize: 22,

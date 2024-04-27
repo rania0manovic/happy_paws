@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 
+// ignore: must_be_immutable
 class FilterMenuOverlay extends StatefulWidget {
   final VoidCallback onClose;
-   String selectedValuePrice;
-   String selectedValueReview;
+  String selectedValuePrice;
+  String selectedValueReview;
   final Function(String price, String review) sort;
 
-   FilterMenuOverlay({
+  FilterMenuOverlay({
     Key? key,
     required this.onClose,
-    required this.sort, required this.selectedValuePrice, required this.selectedValueReview,
+    required this.sort,
+    required this.selectedValuePrice,
+    required this.selectedValueReview,
   }) : super(key: key);
 
   @override
@@ -19,7 +22,6 @@ class FilterMenuOverlay extends StatefulWidget {
 }
 
 class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
-  
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -87,7 +89,10 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
                     padding: const EdgeInsets.all(10),
                     child: Center(
                         child: PrimaryButton(
-                      onPressed: () {widget.sort(widget.selectedValuePrice, widget.selectedValueReview);},
+                      onPressed: () {
+                        widget.sort(widget.selectedValuePrice,
+                            widget.selectedValueReview);
+                      },
                       label: "Apply",
                       width: double.infinity,
                       fontSize: 16,
@@ -118,7 +123,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValueReview,
           onChanged: (value) {
             setState(() {
-              widget.selectedValueReview=value!;
+              widget.selectedValueReview = value!;
             });
           },
         ),
@@ -135,7 +140,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValueReview,
           onChanged: (value) {
             setState(() {
-              widget.selectedValueReview=value!;
+              widget.selectedValueReview = value!;
             });
           },
         ),
@@ -152,8 +157,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValueReview,
           onChanged: (value) {
             setState(() {
-              widget.selectedValueReview=value!;
-              
+              widget.selectedValueReview = value!;
             });
           },
         ),
@@ -170,8 +174,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValueReview,
           onChanged: (value) {
             setState(() {
-              widget.selectedValueReview=value!;
-              
+              widget.selectedValueReview = value!;
             });
           },
         ),
@@ -195,8 +198,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValuePrice,
           onChanged: (value) {
             setState(() {
-              widget.selectedValuePrice=value!;
-              
+              widget.selectedValuePrice = value!;
             });
           },
         ),
@@ -213,7 +215,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
           groupValue: widget.selectedValuePrice,
           onChanged: (value) {
             setState(() {
-              widget.selectedValuePrice=value!;
+              widget.selectedValuePrice = value!;
             });
           },
         ),
