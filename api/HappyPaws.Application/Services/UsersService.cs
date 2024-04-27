@@ -3,6 +3,7 @@ using FluentValidation;
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
+using HappyPaws.Core.Enums;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
@@ -26,6 +27,11 @@ namespace HappyPaws.Application.Services
         public async Task<string?> GetConnectionId(int userId, CancellationToken cancellationToken = default)
         {
             return await CurrentRepository.GetConnectionId(userId, cancellationToken);
+        }
+
+        public async Task<int> GetCountByRoleAsync(Role role, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.GetCountByRoleAsync(role, cancellationToken);
         }
 
         public override async Task<UserDto> UpdateAsync(UserDto dto, CancellationToken cancellationToken = default)

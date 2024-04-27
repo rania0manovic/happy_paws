@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using HappyPaws.Core.Enums;
 using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
@@ -36,6 +37,12 @@ namespace HappyPaws.Infrastructure.Repositories
             return await DbSet.Where(x => x.Id == userId)
                 .Select(x => x.ConnectionId)
                 .FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<int> GetCountByRoleAsync(Role role, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.CountAsync(x => x.Role == role, cancellationToken);
+
         }
     }
 }

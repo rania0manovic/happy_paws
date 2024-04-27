@@ -76,7 +76,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                                 ],
                               )),
                           IconButton(
-                              onPressed: (){
+                              onPressed: () {
                                 AuthService().logOut();
                                 context.router.push(const LoginDesktopRoute());
                               },
@@ -106,7 +106,7 @@ class _AdminLayoutState extends State<AdminLayout> {
         ),
         children: <Widget>[
           Visibility(
-            visible: user!['Role'] == 'Admin',
+            visible: user != null ? user!['Role'] == 'Admin' : false,
             child: barTile(0, context, "Dashboard",
                 "assets/icons/dashboard.svg", const DashboardRoute()),
           ),
@@ -134,21 +134,20 @@ class _AdminLayoutState extends State<AdminLayout> {
           ),
           barTile(3, context, "Appointments", "assets/icons/calender.svg",
               const AppointmentsRoute()),
-               barTile(5, context, "Patients", "assets/icons/paw.svg",
+          barTile(5, context, "Patients", "assets/icons/paw.svg",
               const PatientsRoute()),
           Visibility(
-            visible: user!['Role'] == 'Admin',
+            visible: user != null ? user!['Role'] == 'Admin' : false,
             child: barTile(4, context, "Employees",
                 "assets/icons/employees.svg", const EmployeesRoute()),
           ),
-         
           Visibility(
-            visible: user!['Role'] == 'Admin',
+            visible: user != null ? user!['Role'] == 'Admin' : false,
             child: barTile(6, context, "Reports", "assets/icons/report.svg",
                 const AppointmentsRoute()),
           ),
           Visibility(
-            visible: user!['Role'] == 'Admin',
+            visible: user != null ? user!['Role'] == 'Admin' : false,
             child: ExpansionTile(
               iconColor: AppColors.primary,
               collapsedIconColor: Colors.white,
@@ -172,10 +171,8 @@ class _AdminLayoutState extends State<AdminLayout> {
                 barTile(9, context, "Brands", "", const BrandsRoute()),
                 barTile(10, context, "Products", "assets/icons/none.svg",
                     const ProductsRoute()),
-                            barTile(11, context, "Pet types", "",
-                    const PetTypesRoute()),
-                     barTile(12, context, "Pet breeds", "",
-                    const PetBreedsRoute()),
+                barTile(11, context, "Pet types", "", const PetTypesRoute()),
+                barTile(12, context, "Pet breeds", "", const PetBreedsRoute()),
               ],
             ),
           ),

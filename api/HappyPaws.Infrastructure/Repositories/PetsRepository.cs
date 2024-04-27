@@ -1,4 +1,5 @@
-﻿using HappyPaws.Core.Entities;
+﻿using HappyPaws.Core.Dtos.Helpers;
+using HappyPaws.Core.Entities;
 using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
@@ -39,6 +40,28 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x => x.PetMedications)
                 .Include(x => x.Owner)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
+
+        public async Task<int> GetCountAsync(CancellationToken cancellationToken = default)
+        {
+            return await DbSet.CountAsync(cancellationToken);
+        }
+
+        public async Task<List<PetTypeCountDto>> GetCountByPetTypeAsync(CancellationToken cancellationToken = default)
+        {
+
+            var groupedPets = await DbSet
+                .GroupBy(r => r.PetBreed.PetType.Name)
+                .Select(group => new PetTypeCountDto
+                {
+                    Name = group.Key,
+                    Count = group.Count()
+                })
+                .ToListAsync(cancellationToken: cancellationToken);
+
+
+
+            return groupedPets;
         }
     }
 }
