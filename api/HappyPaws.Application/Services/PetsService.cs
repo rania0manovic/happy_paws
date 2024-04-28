@@ -47,7 +47,7 @@ namespace HappyPaws.Application.Services
 
         public async Task<List<PetTypeCountDto>> GetCountByPetTypeAsync(CancellationToken cancellationToken = default)
         {
-            var allPetTypes = await UnitOfWork.PetTypesRepository.GetPagedAsync(new PetTypeSearchObject(), cancellationToken);
+            var allPetTypes = await UnitOfWork.PetTypesRepository.GetPagedAsync(new PetTypeSearchObject() { PageSize=9999}, cancellationToken);
             var groupedPets = await CurrentRepository.GetCountByPetTypeAsync(cancellationToken);
             var mergedCounts = allPetTypes.Items.Select(petType => new PetTypeCountDto
             {

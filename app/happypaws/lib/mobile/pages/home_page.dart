@@ -10,6 +10,7 @@ import 'package:happypaws/common/services/NotificationsService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/message_notifier.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:provider/provider.dart';
 import 'package:signalr_netcore/http_connection_options.dart';
 import 'package:signalr_netcore/hub_connection_builder.dart';
@@ -278,7 +279,7 @@ Column _cheritySection(BuildContext context) {
               fit: BoxFit.contain,
             ),
             PrimaryButton(
-              onPressed: () {},
+              onPressed: ()=> context.router.push(const DonateRoute()),
               label: " Donate now ➜ ",
               fontSize: 18,
             )
@@ -298,6 +299,8 @@ Column _cheritySection(BuildContext context) {
 }
 
 class CircularPhotoLayout extends StatefulWidget {
+  const CircularPhotoLayout({super.key});
+
   @override
   State<CircularPhotoLayout> createState() => _CircularPhotoLayoutState();
 }

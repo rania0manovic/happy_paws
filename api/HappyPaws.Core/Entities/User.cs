@@ -20,6 +20,7 @@ namespace HappyPaws.Core.Entities
         public required ICollection<UserCart> UserCartItems { get; set; }
         public required ICollection<UserFavourite> UserFavouriteItems { get; set; }
         public required ICollection<Notification> Notifications { get; set; }
+        public required ICollection<Donation> Donations { get; set; }
 
 
     }

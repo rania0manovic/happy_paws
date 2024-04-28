@@ -61,194 +61,205 @@ class _DashboardPageState extends State<DashboardPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   mainCountSection(),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Patient types',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 40,
-                      ),
-                      SizedBox(
-                        width: 250,
-                        child: Text(
-                          'Donations progress',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Card(
-                          child: SizedBox(
-                            height: 250,
-                            child: BarChart(
-                              BarChartData(
-                                  barTouchData: barTouchData,
-                                  titlesData: titlesData,
-                                  borderData: borderData,
-                                  barGroups: barGroups,
-                                  gridData: const FlGridData(
-                                      show: true,
-                                      drawHorizontalLine: true,
-                                      drawVerticalLine: false),
-                                  alignment: BarChartAlignment.spaceAround,
-                                  maxY: maxY + 1),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 40,
-                      ),
-                      Card(
-                        child: SizedBox(
-                          width: 250,
-                          height: 250,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: CustomProgressIndicator(
-                              progress: 0.75,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Top buyers',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 40,
-                      ),
-                      SizedBox(
-                        width: 250,
-                        child: Text(
-                          'This month',
-                          style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      const Expanded(
-                        child: Card(
-                          child: SizedBox(
-                            height: 250,
-                            child: SizedBox()
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 40,
-                      ),
-                      SizedBox(
-                        width: 250,
-                        height: 250,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: AppColors.dimWhite),
-                                width: double.infinity,
-                                child: const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      'SHOP INCOME',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black45,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      "\$ 57 899",
-                                      style: TextStyle(
-                                          fontSize: 26,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w700),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 10),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    color: AppColors.dimWhite),
-                                width: double.infinity,
-                                child: const Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Text(
-                                      'DONATIONS',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black45,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    Text(
-                                      "\$ 3403",
-                                      style: TextStyle(
-                                          fontSize: 26,
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w700),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            
-                          ],
-                        ),
-                      ),
-                    ],
-                  )
+                  barChart(),
+                  donationsProgressAndTopBuyers(),
+                  thisMonth()
                 ],
               ),
             ),
           );
+  }
+
+  Column barChart() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        const Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Patient types',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: SizedBox(
+                  height: 250,
+                  child: BarChart(
+                    BarChartData(
+                        barTouchData: barTouchData,
+                        titlesData: titlesData,
+                        borderData: borderData,
+                        barGroups: barGroups,
+                        gridData: const FlGridData(
+                            show: true,
+                            drawHorizontalLine: true,
+                            drawVerticalLine: false),
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: maxY + 1),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column donationsProgressAndTopBuyers() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        const Row(
+          children: [
+            SizedBox(
+              width: 250,
+              child: Text(
+                'Donations progress',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+            ),
+            SizedBox(
+              width: 40,
+            ),
+            Expanded(
+              child: Text(
+                'Top buyers',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Card(
+              child: SizedBox(
+                width: 250,
+                height: 250,
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: CustomProgressIndicator(
+                    progress: 0.75,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 40,
+            ),
+            const Expanded(
+              child: Card(
+                child: SizedBox(height: 250, child: SizedBox()),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Column thisMonth() {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        const Row(
+          children: [
+            Expanded(
+              child: Text(
+                'This month',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  height: 100,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        'SHOP INCOME',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black45,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        "\$ 3403",
+                        style: TextStyle(
+                            fontSize: 26,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 30,
+            ),
+            Expanded(
+              child: Card(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  height: 100,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text(
+                        'DONATIONS',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black45,
+                            fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        "\$ 3403",
+                        style: TextStyle(
+                            fontSize: 26,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Row mainCountSection() {

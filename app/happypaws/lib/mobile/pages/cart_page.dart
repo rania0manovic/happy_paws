@@ -171,15 +171,18 @@ class _CartPageState extends State<CartPage> {
                                       children: [
                                         FractionallySizedBox(
                                             widthFactor: 0.3,
-                                            child: Image.memory(
-                                              base64.decode(item['product']
-                                                          ['productImages'][0]
-                                                      ['image']['data']
-                                                  .toString()),
-                                              height: 100,
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Image.memory(
+                                                base64.decode(item['product']
+                                                            ['productImages'][0]
+                                                        ['image']['data']
+                                                    .toString()),
+                                                height: 100,
+                                              ),
                                             )),
                                         FractionallySizedBox(
-                                          widthFactor: 0.5,
+                                          widthFactor: 0.48,
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -207,7 +210,7 @@ class _CartPageState extends State<CartPage> {
                                           ),
                                         ),
                                         FractionallySizedBox(
-                                          widthFactor: 0.2,
+                                          widthFactor: 0.22,
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.end,
@@ -215,7 +218,7 @@ class _CartPageState extends State<CartPage> {
                                               Text(
                                                 "\$ ${item['product']['price']}",
                                                 style: const TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 18,
                                                     fontWeight:
                                                         FontWeight.w600),
                                               ),

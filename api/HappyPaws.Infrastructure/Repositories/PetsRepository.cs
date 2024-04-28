@@ -59,8 +59,6 @@ namespace HappyPaws.Infrastructure.Repositories
                 })
                 .ToListAsync(cancellationToken: cancellationToken);
 
-
-
             return groupedPets;
         }
     }

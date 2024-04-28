@@ -38,7 +38,6 @@ dependencies:
   flutter_svg: ^2.0.9
   auto_route: ^7.8.4
   get_it: ^7.6.4
-  http: ^1.1.0
   shared_preferences: ^2.2.2
   jwt_decode: ^0.3.1
   image_picker: ^1.0.5
@@ -59,6 +58,7 @@ dependencies:
   provider: ^6.1.2
   flutter_rating_bar: ^4.0.1
   fl_chart: ^0.67.0
+  http: ^1.2.1
 
 dev_dependencies:
   auto_route_generator: ^7.1.1

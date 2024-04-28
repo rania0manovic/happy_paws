@@ -136,14 +136,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 children: [
                   const GoBackButton(),
                   const SizedBox(
-                    height: 10,
-                  ),
-                  //   Text(
-                  //   "Total:${widget.total}\$",
-                  //   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
-                  // ),
-                  const SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   const Text(
                     "Pay method",
@@ -409,8 +402,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               isSavedAddress,
                           child: GestureDetector(
                             onTap: () {
-                              print(widget.total);
-                              print(widget.products);
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (BuildContext context) =>
                                     PaypalCheckoutView(

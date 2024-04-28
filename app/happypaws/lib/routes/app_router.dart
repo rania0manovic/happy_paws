@@ -28,10 +28,10 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: ClientLayout.page, guards: [
           AuthGuardMobile()
         ], children: [
-          AutoRoute(
-              path: 'home',
-              page: HomeTab.page,
-              children: [AutoRoute(path: '', page: HomeRoute.page)]),
+          AutoRoute(path: 'home', page: HomeTab.page, children: [
+            AutoRoute(path: '', page: HomeRoute.page),
+            AutoRoute(path: 'make-donation', page: DonateRoute.page)
+          ]),
           AutoRoute(path: "clinic", page: ClinicTab.page, children: [
             AutoRoute(path: '', page: ClinicRoute.page),
             AutoRoute(path: 'appointments', page: UserAppointmentsRoute.page),
