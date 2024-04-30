@@ -4,47 +4,93 @@ import 'dart:math' as math;
 
 import 'package:happypaws/common/utilities/colors.dart';
 
-class CustomProgressIndicator extends StatelessWidget {
-  final double progress;
+class CustomProgressIndicator extends StatefulWidget {
+  final double targetProgress;
 
-  CustomProgressIndicator({required this.progress});
+  CustomProgressIndicator({required this.targetProgress});
+
+  @override
+  _CustomProgressIndicatorState createState() =>
+      _CustomProgressIndicatorState();
+}
+
+class _CustomProgressIndicatorState extends State<CustomProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600), 
+    );
+    _animation = Tween<double>(
+      begin: 0.0,
+      end: widget.targetProgress,
+    ).animate(_animationController);
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            child: CustomPaint(
-                painter: ProgressPainter(progress: progress),
-                child: const SizedBox( width: 200,))),
-        Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            Positioned(
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
               child: CustomPaint(
-                  painter: ProgressPainter(progress: progress),
-                  child: const SizedBox(width: 200,)),
-            )),
-        Positioned(
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            child: SizedBox(
-              width: 200,
+                painter: ProgressPainter(progress: _animation.value),
+                child: const SizedBox(width: 200),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: CustomPaint(
+                  painter: ProgressPainter(progress: _animation.value),
+                  child: const SizedBox(width: 200),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              child: SizedBox(
+                width: 200,
                 child: Center(
-                    child: Text(
-              "75%",
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: AppColors.primary),
-            )))),
-      ],
+                  child: Text(
+                    "${(_animation.value * 100).toStringAsFixed(0)}%",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

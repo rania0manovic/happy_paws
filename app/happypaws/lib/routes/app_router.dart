@@ -30,7 +30,8 @@ class AppRouter extends $AppRouter {
         ], children: [
           AutoRoute(path: 'home', page: HomeTab.page, children: [
             AutoRoute(path: '', page: HomeRoute.page),
-            AutoRoute(path: 'make-donation', page: DonateRoute.page)
+            AutoRoute(path: '', page: DonateRoute.page),
+            AutoRoute(path: 'paypal', page: PaypalDonationsRoute.page)
           ]),
           AutoRoute(path: "clinic", page: ClinicTab.page, children: [
             AutoRoute(path: '', page: ClinicRoute.page),
@@ -40,7 +41,7 @@ class AppRouter extends $AppRouter {
           AutoRoute(path: "shop", page: ShopTab.page, children: [
             AutoRoute(path: '', page: ShopRoute.page),
             AutoRoute(
-              path: '',
+              path: 'cart',
               page: CartRoute.page,
             ),
             AutoRoute(
@@ -54,6 +55,7 @@ class AppRouter extends $AppRouter {
               path: 'checkout',
               page: CheckoutRoute.page,
             ),
+            AutoRoute(path: 'paypal', page: PaypalDonationsRoute.page),
             AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
             AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
           ]),

@@ -23,6 +23,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
   Map<String, dynamic>? userPets;
   Map<String, dynamic> data = {};
   String? selectedValue;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -105,32 +106,43 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                       style:
                           TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                     ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 6),
-                      height: 200,
-                      child: TextFormField(
-                        readOnly: widget.data != null,
-                        initialValue: data['reason'],
-                        onChanged: (value) => setState(() {
-                          data['reason'] = value;
-                        }),
-                        textInputAction: TextInputAction.done,
-                        minLines: 10,
-                        maxLines: 10,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 14),
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: const Color(0xfff2f2f2),
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide.none,
-                                borderRadius: BorderRadius.circular(10)),
-                            focusedBorder: UnderlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: AppColors.primary,
-                                  width: 5.0,
-                                ),
-                                borderRadius: BorderRadius.circular(10))),
+                    Form(
+                      key: _formKey,
+                      child: Container(
+                        padding: const EdgeInsets.only(top: 6),
+                        height: 200,
+                        child: TextFormField(
+                          validator: (value) {
+                            if (value != null && value.isEmpty) {
+                              return "This field is required";
+                            }
+                            return null;
+                          },
+                          readOnly: widget.data != null,
+                          initialValue: data['reason'],
+                          onChanged: (value) => setState(() {
+                            data['reason'] = value;
+                          }),
+                          textInputAction: TextInputAction.done,
+                          minLines: 10,
+                          maxLines: 10,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 14),
+                          decoration: InputDecoration(
+                              errorStyle: const TextStyle(
+                                  color: AppColors.error, fontSize: 14),
+                              filled: true,
+                              fillColor: const Color(0xfff2f2f2),
+                              border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(10)),
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: AppColors.primary,
+                                    width: 5.0,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10))),
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -169,29 +181,31 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                                 borderRadius: BorderRadius.circular(10))),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     if (widget.data == null)
                       PrimaryButton(
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ConfirmationDialog(
-                                title: 'Confirmation',
-                                content:
-                                    'Keep in mind that once your request is made, you won\'t be able to update the inserted data. Do you wish to proceed?',
-                                onYesPressed: () {
-                                  Navigator.of(context).pop();
-                                  bookAppointment();
-                                },
-                                onNoPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                              );
-                            },
-                          );
+                          if (_formKey.currentState!.validate()) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return ConfirmationDialog(
+                                  title: 'Confirmation',
+                                  content:
+                                      'Keep in mind that once your request is made, you won\'t be able to update the inserted data. Do you wish to proceed?',
+                                  onYesPressed: () {
+                                    Navigator.of(context).pop();
+                                    bookAppointment();
+                                  },
+                                  onNoPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                              },
+                            );
+                          }
                         },
                         label: "Send",
                         width: double.infinity,

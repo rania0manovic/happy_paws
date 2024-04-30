@@ -1,4 +1,6 @@
-﻿using HappyPaws.Core.Entities;
+﻿using HappyPaws.Core.Dtos.User;
+using HappyPaws.Core.Entities;
+using HappyPaws.Core.Enums;
 using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure.Interfaces;
@@ -30,6 +32,15 @@ namespace HappyPaws.Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
+        public async Task<double> GetIncomeForMonthAsync(int month, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.Where(x => x.CreatedAt.Month == month
+                && x.CreatedAt.Year == DateTime.Now.Year
+                && x.Status != OrderStatus.Returned
+                && x.Status != OrderStatus.Refunded)
+                .SumAsync(x => x.Total, cancellationToken);
+        }
+
         public override async Task<PagedList<Order>> GetPagedAsync(OrderSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             var query = DbSet
@@ -46,5 +57,23 @@ namespace HappyPaws.Infrastructure.Repositories
              .ToPagedListAsync(searchObject, cancellationToken);
         }
 
+        public async Task<List<TopUserDto>> GetTopBuyersAsync(int size, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.Where(x => x.Status != OrderStatus.Returned && x.Status != OrderStatus.Refunded).GroupBy(x => x.UserId)
+                          .OrderByDescending(g => g.Count())
+                          .Take(size)
+                             .Select(g => new TopUserDto()
+                             {
+                                 User = new UserDto()
+                                 {
+                                     FirstName = g.FirstOrDefault().User.FirstName,
+                                     LastName = g.FirstOrDefault().User.LastName,
+                                     ProfilePhotoId = g.FirstOrDefault().User.ProfilePhotoId,
+                                     Gender = g.FirstOrDefault().User.Gender
+                                 },
+                                 TotalSpent = g.Sum(o => o.Total)
+                             })
+                          .ToListAsync(cancellationToken);
+        }
     }
 }

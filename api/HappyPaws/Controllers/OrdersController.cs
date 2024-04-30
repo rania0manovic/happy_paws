@@ -2,14 +2,17 @@
 using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Application.Services;
+using HappyPaws.Core.Dtos.Helpers;
 using HappyPaws.Core.Dtos.Notification;
 using HappyPaws.Core.Dtos.Order;
+using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;
 using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
@@ -21,12 +24,14 @@ namespace HappyPaws.Api.Controllers
         protected readonly IUsersService _usersService;
         protected readonly INotificationsService _notificationsService;
         private readonly IHubContext<MessageHub> _hubContext;
-        public OrdersController(IOrdersService service, ILogger<BaseController> logger, CurrentUser currentUser, IUsersService usersService, INotificationsService notificationsService, IHubContext<MessageHub> hubContext) : base(service, logger)
+        private readonly IMemoryCache _memoryCache;
+        public OrdersController(IOrdersService service, ILogger<BaseController> logger, CurrentUser currentUser, IUsersService usersService, INotificationsService notificationsService, IHubContext<MessageHub> hubContext, IMemoryCache memoryCache) : base(service, logger)
         {
             _currentUser = currentUser;
             _usersService = usersService;
             _notificationsService = notificationsService;
             _hubContext = hubContext;
+            _memoryCache = memoryCache;
         }
         public override async Task<IActionResult> Post([FromBody] OrderDto upsertDto, CancellationToken cancellationToken = default)
         {
@@ -72,7 +77,7 @@ namespace HappyPaws.Api.Controllers
             try
             {
                 await Service.UpdateAsync(id, status, cancellationToken);
-                
+
                 var orderStatus = Regex.Replace(status.ToString(), @"(?<!^)(?=[A-Z])", " ");
                 orderStatus = char.ToUpper(orderStatus[0]) + orderStatus.Substring(1).ToLower();
                 var notification = new NotificationDto
@@ -93,6 +98,25 @@ namespace HappyPaws.Api.Controllers
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when updating resource");
+                return BadRequest();
+            }
+        }
+        [HttpGet("GetTopBuyers")]
+        public async Task<IActionResult> GetTopBuyers(int size, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (_memoryCache.TryGetValue<List<TopUserDto>>("topBuyers", out var topBuyers))
+                {
+                    return Ok(topBuyers);
+                }
+                var response = await Service.GetTopBuyersAsync(size, cancellationToken);
+                _memoryCache.Set("topBuyers", response, TimeSpan.FromDays(1));
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when fetching resources about top buyers!");
                 return BadRequest();
             }
         }

@@ -20,7 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
     try {
       final response = await AuthService().sendEmailVerification(user);
       if (response.statusCode == 200) {
-        if(!mounted)return;
+        if (!mounted) return;
         context.router.push(RegisterVerificationRoute(user: user));
       } else if (response.statusCode == 409) {
         throw Exception('User with the same email exists');
@@ -30,6 +30,8 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+  Map<String, bool> errorStates = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,37 +66,44 @@ class _RegisterPageState extends State<RegisterPage> {
                 "Please fill out the form below with correct information to register",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
-                    ),
+                  fontSize: 16,
+                  color: Colors.black.withOpacity(0.7),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Column(
-                    children: [
-                      inputField('Name', 'firstName'),
-                      inputField('Surname', 'lastName'),
-                      inputField('Email', 'email'),
-                      inputField('Password', 'password', isObscure: true),
-                    ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        inputField('Name', 'firstName'),
+                        inputField('Surname', 'lastName'),
+                        inputField('Email', 'email'),
+                        inputField('Password', 'password', isObscure: true),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              sendEmailVerificationCode();
+                            }
+                          },
+                          child: SvgPicture.asset(
+                            'assets/icons/long_right_arrow.svg',
+                            height: 50,
+                            width: 50,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 )),
-            const SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () =>sendEmailVerificationCode(),
-              child: SvgPicture.asset(
-                'assets/icons/long_right_arrow.svg',
-                height: 50,
-                width: 50,
-                color: AppColors.primary,
-              ),
-            ),
             GestureDetector(
               onTap: () => context.router.push(const LoginRoute()),
               child: Padding(
@@ -103,15 +112,17 @@ class _RegisterPageState extends State<RegisterPage> {
                   "Already a member? Login here.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize: 16,
-                      color: Colors.black.withOpacity(0.7),
-                      fontWeight: FontWeight.w500,
-                     ),
+                    decoration: TextDecoration.underline,
+                    fontSize: 16,
+                    color: Colors.black.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 30,),
+            const SizedBox(
+              height: 30,
+            ),
           ]),
     ));
   }
@@ -125,16 +136,41 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
         ),
         SizedBox(
-          height: 49,
-          child: TextField(
+          height: errorStates[key] ?? false
+              ? key == 'password'
+                  ? 95
+                  : 75
+              : 50,
+          child: TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                setState(() {
+                  errorStates[key] = true;
+                });
+                return 'This field is required';
+              } else if (isObscure) {
+                RegExp passwordRegex = RegExp(
+                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                if (!passwordRegex.hasMatch(value)) {
+                  setState(() {
+                    errorStates[key] = true;
+                  });
+                  return 'Password must be at least 8 characters with 1 uppercase, 1 number, and 1 special character';
+                }
+                return null;
+              } else {
+                setState(() {
+                  errorStates[key] = false;
+                });
+                return null;
+              }
+            },
             obscureText: isObscure,
             onChanged: (value) {
               setState(() {
@@ -144,6 +180,9 @@ class _RegisterPageState extends State<RegisterPage> {
             decoration: InputDecoration(
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
+                errorStyle:
+                    const TextStyle(color: AppColors.error, fontSize: 14),
+                errorMaxLines: 3,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

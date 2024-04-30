@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -15,6 +16,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   Map<String, dynamic> data = {};
   bool error = false;
+  final _formKey = GlobalKey<FormState>();
+  Map<String, bool> errorStates = {};
 
   Future<void> login() async {
     try {
@@ -22,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', response.data['token'].toString());
-        if(mounted) {
+        if (mounted) {
           context.router.push(const ClientLayout());
         }
       } else if (response.statusCode == 403) {
@@ -32,8 +35,8 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       setState(() {
-          error = true;
-        });
+        error = true;
+      });
       throw Exception(e);
     }
   }
@@ -72,64 +75,52 @@ class _LoginPageState extends State<LoginPage> {
                 "Please fill out the form below with correct information to login",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black.withOpacity(0.7),
-                    fontWeight: FontWeight.w500,
-                   ),
+                  fontSize: 16,
+                  color: Colors.black.withOpacity(0.7),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             Padding(
-                padding: const EdgeInsets.only(left: 20, right:20, top: 20),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Column(
-                    children: [
-                      inputField('Email', 'email'),
-                      inputField('Password', 'password', isObscure: true),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Visibility(
-                        visible: error,
-                        child: const Text(
-                          "Wrong email or password! Please try again.",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        inputField('Email', 'email'),
+                        inputField('Password', 'password', isObscure: true),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Visibility(
+                          visible: error,
+                          child: const Text(
+                            "Wrong email or password! Please try again.",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
                               fontSize: 16,
                               color: AppColors.error,
                               fontWeight: FontWeight.w500,
-                        ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      GestureDetector(
-                        onTap: () => login(),
-                        child: Container(
-                          height: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: AppColors.primary),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 0, left: 0),
-                                child: Text(
-                                  "Login",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        PrimaryButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              login();
+                            }
+                          },
+                          label: "Login",
+                          fontSize: 18,
+                          width: double.infinity,
+                        ),
+                      ],
+                    ),
                   ),
                 )),
             GestureDetector(
@@ -140,13 +131,16 @@ class _LoginPageState extends State<LoginPage> {
                   "Not a member yet? Register here.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontSize: 16,
-                      color: Colors.black.withOpacity(0.7),
-                      fontWeight: FontWeight.w500,
-                      ),
+                    decoration: TextDecoration.underline,
+                    fontSize: 16,
+                    color: Colors.black.withOpacity(0.7),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
+            ),
+            const SizedBox(
+              height: 20,
             )
           ]),
     ));
@@ -161,34 +155,45 @@ class _LoginPageState extends State<LoginPage> {
         ),
         Text(
           label,
-          style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 18),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
         ),
         const SizedBox(
           height: 10,
         ),
         SizedBox(
-          height: 49,
-          child: TextField(
+          height: errorStates[key] ?? false ? 75 : 50,
+          child: TextFormField(
             onChanged: (value) {
               setState(() {
                 data[key] = value;
               });
             },
-            style: TextStyle(color: error ? AppColors.error :Colors.black),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                setState(() {
+                  errorStates[key] = true;
+                });
+                return 'This field is required';
+              }
+              setState(() {
+                errorStates[key] = false;
+              });
+              return null;
+            },
+            style: TextStyle(color: error ? AppColors.error : Colors.black),
             obscureText: isObscure ? true : false,
             decoration: InputDecoration(
+                errorStyle:
+                    const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
                 fillColor: error ? AppColors.dimError : AppColors.dimWhite,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),
                 focusedBorder: UnderlineInputBorder(
-                    borderSide:  BorderSide(
-                      color: error ? AppColors.error :
-                          AppColors.primary, 
-                      width: 5.0, 
+                    borderSide: BorderSide(
+                      color: error ? AppColors.error : AppColors.primary,
+                      width: 5.0,
                     ),
                     borderRadius: BorderRadius.circular(10))),
           ),

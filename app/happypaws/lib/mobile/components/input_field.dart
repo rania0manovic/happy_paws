@@ -7,12 +7,15 @@ class InputField extends StatefulWidget {
   final bool isObscure;
   final String? initialValue;
   final MyVoidCallback onChanged;
+  final bool isRequired;
 
   const InputField({
     Key? key,
     required this.label,
     this.isObscure = false,
-    required this.onChanged,  this.initialValue,
+    required this.onChanged,
+    this.initialValue,
+    this.isRequired = true,
   }) : super(key: key);
 
   @override
@@ -20,6 +23,7 @@ class InputField extends StatefulWidget {
 }
 
 class _InputFieldState extends State<InputField> {
+  bool isErrorShowing = false;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -39,15 +43,31 @@ class _InputFieldState extends State<InputField> {
           height: 10,
         ),
         SizedBox(
-          height: 49,
+          height: isErrorShowing ? 75 : 50,
           child: TextFormField(
             onChanged: (value) {
-             widget.onChanged(value);
+              widget.onChanged(value);
+            },
+            validator: (value) {
+              if (!widget.isRequired) {
+                return null;
+              }
+              if (value == null || value.isEmpty) {
+                setState(() {
+                  isErrorShowing = true;
+                });
+                return "This field is required";
+              }
+              setState(() {
+                isErrorShowing = false;
+              });
+              return null;
             },
             initialValue: widget.initialValue,
             style: const TextStyle(color: Colors.black),
             obscureText: widget.isObscure,
             decoration: InputDecoration(
+              errorStyle: const TextStyle(color: AppColors.error, fontSize: 14),
               filled: true,
               fillColor: AppColors.dimWhite,
               border: OutlineInputBorder(

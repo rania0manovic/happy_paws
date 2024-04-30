@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -13,8 +15,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  late dynamic user=Null;
-  late dynamic formatedCardNumber=Null;
+  late dynamic user = Null;
+  late dynamic formatedCardNumber = Null;
 
   @override
   void initState() {
@@ -51,47 +53,53 @@ class _ProfilePageState extends State<ProfilePage> {
         SingleChildScrollView(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            user != Null ? myPawCard() : CircularProgressIndicator(),
-            const SizedBox(
-              height: 40,
-            ),
+            user != Null ? myPawCard() : const Spinner(),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(25),
-              height: 220,
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      onTap: () =>
-                          context.router.push(const PersonalInformationRoute()),
-                      child: const Text(
-                        "Personal Information",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      height: 1,
+                      color: AppColors.gray.withOpacity(0.2),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () => context.router
+                            .push(const PersonalInformationRoute()),
+                        child: const Text(
+                          "Personal Information",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 20),
+                        ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => context.router.push( MyPetsRoute(userId: user?['Id'])),
-                      child: const Text(
-                        "My Pets",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20),
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      height: 1,
+                      color: AppColors.gray.withOpacity(0.2),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: GestureDetector(
+                        onTap: () => context.router
+                            .push(MyPetsRoute(userId: user?['Id'])),
+                        child: const Text(
+                          "My Pets",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500, fontSize: 20),
+                        ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => context.router.push( const OrderHistoryRoute()),
-
-                      child: const Text(
-                        "Order History",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20),
-                      ),
-                    )
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      height: 1,
+                      color: AppColors.gray.withOpacity(0.2),
+                    ),
                   ]),
             )
           ]),
@@ -115,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
           height: 50,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color:  AppColors.primary),
+              color: AppColors.primary),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -147,9 +155,8 @@ class _ProfilePageState extends State<ProfilePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             image: const DecorationImage(
-              image: AssetImage(
-                  'assets/images/card.png'), 
-              fit: BoxFit.cover, 
+              image: AssetImage('assets/images/card.png'),
+              fit: BoxFit.cover,
             ),
           ),
           child: Padding(
@@ -162,21 +169,30 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     Text(
                       "MyPaw",
-                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800),
                     )
                   ],
                 ),
                 const Spacer(),
                 Text(
                   user['FirstName'] + ' ' + user['LastName'],
-                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(
                   height: 5,
                 ),
                 Text(
-                  formatedCardNumber!= Null ? formatedCardNumber : '',
-                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+                  formatedCardNumber != Null ? formatedCardNumber : '',
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600),
                 )
               ],
             ),

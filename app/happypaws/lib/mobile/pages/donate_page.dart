@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/DonationsService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
@@ -8,6 +7,7 @@ import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
 class DonatePage extends StatefulWidget {
@@ -18,7 +18,7 @@ class DonatePage extends StatefulWidget {
 }
 
 class _DonatePageState extends State<DonatePage> {
-  String total = "";
+  String total = "10.00";
   bool isLoading = false;
   Map<String, dynamic> data = {};
   bool success = false;
@@ -63,7 +63,7 @@ class _DonatePageState extends State<DonatePage> {
         padding: const EdgeInsets.all(14.0),
         child: SizedBox(
           child: isLoading
-              ? Spinner()
+              ? const Spinner()
               : success
                   ? const Column(
                       children: [
@@ -117,7 +117,7 @@ class _DonatePageState extends State<DonatePage> {
                             print(total);
                           },
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         //   PrimaryButton(
@@ -181,61 +181,14 @@ class _DonatePageState extends State<DonatePage> {
                         //     width: double.infinity,
                         //     fontSize: 18,
                         //   )
+                        //TODO: figure out why paypal checkout won't work on home page but works on shop page (layout/chromium issue??)
                         GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  PaypalCheckoutView(
-                                sandboxMode: true,
-                                clientId:
-                                    "ASjwExQn3AI277g6eeFoLKQYfbxRsNXhcIeAx_dmfitKfZ8ooaAhurIvE3Ur71J4mN8c_5BCgTmeLZHd",
-                                secretKey:
-                                    "ELuK8hO3XhQXyHHoK7kR4knxKB6Px2vHqqoYd5qgYGmqgetz_ICba2YEsJgsqMejNkWcHLOAD7YqrpGa",
-                                transactions: [
-                                  {
-                                    "amount": {
-                                      "total": total,
-                                      "currency": "USD",
-                                      "details": {
-                                        "subtotal": total,
-                                        "shipping": '0',
-                                        "shipping_discount": 0
-                                      }
-                                    },
-                                    "description": "",
-                                    "item_list": {
-                                      "items": [
-                                        {
-                                          "name": "Donation",
-                                          "quantity": 1,
-                                          "price": total,
-                                          "currency": "USD"
-                                        },
-                                      ],
-                                    }
-                                  }
-                                ],
-                                note:
-                                    "Contact us for any questions on your payment.",
-                                onSuccess: (Map params) async {
-                                  Navigator.pop(context);
-                                  saveDonation(params['data']['id']);
-                                },
-                                onError: (error) {
-                                  if (error['data']['name'] ==
-                                      "VALIDATION_ERROR") {
-                                    ToastHelper.showToastError(context,
-                                        'Input must be a number! (e.g. 10 or 10.50)');
-                                  } else {
-                                    ToastHelper.showToastError(context,
-                                        "An error occursed. Please try again later!");
-                                  }
-                                  Navigator.pop(context);
-                                },
-                                onCancel: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
+                            context.router.push(PaypalDonationsRoute(
+                              total: total,
+                              onSuccess: (p0) {
+                                saveDonation(p0['data']['id']);
+                              },
                             ));
                           },
                           child: Container(

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
@@ -18,7 +19,7 @@ import 'package:happypaws/routes/app_router.gr.dart';
 @RoutePage()
 class CheckoutPage extends StatefulWidget {
   final String total;
-  final  Map<String, dynamic> products;
+  final Map<String, dynamic> products;
   const CheckoutPage({super.key, required this.total, required this.products});
 
   @override
@@ -31,6 +32,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   bool isLoading = false;
   bool saveAsInitialAddress = false;
   Map<String, dynamic> data = {};
+  final _formKey = GlobalKey<FormState>();
 
   @override
   initState() {
@@ -73,7 +75,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
       }
     } catch (e) {}
   }
-    Future<void> placePaypalOrder(dynamic payId) async {
+
+  Future<void> placePaypalOrder(dynamic payId) async {
     try {
       setState(() {
         isLoading = true;
@@ -81,14 +84,14 @@ class _CheckoutPageState extends State<CheckoutPage> {
       data['orderDate'] = DateTime.now().toIso8601String();
       data['paymentMethod'] = "Paypal";
       data['total'] = widget.total;
-      data['payId'] =payId;
+      data['payId'] = payId;
       var response = await OrdersService().post('', data);
       if (response.statusCode == 200) {
         setState(() {
           isLoading = false;
           ToastHelper.showToastSuccess(
               context, "Your order has been successfully created!");
-              context.router.push(OrderHistoryRoute());
+          context.router.push(OrderHistoryRoute());
         });
       }
     } catch (e) {}
@@ -199,100 +202,105 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.w700),
                         ),
-                        Visibility(
-                          visible: !isSavedAddress,
-                          child: Column(
-                            children: [
-                              InputField(
-                                label: 'Full Name:',
-                                onChanged: (value) => setState(
-                                  () {
-                                    data['fullName'] = value;
-                                  },
+                        Form(
+                          key: _formKey,
+                          child: Visibility(
+                            visible: !isSavedAddress,
+                            child: Column(
+                              children: [
+                                InputField(
+                                  label: 'Full Name:',
+                                  onChanged: (value) => setState(
+                                    () {
+                                      data['fullName'] = value;
+                                    },
+                                  ),
+                                  initialValue: data['fullName'],
                                 ),
-                                initialValue: data['fullName'],
-                              ),
-                              InputField(
-                                label: 'Address Line 1:',
-                                onChanged: (value) => setState(() {
-                                  data['addressOne'] = value;
-                                }),
-                                initialValue: data['addressOne'],
-                              ),
-                              InputField(
-                                label: 'Address Line 2 (optional):',
-                                onChanged: (value) => setState(() {
-                                  data['addressTwo'] = value;
-                                }),
-                                initialValue: data['addressTwo'],
-                              ),
-                              InputField(
-                                label: 'Country:',
-                                onChanged: (value) => setState(() {
-                                  data['country'] = value;
-                                }),
-                                initialValue: data['country'],
-                              ),
-                              InputField(
-                                label: 'City:',
-                                onChanged: (value) => setState(() {
-                                  data['city'] = value;
-                                }),
-                                initialValue: data['city'],
-                              ),
-                              InputField(
-                                label: 'Postal Code:',
-                                onChanged: (value) => setState(() {
-                                  data['postalCode'] = value;
-                                }),
-                                initialValue: data['postalCode'],
-                              ),
-                              InputField(
-                                label: 'Phone:',
-                                onChanged: (value) => setState(() {
-                                  data['phone'] = value;
-                                }),
-                                initialValue: data['phone'],
-                              ),
-                              InputField(
-                                label: 'Note (optional):',
-                                onChanged: (value) => setState(() {
-                                  data['note'] = value;
-                                }),
-                                initialValue: data['note'],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Transform.scale(
-                                    scale: 1.3,
-                                    child: Checkbox(
-                                      activeColor: AppColors.primary,
-                                      value: saveAsInitialAddress,
-                                      visualDensity: VisualDensity.compact,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          saveAsInitialAddress = value!;
-                                        });
-                                      },
+                                InputField(
+                                  label: 'Address Line 1:',
+                                  onChanged: (value) => setState(() {
+                                    data['addressOne'] = value;
+                                  }),
+                                  initialValue: data['addressOne'],
+                                ),
+                                InputField(
+                                  label: 'Address Line 2 (optional):',
+                                  onChanged: (value) => setState(() {
+                                    data['addressTwo'] = value;
+                                  }),
+                                  isRequired: false,
+                                  initialValue: data['addressTwo'],
+                                ),
+                                InputField(
+                                  label: 'Country:',
+                                  onChanged: (value) => setState(() {
+                                    data['country'] = value;
+                                  }),
+                                  initialValue: data['country'],
+                                ),
+                                InputField(
+                                  label: 'City:',
+                                  onChanged: (value) => setState(() {
+                                    data['city'] = value;
+                                  }),
+                                  initialValue: data['city'],
+                                ),
+                                InputField(
+                                  label: 'Postal Code:',
+                                  onChanged: (value) => setState(() {
+                                    data['postalCode'] = value;
+                                  }),
+                                  initialValue: data['postalCode'],
+                                ),
+                                InputField(
+                                  label: 'Phone:',
+                                  onChanged: (value) => setState(() {
+                                    data['phone'] = value;
+                                  }),
+                                  initialValue: data['phone'],
+                                ),
+                                InputField(
+                                  label: 'Note (optional):',
+                                  isRequired: false,
+                                  onChanged: (value) => setState(() {
+                                    data['note'] = value;
+                                  }),
+                                  initialValue: data['note'],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Transform.scale(
+                                      scale: 1.3,
+                                      child: Checkbox(
+                                        activeColor: AppColors.primary,
+                                        value: saveAsInitialAddress,
+                                        visualDensity: VisualDensity.compact,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            saveAsInitialAddress = value!;
+                                          });
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                  const Text(
-                                    "Save as initial address",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
+                                    const Text(
+                                      "Save as initial address",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                            ],
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                         if (data.isNotEmpty)
@@ -357,7 +365,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   if (data['note'] != null &&
                                       data['note'] != "")
                                     Text(
-                                      data['addressTwo'],
+                                      data['note'],
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
@@ -387,7 +395,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           visible: !isSavedAddress,
                           child: PrimaryButton(
                             onPressed: () {
-                              addUserAddress();
+                              if (_formKey.currentState!.validate()) {
+                                addUserAddress();
+                              }
                             },
                             label: "Go pay",
                             fontSize: 22,
@@ -410,7 +420,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r",
                                   secretKey:
                                       "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW",
-                                  transactions:  [
+                                  transactions: [
                                     {
                                       "amount": {
                                         "total": widget.total,
@@ -421,18 +431,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                           "shipping_discount": 0
                                         }
                                       },
-                                      "description":
-                                          "",
+                                      "description": "",
                                       "item_list": {
                                         "items": [
-                                        for(var item in widget.products['items'])
-                                          {
-                                            "name": item['product']['name'],
-                                            "quantity": item['quantity'],
-                                            "price": item['product']['price'],
-                                            "currency": "USD"
-                                          },
-                                         
+                                          for (var item
+                                              in widget.products['items'])
+                                            {
+                                              "name": item['product']['name'],
+                                              "quantity": item['quantity'],
+                                              "price": item['product']['price'],
+                                              "currency": "USD"
+                                            },
                                         ],
                                       }
                                     }
@@ -471,7 +480,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

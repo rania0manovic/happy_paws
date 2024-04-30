@@ -1,10 +1,14 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Helpers;
+using HappyPaws.Core.Dtos.ProductCategory;
+using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;
+using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HappyPaws.Api.Controllers
 {
@@ -12,25 +16,36 @@ namespace HappyPaws.Api.Controllers
     {
         protected readonly IUsersService _usersService;
         protected readonly IPetsService _petsService;
-        public AnalyticsController(ILogger<BaseController> logger, IUsersService usersService, IPetsService petsService) : base(logger)
+        protected readonly IOrdersService _ordersService;
+        private readonly IMemoryCache _memoryCache;
+        public AnalyticsController(ILogger<BaseController> logger, IUsersService usersService, IPetsService petsService, IOrdersService ordersService, IMemoryCache memoryCache) : base(logger)
         {
             _usersService = usersService;
             _petsService = petsService;
+            _ordersService = ordersService;
+            _memoryCache = memoryCache;
         }
         [HttpGet]
         public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken = default)
         {
             try
             {
+                if (_memoryCache.TryGetValue<AnalyticsDto>("analytics", out var analytics))
+                {
+                    return Ok(analytics);
+                }
                 var appUsers = await _usersService.GetCountByRoleAsync(Role.User, cancellationToken);
                 var employees = await _usersService.GetCountByRoleAsync(Role.Employee, cancellationToken);
                 var patients = await _petsService.GetCountAsync(cancellationToken);
+                var monthlyIncome = await _ordersService.GetIncomeForMonthAsync(DateTime.Now.Month, cancellationToken);
                 var response = new AnalyticsDto()
                 {
                     AppUsersCount = appUsers,
                     EmployeesCount = employees,
-                    PatientsCount = patients
+                    PatientsCount = patients,
+                    MonthlyIncome = monthlyIncome
                 };
+                _memoryCache.Set("analytics", response, TimeSpan.FromDays(1));
                 return Ok(response);
             }
             catch (Exception e)
@@ -45,7 +60,12 @@ namespace HappyPaws.Api.Controllers
         {
             try
             {
+                if (_memoryCache.TryGetValue<List<PetTypeCountDto>>("countByPetType", out var countByPetType))
+                {
+                    return Ok(countByPetType);
+                }
                 var response = await _petsService.GetCountByPetTypeAsync(cancellationToken);
+                _memoryCache.Set("countByPetType", response, TimeSpan.FromDays(1));
                 return Ok(response);
             }
             catch (Exception e)

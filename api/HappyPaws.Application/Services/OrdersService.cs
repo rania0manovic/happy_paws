@@ -3,6 +3,7 @@ using FluentValidation;
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Common.Services.EmailService;
 using HappyPaws.Core.Dtos.Order;
+using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;
 using HappyPaws.Core.SearchObjects;
@@ -82,97 +83,110 @@ namespace HappyPaws.Application.Services
             CurrentRepository.Update(order);
             await UnitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+
+        public async Task<List<TopUserDto>> GetTopBuyersAsync(int size, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.GetTopBuyersAsync(size, cancellationToken);
+        }
+
+
+        public async Task<double> GetIncomeForMonthAsync(int month, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.GetIncomeForMonthAsync(month, cancellationToken);
+        }
+
         private static string GenerateInvoiceHtml(Order order)
         {
             var invoiceBuilder = new StringBuilder();
-
             invoiceBuilder.Append(@"<!DOCTYPE html>
-        <html lang=""en"">
-        <head>
-          <meta charset=""UTF-8"">
-          <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-          <title>Invoice</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              line-height: 1.6;
-              margin: 0;
-              padding: 0;
-            }
-            .container {
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #f9f9f9;
-            }
-            h1, h2, p {
-              margin: 0 0 10px;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-            }
-            th, td {
-              border: 1px solid #ddd;
-              padding: 8px;
-              text-align: left;
-            }
-            th {
-              background-color: #f2f2f2;
-            }
-            .total {
-              font-weight: bold;
-            }
-          </style>
-        </head>
-        <body>
-          <div class=""container"">
-            <h1>Invoice</h1>
-            <p>Thank you for your order!</p>
-            <p>This invoice confirms your recent purchase from Happy Paws Shop.</p>
+            <html lang=""en"">
+            <head>
+              <meta charset=""UTF-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+              <title>Invoice</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  line-height: 1.6;
+                  margin: 0;
+                  padding: 0;
+                }
+                .container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                  background-color: #f9f9f9;
+                }
+                h1, h2, p {
+                  margin: 0 0 10px;
+                }
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                }
+                th, td {
+                  border: 1px solid #ddd;
+                  padding: 8px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f2f2f2;
+                }
+                .total {
+                  font-weight: bold;
+                }
+              </style>
+            </head>
+            <body>
+              <div class=""container"">
+                <h1>Invoice</h1>
+                <p>Thank you for your order!</p>
+                <p>This invoice confirms your recent purchase from Happy Paws Shop.</p>
             
-            <h2>Invoice Details</h2>
-            <table>
-              <tr>
-                <th>Invoice Number:</th>
-                <td>" + order.Id + @"</td>
-              </tr>
-              <tr>
-                <th>Invoice Date:</th>
-                <td>" + order.CreatedAt + @"</td>
-              </tr>
-            </table>
+                <h2>Invoice Details</h2>
+                <table>
+                  <tr>
+                    <th>Invoice Number:</th>
+                    <td>" + order.Id + @"</td>
+                  </tr>
+                  <tr>
+                    <th>Invoice Date:</th>
+                    <td>" + order.CreatedAt + @"</td>
+                  </tr>
+                </table>
             
-            <h2>Order Details</h2>
-            <table>
-              <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-              </tr>");
+                <h2>Order Details</h2>
+                <table>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>");
 
             foreach (var orderDetail in order.OrderDetails)
             {
                 invoiceBuilder.Append(@"<tr>
-                <td>" + orderDetail.Product.Name + @"</td>
-                <td>" + orderDetail.Quantity + @"</td>
-                <td>$" + orderDetail.UnitPrice + @"</td>
-                <td>$" + Math.Round(orderDetail.UnitPrice * orderDetail.Quantity, 2) + @"</td>
-              </tr>");
+                    <td>" + orderDetail.Product.Name + @"</td>
+                    <td>" + orderDetail.Quantity + @"</td>
+                    <td>$" + orderDetail.UnitPrice + @"</td>
+                    <td>$" + Math.Round(orderDetail.UnitPrice * orderDetail.Quantity, 2) + @"</td>
+                  </tr>");
             }
 
             invoiceBuilder.Append(@"</table>
-            <p class=""total""><strong>Total: $" + order.Total + @"</strong></p>
+                <p class=""total""><strong>Total: $" + order.Total + @"</strong></p>
             
-            <p>We appreciate your business!</p>
-            <p>Sincerely,</p>
-            <p>Happy Paws</p>
-          </div>
-        </body>
-        </html>");
+                <p>We appreciate your business!</p>
+                <p>Sincerely,</p>
+                <p>Happy Paws</p>
+              </div>
+            </body>
+            </html>");
 
             return invoiceBuilder.ToString();
         }
+
     }
 }

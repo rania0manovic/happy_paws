@@ -29,6 +29,8 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
+  final _formKey = GlobalKey<FormState>();
+  Map<String, bool> errorStates = {};
 
   @override
   void initState() {
@@ -70,8 +72,8 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         throw Exception();
       }
     } catch (e) {
-         ToastHelper.showToastError(
-            context, "An error has occured! Please try again later.");
+      ToastHelper.showToastError(
+          context, "An error has occured! Please try again later.");
       rethrow;
     }
   }
@@ -96,79 +98,87 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const GoBackButton(),
           Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 0),
+              padding: const EdgeInsets.only(left: 10, right: 10, top: 0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: user != Null
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                              alignment: Alignment.topCenter,
-                              child: Column(
-                                children: [
-                                  const Text("Personal information",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500)),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  SizedBox(
-                                      height: 128,
-                                      width: 128,
-                                      child: Stack(
-                                        children: [
-                                          ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
-                                              child: _selectedImage != null
-                                                  ? Image.file(_selectedImage!)
-                                                  : profilePhoto != null
-                                                      ? Image.memory(
-                                                          base64.decode(
-                                                              profilePhoto![
-                                                                      'data']
-                                                                  .toString()),
-                                                        )
-                                                      : const Image(
-                                                          image: AssetImage(
-                                                              "assets/images/user.png"))),
-                                          Positioned(
-                                              bottom: 5,
-                                              right: 5,
-                                              child: GestureDetector(
-                                                onTap: () => _pickImage(),
-                                                child: const Image(
-                                                    image: AssetImage(
-                                                        "assets/images/edit.png")),
-                                              ))
-                                        ],
-                                      ))
-                                ],
-                              )),
-                          inputField('Name', user["FirstName"], "FirstName"),
-                          inputField('Surname', user["LastName"], "LastName"),
-                          inputField('Email', user["Email"], "Email"),
-                          dropdownMenu("Gender"),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          const Text("Change password",
-                              style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500)),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          PrimaryButton(
-                            onPressed: () => updateUser(),
-                            label: 'Update',
-                            width: double.infinity,
-                            fontSize: 20,
-                          )
-                        ],
+                    ? Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                                alignment: Alignment.topCenter,
+                                child: Column(
+                                  children: [
+                                    const Text("Personal information",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500)),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    SizedBox(
+                                        height: 128,
+                                        width: 128,
+                                        child: Stack(
+                                          children: [
+                                            ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                                child: _selectedImage != null
+                                                    ? Image.file(
+                                                        _selectedImage!)
+                                                    : profilePhoto != null
+                                                        ? Image.memory(
+                                                            base64.decode(
+                                                                profilePhoto![
+                                                                        'data']
+                                                                    .toString()),
+                                                          )
+                                                        : const Image(
+                                                            image: AssetImage(
+                                                                "assets/images/user.png"))),
+                                            Positioned(
+                                                bottom: 5,
+                                                right: 5,
+                                                child: GestureDetector(
+                                                  onTap: () => _pickImage(),
+                                                  child: const Image(
+                                                      image: AssetImage(
+                                                          "assets/images/edit.png")),
+                                                ))
+                                          ],
+                                        ))
+                                  ],
+                                )),
+                            inputField('Name', user["FirstName"], "FirstName"),
+                            inputField('Surname', user["LastName"], "LastName"),
+                            inputField('Email', user["Email"], "Email"),
+                            dropdownMenu("Gender"),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Text("Change password",
+                                style: TextStyle(
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500)),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            PrimaryButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  updateUser();
+                                }
+                              },
+                              label: 'Update',
+                              width: double.infinity,
+                              fontSize: 20,
+                            )
+                          ],
+                        ),
                       )
                     : const Spinner(),
               )),
@@ -246,16 +256,30 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
           height: 10,
         ),
         SizedBox(
-          height: 49,
+          height: errorStates[objName] ?? false ? 75 : 50,
           child: TextFormField(
             onChanged: (value) {
               setState(() {
                 user[objName] = value;
               });
             },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                setState(() {
+                  errorStates[objName!] = true;
+                });
+                return 'This field is required';
+              }
+              setState(() {
+                errorStates[objName!] = false;
+              });
+              return null;
+            },
             initialValue: initialValue,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
+                errorStyle:
+                    const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
                 border: OutlineInputBorder(

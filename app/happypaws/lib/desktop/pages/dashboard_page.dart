@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AnalyticsService.dart';
+import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/progress_bar.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
@@ -17,8 +18,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  Map<String, dynamic>? data;
+  Map<String, dynamic>? basicAnalytics;
   List<dynamic>? barChartData;
+  List<dynamic>? topBuyers;
   double maxY = 0;
   @override
   void initState() {
@@ -33,10 +35,12 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchData() async {
     var analytics = await AnalyticsService().get('');
-    var chartData = await AnalyticsService().get('/GetCountByPetType');
+    var chartData = await AnalyticsService().getCountByPetType();
+    var topBuyersData = await OrdersService().getTopBuyers(size: 5);
+
     if (analytics.statusCode == 200) {
       setState(() {
-        data = analytics.data;
+        basicAnalytics = analytics.data;
       });
     }
     if (chartData.statusCode == 200) {
@@ -48,11 +52,16 @@ class _DashboardPageState extends State<DashboardPage> {
         barChartData = chartData.data;
       });
     }
+    if (topBuyersData.statusCode == 200) {
+      setState(() {
+        topBuyers = topBuyersData.data;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return data == null || barChartData == null
+    return basicAnalytics == null || barChartData == null
         ? const Spinner()
         : SingleChildScrollView(
             child: Padding(
@@ -155,7 +164,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: CustomProgressIndicator(
-                    progress: 0.75,
+                    targetProgress: 0.75,
                   ),
                 ),
               ),
@@ -163,9 +172,136 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(
               width: 40,
             ),
-            const Expanded(
+            Expanded(
               child: Card(
-                child: SizedBox(height: 250, child: SizedBox()),
+                child: SizedBox(
+                    height: 250,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          const Wrap(
+                            children: [
+                              FractionallySizedBox(
+                                widthFactor: 0.2,
+                                child: Text(
+                                  'NO',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gray),
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: 0.2,
+                                child: Text(
+                                  'PROFILE PHOTO',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gray),
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: 0.2,
+                                child: Text(
+                                  'NAME',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gray),
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: 0.2,
+                                child: Text(
+                                  'GENDER',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gray),
+                                ),
+                              ),
+                              FractionallySizedBox(
+                                widthFactor: 0.2,
+                                child: Text(
+                                  'TOTAL',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.gray),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(topBuyers!.length, (index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Wrap(
+                                  alignment: WrapAlignment.center,
+                                  children: [
+                                    FractionallySizedBox(
+                                      widthFactor: 0.2,
+                                      child: Text(
+                                        (index + 1).toString(),
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    const FractionallySizedBox(
+                                        widthFactor: 0.2,
+                                        child: Image(
+                                          image: AssetImage(
+                                              "assets/images/user.png"),
+                                          height: 25,
+                                          width: 25,
+                                        )),
+                                    FractionallySizedBox(
+                                      widthFactor: 0.2,
+                                      child: Text(
+                                        topBuyers![index]['user']['fullName'],
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    FractionallySizedBox(
+                                      widthFactor: 0.2,
+                                      child: Text(
+                                        topBuyers![index]['user']['gender'],
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    FractionallySizedBox(
+                                      widthFactor: 0.2,
+                                      child: Text(
+                                        "\$ ${topBuyers![index]['totalSpent'].toStringAsFixed(2)}",
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                          )
+                        ],
+                      ),
+                    )),
               ),
             ),
           ],
@@ -201,11 +337,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   height: 100,
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
+                      const Text(
                         'SHOP INCOME',
                         style: TextStyle(
                             fontSize: 20,
@@ -213,8 +349,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        "\$ 3403",
-                        style: TextStyle(
+                        "\$ ${basicAnalytics!['monthlyIncome'].toStringAsFixed(2)}",
+                        style: const TextStyle(
                             fontSize: 26,
                             color: Colors.black,
                             fontWeight: FontWeight.w700),
@@ -233,11 +369,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   height: 100,
-                  child: const Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
+                      const Text(
                         'DONATIONS',
                         style: TextStyle(
                             fontSize: 20,
@@ -245,8 +381,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        "\$ 3403",
-                        style: TextStyle(
+                        "\$ ${basicAnalytics!['monthlyDonations'].toStringAsFixed(2)}",
+                        style: const TextStyle(
                             fontSize: 26,
                             color: Colors.black,
                             fontWeight: FontWeight.w700),
@@ -284,7 +420,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  data!['appUsersCount'].toString(),
+                  basicAnalytics!['appUsersCount'].toString(),
                   style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,
@@ -316,7 +452,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  data!['patientsCount'].toString(),
+                  basicAnalytics!['patientsCount'].toString(),
                   style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,
@@ -348,7 +484,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  data!['employeesCount'].toString(),
+                  basicAnalytics!['employeesCount'].toString(),
                   style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,
@@ -380,7 +516,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '\$ ${data!['donationsTotal']}',
+                  '\$ ${basicAnalytics!['donationsTotal'].toStringAsFixed(2)}',
                   style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,

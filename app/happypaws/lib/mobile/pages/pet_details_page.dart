@@ -43,6 +43,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
+  final _formKey = GlobalKey<FormState>();
+  Map<String, bool> errorStates = {};
 
   @override
   void initState() {
@@ -173,169 +175,179 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                     const GoBackButton(),
                     Padding(
                         padding:
-                            const EdgeInsets.only(left: 20, right: 20, top: 0),
+                            const EdgeInsets.only(left: 10, right: 10, top: 0),
                         child: Align(
                           alignment: Alignment.centerLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Align(
-                                  alignment: Alignment.topCenter,
-                                  child: Column(
-                                    children: [
-                                      const Text("Pet information",
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500)),
-                                      const SizedBox(
-                                        height: 20,
-                                      ),
-                                      SizedBox(
-                                          height: 128,
-                                          width: 128,
-                                          child: Stack(
-                                            children: [
-                                              SizedBox(
-                                                height: 128,
-                                                width: 128,
-                                                child: ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            100),
-                                                    child: _selectedImage !=
-                                                            null
-                                                        ? Image.file(
-                                                            _selectedImage!,
-                                                            fit: BoxFit.cover,
-                                                          )
-                                                        : profilePhoto != null
-                                                            ? Image.memory(
-                                                                base64.decode(
-                                                                  profilePhoto![
-                                                                          'data']
-                                                                      .toString(),
-                                                                ),
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              )
-                                                            : const Image(
-                                                                image: AssetImage(
-                                                                    "assets/images/pet_default.jpg"),
-                                                                fit: BoxFit
-                                                                    .cover,
-                                                              )),
-                                              ),
-                                              Positioned(
-                                                  bottom: 5,
-                                                  right: 5,
-                                                  child: GestureDetector(
-                                                    onTap: () => _pickImage(),
-                                                    child: const Image(
-                                                        image: AssetImage(
-                                                            "assets/images/edit.png")),
-                                                  ))
-                                            ],
-                                          ))
-                                    ],
-                                  )),
-                              inputField(
-                                  'Name:',
-                                  widget.petId != null ? data['name'] : null,
-                                  "name"),
-                              inputField(
-                                  'Weight (in kg):',
-                                  widget.petId != null
-                                      ? '${data['weight']}'
-                                      : null,
-                                  "weight"),
-                              apiDropdownMenu(petTypes!['items'], "Pet type:",
-                                  (String? newValue) async {
-                                setState(() {
-                                  selectedPetBreed = null;
-                                  selectedPetType = null;
-                                });
-                                await fetchPetBreeds(newValue);
-                                setState(() {
-                                  selectedPetType = newValue;
-                                });
-                              }, selectedPetType),
-                              apiDropdownMenu(
-                                  petBreeds == null ? List.empty() : petBreeds!,
-                                  "Pet breed:",
-                                  (String? newValue) => setState(() {
-                                        selectedPetBreed = newValue;
-                                        data['petBreedId'] = newValue;
-                                      }),
-                                  selectedPetBreed,
-                                  isDisabeled:
-                                      selectedPetType == null ? true : false),
-                              dropdownMenu("Gender:", "gender"),
-                              birthDateInput(context),
-                              if (widget.petId != null)
-                                if (!data['petAllergies'].isEmpty)
-                                  allergiesSection()
-                                else
-                                  GestureDetector(
-                                      onTap: () => showAddAllergyMenu(context),
-                                      child: const Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        child: Text(
-                                          "Add new allergy",
-                                          style: TextStyle(
-                                              color: AppColors.primary,
-                                              decoration:
-                                                  TextDecoration.underline),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Column(
+                                      children: [
+                                        const Text("Pet information",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500)),
+                                        const SizedBox(
+                                          height: 20,
                                         ),
-                                      )),
-                              if (widget.petId != null)
-                                if (!data['petMedications'].isEmpty)
-                                  medicationSection(),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              PrimaryButton(
-                                onPressed: () {
-                                  widget.petId == null ? addPet() : editPet();
-                                },
-                                label: widget.petId == null
-                                    ? "Add new pet"
-                                    : "Edit pet",
-                                width: double.infinity,
-                                fontSize: 18,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Visibility(
-                                visible: widget.petId != null,
-                                child: PrimaryButton(
+                                        SizedBox(
+                                            height: 128,
+                                            width: 128,
+                                            child: Stack(
+                                              children: [
+                                                SizedBox(
+                                                  height: 128,
+                                                  width: 128,
+                                                  child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              100),
+                                                      child: _selectedImage !=
+                                                              null
+                                                          ? Image.file(
+                                                              _selectedImage!,
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : profilePhoto != null
+                                                              ? Image.memory(
+                                                                  base64.decode(
+                                                                    profilePhoto![
+                                                                            'data']
+                                                                        .toString(),
+                                                                  ),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                )
+                                                              : const Image(
+                                                                  image: AssetImage(
+                                                                      "assets/images/pet_default.jpg"),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                )),
+                                                ),
+                                                Positioned(
+                                                    bottom: 5,
+                                                    right: 5,
+                                                    child: GestureDetector(
+                                                      onTap: () => _pickImage(),
+                                                      child: const Image(
+                                                          image: AssetImage(
+                                                              "assets/images/edit.png")),
+                                                    ))
+                                              ],
+                                            ))
+                                      ],
+                                    )),
+                                inputField(
+                                    'Name:',
+                                    widget.petId != null ? data['name'] : null,
+                                    "name"),
+                                inputField(
+                                    'Weight (in kg):',
+                                    widget.petId != null
+                                        ? '${data['weight']}'
+                                        : null,
+                                    "weight"),
+                                apiDropdownMenu(petTypes!['items'], "Pet type:",
+                                    (String? newValue) async {
+                                  setState(() {
+                                    selectedPetBreed = null;
+                                    selectedPetType = null;
+                                  });
+                                  await fetchPetBreeds(newValue);
+                                  setState(() {
+                                    selectedPetType = newValue;
+                                  });
+                                }, selectedPetType),
+                                apiDropdownMenu(
+                                    petBreeds == null
+                                        ? List.empty()
+                                        : petBreeds!,
+                                    "Pet breed:",
+                                    (String? newValue) => setState(() {
+                                          selectedPetBreed = newValue;
+                                          data['petBreedId'] = newValue;
+                                        }),
+                                    selectedPetBreed,
+                                    isDisabeled:
+                                        selectedPetType == null ? true : false),
+                                dropdownMenu("Gender:", "gender"),
+                                birthDateInput(context),
+                                if (widget.petId != null)
+                                  if (!data['petAllergies'].isEmpty)
+                                    allergiesSection()
+                                  else
+                                    GestureDetector(
+                                        onTap: () =>
+                                            showAddAllergyMenu(context),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          child: Text(
+                                            "Add new allergy",
+                                            style: TextStyle(
+                                                color: AppColors.primary,
+                                                decoration:
+                                                    TextDecoration.underline),
+                                          ),
+                                        )),
+                                if (widget.petId != null)
+                                  if (!data['petMedications'].isEmpty)
+                                    medicationSection(),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                PrimaryButton(
                                   onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return ConfirmationDialog(
-                                          title: 'Confirmation',
-                                          content:
-                                              'Are you sure you want to delete this pet?',
-                                          onYesPressed: () {
-                                            Navigator.of(context).pop();
-                                            deletePet();
-                                          },
-                                          onNoPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        );
-                                      },
-                                    );
+                                    if (_formKey.currentState!.validate()) {
+                                      widget.petId == null
+                                          ? addPet()
+                                          : editPet();
+                                    }
                                   },
-                                  label: "Delete pet",
+                                  label: widget.petId == null
+                                      ? "Add new pet"
+                                      : "Edit pet",
                                   width: double.infinity,
                                   fontSize: 18,
-                                  backgroundColor: AppColors.error,
                                 ),
-                              )
-                            ],
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Visibility(
+                                  visible: widget.petId != null,
+                                  child: PrimaryButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return ConfirmationDialog(
+                                            title: 'Confirmation',
+                                            content:
+                                                'Are you sure you want to delete this pet?',
+                                            onYesPressed: () {
+                                              Navigator.of(context).pop();
+                                              deletePet();
+                                            },
+                                            onNoPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                    label: "Delete pet",
+                                    width: double.infinity,
+                                    fontSize: 18,
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         )),
                   ]),
@@ -571,30 +583,45 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             width: double.infinity,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedOption,
-                  hint: const Text('Select'),
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: isDisabeled ? null : onChanged,
-                  disabledHint: selectedPetType != null
-                      ? const Text("No breed found...")
-                      : const Text("Select the type first..."),
-                  items: [
-                    for (var item in items)
-                      DropdownMenuItem<String>(
-                        value: item['id'].toString(),
-                        child: Text(item['name']),
-                      ),
-                  ],
+              child: DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  errorStyle: TextStyle(color: AppColors.error, fontSize: 14),
+                  fillColor: Color(0xffF2F2F2),
+                  filled: true,
+                  border: UnderlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    setState(() {
+                      errorStates[label] = true;
+                    });
+                    return "This field is required";
+                  }
+                  setState(() {
+                    errorStates[label] = false;
+                  });
+                  return null;
+                },
+                isExpanded: true,
+                value: selectedOption,
+                hint: const Text('Select'),
+                borderRadius: BorderRadius.circular(10),
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+                onChanged: isDisabeled ? null : onChanged,
+                disabledHint: selectedPetType != null
+                    ? const Text("No breed found...")
+                    : const Text("Select the type first..."),
+                items: [
+                  for (var item in items)
+                    DropdownMenuItem<String>(
+                      value: item['id'].toString(),
+                      child: Text(item['name']),
+                    ),
+                ],
               ),
             )),
       ],
@@ -670,8 +697,27 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           height: 10,
         ),
         SizedBox(
-          height: 49,
+          height: errorStates[key] ?? false ? 75 : 50,
           child: TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                setState(() {
+                  errorStates[key] = true;
+                });
+                return "This field is required";
+              } else if (key == "weight") {
+                if (double.tryParse(value) == null) {
+                  setState(() {
+                    errorStates[key] = true;
+                  });
+                  return "Input must be numerical value";
+                }
+              }
+              setState(() {
+                errorStates[key] = false;
+              });
+              return null;
+            },
             onChanged: (value) {
               setState(() {
                 data[key] = value;
@@ -680,6 +726,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             initialValue: initialValue,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             decoration: InputDecoration(
+                errorStyle:
+                    const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
                 border: OutlineInputBorder(

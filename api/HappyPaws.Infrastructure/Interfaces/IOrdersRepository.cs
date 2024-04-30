@@ -1,4 +1,5 @@
-﻿using HappyPaws.Core.Entities;
+﻿using HappyPaws.Core.Dtos.User;
+using HappyPaws.Core.Entities;
 using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
@@ -10,5 +11,7 @@ namespace HappyPaws.Infrastructure.Interfaces
 {
     public interface IOrdersRepository : IBaseRepository<Order, int, OrderSearchObject>
     {
+        Task<List<TopUserDto>> GetTopBuyersAsync(int size, CancellationToken cancellationToken = default);
+        Task<double> GetIncomeForMonthAsync(int month, CancellationToken cancellationToken = default);
     }
 }

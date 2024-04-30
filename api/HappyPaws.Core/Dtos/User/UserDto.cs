@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.Dtos.User
 {
-    public class UserDto:UserBaseDto
+    public class UserDto : UserBaseDto
     {
-        public required string MyPawNumber { get; set; }
+        public string MyPawNumber { get; set; } = null!;
         public bool IsVerified { get; set; }
         public string? ConnectionId { get; set; }
 
