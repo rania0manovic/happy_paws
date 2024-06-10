@@ -1,5 +1,6 @@
-import 'dart:convert';
-import 'package:happypaws/common/services/EmployeesService.dart';
+import 'dart:async';
+
+import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:auto_route/auto_route.dart';
@@ -8,6 +9,9 @@ import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/desktop/components/table/table_data.dart';
+import 'package:happypaws/desktop/components/table/table_data_photo.dart';
+import 'package:happypaws/desktop/components/table/table_head.dart';
 
 import '../dialogs/add_edit_employee_dialog.dart';
 
@@ -21,6 +25,8 @@ class EmployeesPage extends StatefulWidget {
 
 class _EmployeesPageState extends State<EmployeesPage> {
   Map<String, dynamic>? employees;
+  Timer? _debounce;
+  Map<String, dynamic> params = {'role': 1};
 
   @override
   void initState() {
@@ -29,14 +35,23 @@ class _EmployeesPageState extends State<EmployeesPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await EmployeesService().getPaged("", 1, 999);
+    var response =
+        await UsersService().getPaged("", 1, 999, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         employees = response.data;
       });
     }
   }
-
+onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        employees = null;
+      });
+      fetchData();
+    });
+  }
   void showAddEditEmployeeMenu(BuildContext context,
       {Map<String, dynamic>? data}) {
     showDialog(
@@ -55,7 +70,8 @@ class _EmployeesPageState extends State<EmployeesPage> {
             onEdit: (value) {
               setState(() {
                 employees!['items'][employees!['items']
-                    .indexWhere((x) => x['id'] == value['id'])] = value;
+                        .indexWhere((x) => x['id'] == value['value']['id'])] =
+                    value['value'];
               });
             },
             data: data,
@@ -70,7 +86,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
 
   Future<void> deleteEmployee(int id) async {
     try {
-      var response = await EmployeesService().delete('/$id');
+      var response = await UsersService().delete('/$id');
       if (response.statusCode == 200) {
         setState(() {
           employees!['items'].removeWhere((x) => x['id'] == id);
@@ -97,13 +113,40 @@ class _EmployeesPageState extends State<EmployeesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const Text(
                       'Employee details',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
+                    const Spacer(),
+                     SizedBox(
+                      width: 250,
+                      height: 50,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['fullName'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by name...",
+                            labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
+                      ),
+                    ),
+                    const SizedBox(width: 20,),
                     PrimaryIconButton(
                         onPressed: () => showAddEditEmployeeMenu(context),
                         icon: const Icon(
@@ -142,7 +185,7 @@ class _EmployeesPageState extends State<EmployeesPage> {
     return Table(
       columnWidths: const {
         0: FlexColumnWidth(1),
-        1: FlexColumnWidth(1),
+        1: FlexColumnWidth(2),
         2: FlexColumnWidth(4),
         3: FlexColumnWidth(4),
         4: FlexColumnWidth(4),
@@ -160,19 +203,27 @@ class _EmployeesPageState extends State<EmployeesPage> {
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(0.1),
           ),
-          children: [
-            tableHead('Id'),
-            tableHead('Photo'),
-            tableHead('Name'),
-            tableHead('Email'),
-            tableHead('Role'),
-            tableHead('Actions'),
+          children: const [
+            TableHead(
+              header: 'Id.',
+              alignmentGeometry: Alignment.center,
+              paddingHorizontal: 0,
+            ),
+            TableHead(
+              header: 'Photo',
+              alignmentGeometry: Alignment.center,
+              paddingHorizontal: 0,
+            ),
+            TableHead(header: 'Name', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Email', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Role', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Actions', alignmentGeometry: Alignment.center),
           ],
         ),
         for (var employee in employees!['items'])
           TableRow(
             children: [
-              tableCell(employee['id'].toString()),
+              TableData(data: employee['id'].toString()),
               employee['profilePhoto'] == null
                   ? const TableCell(
                       child: Image(
@@ -181,58 +232,21 @@ class _EmployeesPageState extends State<EmployeesPage> {
                         width: 30,
                       ),
                     )
-                  : tableCellPhoto(employee['profilePhoto']['data']),
-              tableCell(employee['fullName']),
-              tableCell(employee['email']),
-              tableCell(employee['employeePosition'][0] +
-                  employee['employeePosition']
-                      .split(RegExp(r'(?=[A-Z])'))
-                      .join(' ')
-                      .toLowerCase()
-                      .substring(1)),
+                  : TableDataPhoto(data: employee['profilePhoto']['data']),
+              TableData(data: employee['fullName']),
+              TableData(data: employee['email']),
+              TableData(
+                  data: employee['employeePosition'][0] +
+                      employee['employeePosition']
+                          .split(RegExp(r'(?=[A-Z])'))
+                          .join(' ')
+                          .toLowerCase()
+                          .substring(1)),
               tableActions(employee)
             ],
           )
       ],
     );
-  }
-
-  TableCell tableCell(String data) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: Center(
-            child: Tooltip(
-          message: data.length > 20 ? data : '',
-          child: Text(
-            data.length > 30 ? '${data.substring(0, 30)}...' : data,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        )),
-      ),
-    );
-  }
-
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: SizedBox(
-      height: 40,
-      width: 40,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(1000),
-          child: Image.memory(
-            base64.decode(
-              data.toString(),
-            ),
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    ));
   }
 
   TableCell tableActions(Map<String, dynamic> data) {
@@ -254,8 +268,10 @@ class _EmployeesPageState extends State<EmployeesPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return ConfirmationDialog(
+                      insentPaddingX: 300,
                       title: 'Confirmation',
-                      content: 'Are you sure you want to delete this employee?',
+                      content:
+                          'Deleting this employee will result in the deletion of all related data, including appointment history and any other associated information. This action cannot be undone. Please confirm that you want to proceed.',
                       onYesPressed: () {
                         Navigator.of(context).pop();
                         deleteEmployee(data['id']);
@@ -271,20 +287,6 @@ class _EmployeesPageState extends State<EmployeesPage> {
               iconColor: AppColors.error,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  TableCell tableHead(String header) {
-    return TableCell(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 12),
-          child: Text(
-            header,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
         ),
       ),
     );

@@ -14,5 +14,7 @@ namespace HappyPaws.Infrastructure.Interfaces
     {
         Task<int> GetCountAsync(CancellationToken cancellationToken = default);
         Task<List<PetTypeCountDto>> GetCountByPetTypeAsync(CancellationToken cancellationToken = default);
+        Task<bool> HasAnyWithPetTypeIdAsync(int petTypeId, CancellationToken cancellationToken = default);
+        Task<bool> HasAnyWithPetBreedIdAsync(int petBreedId, CancellationToken cancellationToken = default);
     }
 }

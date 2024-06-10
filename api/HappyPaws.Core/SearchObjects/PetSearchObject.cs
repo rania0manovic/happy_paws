@@ -9,5 +9,6 @@ namespace HappyPaws.Core.SearchObjects
     public class PetSearchObject : BaseSearchObject
     {
         public string? MyPawNumber { get; set; }
+        public bool FormatPhotos { get; set; } = false;
     }
 }

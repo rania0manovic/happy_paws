@@ -1,7 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 
@@ -14,19 +15,28 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  Map<String, dynamic> user = {};
+  Map<String, dynamic> user={};
+  bool isDisabledButton = false;
 
   Future<void> sendEmailVerificationCode() async {
+    dynamic response;
     try {
-      final response = await AuthService().sendEmailVerification(user);
+      setState(() {
+        isDisabledButton = true;
+      });
+       response = await AuthService().sendEmailVerification(user);
       if (response.statusCode == 200) {
+        setState(() {
+          isDisabledButton = false;
+        });
         if (!mounted) return;
         context.router.push(RegisterVerificationRoute(user: user));
-      } else if (response.statusCode == 409) {
-        throw Exception('User with the same email exists');
-      }
+      } 
     } catch (e) {
-      rethrow;
+         setState(() {
+          isDisabledButton = false;
+        });
+        ToastHelper.showToastError(context, "User with the same email already exists!");
     }
   }
 
@@ -84,22 +94,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         inputField('Surname', 'lastName'),
                         inputField('Email', 'email'),
                         inputField('Password', 'password', isObscure: true),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              sendEmailVerificationCode();
-                            }
-                          },
-                          child: SvgPicture.asset(
-                            'assets/icons/long_right_arrow.svg',
-                            height: 50,
-                            width: 50,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                         Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 30),
+                            child: PrimaryButton(
+                            disabledWithoutSpinner: isDisabledButton,
+                                onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                sendEmailVerificationCode();
+                              }
+                                },
+                               width: double.infinity,
+                               fontSize: 20,
+                                label: "Next  ➜"),
+                          )),
                       ],
                     ),
                   ),
@@ -107,7 +116,7 @@ class _RegisterPageState extends State<RegisterPage> {
             GestureDetector(
               onTap: () => context.router.push(const LoginRoute()),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                padding: const EdgeInsets.only(left: 20, right: 20,),
                 child: Text(
                   "Already a member? Login here.",
                   textAlign: TextAlign.center,
@@ -181,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 filled: true,
                 fillColor: const Color(0xfff2f2f2),
                 errorStyle:
-                    const TextStyle(color: AppColors.error, fontSize: 14),
+                    const TextStyle(color: AppColors.error, fontSize: 16),
                 errorMaxLines: 3,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,

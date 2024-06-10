@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
@@ -9,12 +9,16 @@ import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-
+import 'package:happypaws/desktop/components/table/table_data.dart';
+import 'package:happypaws/desktop/components/table/table_data_photo.dart';
+import 'package:happypaws/desktop/components/table/table_head.dart';
 import '../dialogs/add_edit_patient_dialog.dart';
 
 @RoutePage()
 class PatientsPage extends StatefulWidget {
-  const PatientsPage({super.key});
+  final String? myPawNumber;
+
+  const PatientsPage({super.key, this.myPawNumber});
 
   @override
   State<PatientsPage> createState() => _PatientsPageState();
@@ -22,32 +26,49 @@ class PatientsPage extends StatefulWidget {
 
 class _PatientsPageState extends State<PatientsPage> {
   Map<String, dynamic>? patients;
-  Map<String, dynamic> params = {};
+  Map<String, dynamic> params = {'formatPhotos': true};
+  late ScrollController _scrollController;
   Timer? _debounce;
+  late int currentPage = 1;
+  bool isLoadingMore = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    if (widget.myPawNumber != null) {
+      setState(() {
+        params["myPawNumber"] = widget.myPawNumber;
+      });
+    }
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    var response =
+        await PetsService().getPaged("", currentPage, 10, searchObject: params);
+    if (response.statusCode == 200) {
+      setState(() {
+        currentPage++;
+        if (patients == null) {
+          patients = response.data;
+        } else {
+          patients!['items'].addAll(response.data['items']);
+        }
+      });
+    }
+  }
 
   onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 1000), () {
       setState(() {
-        patients=null;
+        patients = null;
+        currentPage = 1;
       });
       fetchData();
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-
-  Future<void> fetchData() async {
-    var response = await PetsService().getPaged("", 1, 999, searchObject: params);
-    if (response.statusCode == 200) {
-      setState(() {
-        patients = response.data;
-      });
-    }
   }
 
   void showAddEditPatientMenu(BuildContext context,
@@ -95,6 +116,24 @@ class _PatientsPageState extends State<PatientsPage> {
     }
   }
 
+  Future<void> _scrollListener() async {
+    double currentPosition = _scrollController.position.pixels;
+    double maxScrollExtent = _scrollController.position.maxScrollExtent;
+    double distanceFromBottom = maxScrollExtent - currentPosition;
+
+    if (distanceFromBottom <= 10 &&
+        currentPage <= patients!['pageCount'] &&
+        !isLoadingMore) {
+      setState(() {
+        isLoadingMore = true;
+      });
+      await fetchData();
+      setState(() {
+        isLoadingMore = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -118,7 +157,8 @@ class _PatientsPageState extends State<PatientsPage> {
                     const Spacer(),
                     SizedBox(
                       width: 250,
-                      child: TextField(
+                      child: TextFormField(
+                        initialValue: widget.myPawNumber,
                         onChanged: (value) {
                           setState(() {
                             params['myPawNumber'] = value;
@@ -128,21 +168,19 @@ class _PatientsPageState extends State<PatientsPage> {
                         decoration: InputDecoration(
                             labelText: "Enter MyPaw number...",
                             labelStyle: TextStyle(
+                                fontSize: 12,
                                 color: Colors.grey.shade400,
                                 fontWeight: FontWeight.w500),
-                            suffixIcon: GestureDetector(
-                              onTap: () => null,
-                              child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.search,
-                                    size: 25,
-                                    color: AppColors.primary,
-                                  )),
-                            )),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     PrimaryIconButton(
@@ -167,12 +205,16 @@ class _PatientsPageState extends State<PatientsPage> {
                           ))
                         : Expanded(
                             child: SingleChildScrollView(
-                                scrollDirection: Axis.vertical, child: table()),
+                                controller: _scrollController,
+                                scrollDirection: Axis.vertical,
+                                child: table()),
                           ))
                     : const Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
-                            child: Spinner()))
+                            child: Spinner())),
+                if (isLoadingMore)
+                  Transform.scale(scale: 0.8, child: const Spinner())
               ],
             ),
           ),
@@ -183,9 +225,10 @@ class _PatientsPageState extends State<PatientsPage> {
     return Table(
       columnWidths: const {
         0: FlexColumnWidth(1),
-        1: FlexColumnWidth(1),
+        1: FlexColumnWidth(3),
         2: FlexColumnWidth(4),
         3: FlexColumnWidth(4),
+        4: FlexColumnWidth(2),
       },
       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       border: TableBorder(
@@ -199,72 +242,43 @@ class _PatientsPageState extends State<PatientsPage> {
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(0.1),
           ),
-          children: [
-            tableHead('Id'),
-            tableHead('Photo'),
-            tableHead('Name'),
-            tableHead('Breed'),
-            tableHead('Actions'),
+          children: const [
+            TableHead(header: 'Id.', alignmentGeometry: Alignment.centerLeft),
+            TableHead(header: 'Photo', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Name', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Breed', alignmentGeometry: Alignment.center),
+            TableHead(header: 'Actions', alignmentGeometry: Alignment.center),
           ],
         ),
         for (var patient in patients!['items'])
           TableRow(
             children: [
-              tableCell(patient['id'].toString()),
+              TableData(data: patient['id'].toString()),
               patient['photo'] == null
-                  ? const TableCell(
-                      child: Image(
-                        image: AssetImage("assets/images/user.png"),
-                        height: 30,
-                        width: 30,
+                  ? TableCell(
+                      child: SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(1000),
+                            child: const Image(
+                              image:
+                                  AssetImage("assets/images/pet_default.jpg"),
+                            ),
+                          ),
+                        ),
                       ),
                     )
-                  : tableCellPhoto(patient['photo']['data']),
-              tableCell(patient['name']),
-              tableCell(patient['petBreed']['name']),
+                  : TableDataPhoto(data: patient['photo']['data']),
+              TableData(data: patient['name']),
+              TableData(data: patient['petBreed']['name']),
               tableActions(patient)
             ],
           )
       ],
     );
-  }
-
-  TableCell tableCell(String data) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: Center(
-            child: Tooltip(
-          message: data.length > 20 ? data : '',
-          child: Text(
-            data.length > 30 ? '${data.substring(0, 30)}...' : data,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        )),
-      ),
-    );
-  }
-
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: SizedBox(
-      height: 40,
-      width: 40,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(1000),
-          child: Image.memory(
-            base64.decode(
-              data.toString(),
-            ),
-            width: 40,
-            height: 40,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    ));
   }
 
   TableCell tableActions(Map<String, dynamic> data) {
@@ -286,8 +300,10 @@ class _PatientsPageState extends State<PatientsPage> {
                   context: context,
                   builder: (BuildContext context) {
                     return ConfirmationDialog(
+                      insentPaddingX: 300,
                       title: 'Confirmation',
-                      content: 'Are you sure you want to delete this patient?',
+                      content:
+                          'Deleting this patient will result in the deletion of all related data, including appointment history, medical records, and any other associated information. This action cannot be undone. Please confirm that you want to proceed.',
                       onYesPressed: () {
                         Navigator.of(context).pop();
                         deletePatient(data['id']);
@@ -303,20 +319,6 @@ class _PatientsPageState extends State<PatientsPage> {
               iconColor: AppColors.error,
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  TableCell tableHead(String header) {
-    return TableCell(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 12),
-          child: Text(
-            header,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
         ),
       ),
     );

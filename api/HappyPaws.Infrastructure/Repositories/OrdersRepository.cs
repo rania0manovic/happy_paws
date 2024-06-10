@@ -53,7 +53,13 @@ namespace HappyPaws.Infrastructure.Repositories
                 query.Include(x => x.OrderDetails).ThenInclude(x => x.Product)
                      .ThenInclude(x => x.ProductImages).ThenInclude(x => x.Image);
             }
-            return await query.Where(x => searchObject.UserId == null || x.UserId == searchObject.UserId)
+            return await query
+                .Where(x => (searchObject.UserId == null || x.UserId == searchObject.UserId) &&
+                 (searchObject.Id == null || x.Id.ToString().StartsWith(searchObject.Id)) &&
+                 (searchObject.StartDateTime == null || x.CreatedAt >= searchObject.StartDateTime) &&
+                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime)
+               )
+                .OrderBy(x => (int)(x.Status))
              .ToPagedListAsync(searchObject, cancellationToken);
         }
 
@@ -74,6 +80,11 @@ namespace HappyPaws.Infrastructure.Repositories
                                  TotalSpent = g.Sum(o => o.Total)
                              })
                           .ToListAsync(cancellationToken);
+        }
+
+        public async Task<bool> HasAnyByProductIdAsync(int productId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.OrderDetails.Any(c => c.ProductId == productId), cancellationToken: cancellationToken);
         }
     }
 }

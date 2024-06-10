@@ -13,6 +13,7 @@ namespace HappyPaws.Core.Entities
         public double Price { get; set; }
         public required string Description { get; set; }
         public int InStock { get; set; }
+        public bool? IsActive { get; set; }
 
         public required Brand Brand { get; set; }
         public int BrandId { get; set; }

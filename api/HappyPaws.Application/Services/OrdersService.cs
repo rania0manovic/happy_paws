@@ -188,5 +188,9 @@ namespace HappyPaws.Application.Services
             return invoiceBuilder.ToString();
         }
 
+        public async Task<bool> HasAnyByProductIdAsync(int productId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.HasAnyByProductIdAsync(productId, cancellationToken);
+        }
     }
 }

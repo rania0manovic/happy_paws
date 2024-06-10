@@ -18,13 +18,20 @@ class _LoginPageState extends State<LoginPage> {
   bool error = false;
   final _formKey = GlobalKey<FormState>();
   Map<String, bool> errorStates = {};
+  bool isDisabledButton = false;
 
   Future<void> login() async {
     try {
+      setState(() {
+        isDisabledButton = true;
+      });
       final response = await AuthService().signIn(data);
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('token', response.data['token'].toString());
+        setState(() {
+          isDisabledButton = false;
+        });
         if (mounted) {
           context.router.push(const ClientLayout());
         }
@@ -36,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         error = true;
+        isDisabledButton = false;
       });
       throw Exception(e);
     }
@@ -110,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                           height: 20,
                         ),
                         PrimaryButton(
+                          isDisabled: isDisabledButton,
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               login();

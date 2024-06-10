@@ -71,6 +71,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+
         [HttpPut("{id}/{status}/{userId}")]
         public async Task<IActionResult> Put(int id, OrderStatus status, int userId, CancellationToken cancellationToken = default)
         {
@@ -101,6 +102,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet("GetTopBuyers")]
         public async Task<IActionResult> GetTopBuyers(int size, CancellationToken cancellationToken = default)
         {
@@ -117,6 +119,21 @@ namespace HappyPaws.Api.Controllers
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when fetching resources about top buyers!");
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("HasAnyByProductId/{productId}")]
+        public async Task<IActionResult> HasAnyByProductId(int productId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.HasAnyByProductIdAsync(productId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when checking for any orders with product id {productId} in it!", productId);
                 return BadRequest();
             }
         }

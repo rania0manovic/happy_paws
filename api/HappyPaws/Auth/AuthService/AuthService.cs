@@ -99,7 +99,7 @@ namespace HappyPaws.Api.Auth.AuthService
 
         public async Task<TokenModel> UpdateUserAsync(UserDto dto, CancellationToken cancellationToken = default)
         {
-           var user = await _usersService.UpdateAsync(dto, cancellationToken);
+            var user = await _usersService.UpdateAsync(dto, cancellationToken);
 
             return new TokenModel
             {
@@ -131,14 +131,14 @@ namespace HappyPaws.Api.Auth.AuthService
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                    new Claim(ClaimNames.Id, user.Id.ToString()),
-                    new Claim(ClaimNames.FirstName, user.FirstName),
-                    new Claim(ClaimNames.LastName, user.LastName),
-                    new Claim(ClaimNames.MyPawNumber, user.MyPawNumber),
-                    new Claim(ClaimNames.Email, user.Email),
-                    new Claim(ClaimNames.Role, user.Role.ToString()),
-                    new Claim(ClaimNames.Gender, user.Gender.ToString()),
-                    new Claim(ClaimNames.ProfilePhotoId, user.ProfilePhotoId.ToString())
+                    new Claim(type: ClaimNames.Id, value: user.Id.ToString()),
+                    new Claim(type: ClaimNames.FirstName, value: user.FirstName),
+                    new Claim(type : ClaimNames.LastName, value: user.LastName),
+                    new Claim(type : ClaimNames.MyPawNumber, value: user.MyPawNumber ?? ""),
+                    new Claim(type : ClaimNames.Email, value : user.Email),
+                    new Claim(type : ClaimNames.Role, value: user.Role.ToString()),
+                    new Claim(type : ClaimNames.Gender, value: user.Gender.ToString()),
+                    new Claim(type : ClaimNames.ProfilePhotoId, value : user.ProfilePhotoId.ToString() ?? "")
                 }),
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(secretKey),
@@ -160,6 +160,16 @@ namespace HappyPaws.Api.Auth.AuthService
                 throw;
             }
 
+        }
+
+        public async Task UpdatePasswordAsync(ChangePasswordModel model, CancellationToken cancellationToken = default)
+        {
+            var user = await _usersService.GetByEmailAsync(model.Email, cancellationToken) ?? throw new UserNotFoundException();
+            if (user==null || !_cryptoService.Verify(user.PasswordHash, user.PasswordSalt, model.OldPassword))
+                throw new UserWrongCredentialsException();
+            user.PasswordSalt = _cryptoService.GenerateSalt();
+            user.PasswordHash = _cryptoService.GenerateHash(model.NewPassword!, user.PasswordSalt);
+            await _usersService.UpdateAsync(user, cancellationToken);
         }
     }
 }

@@ -69,6 +69,15 @@ class BaseService {
     return response;
   }
 
+   Future<dynamic> patch(String endpoint, dynamic data) async {
+    final response = await _dio.patch(
+      '$baseUrl$endpoint',
+      data: data,
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
+    return response;
+  }
+
   Future<dynamic> delete(String endpoint) async {
     final response = await _dio.delete('$baseUrl$endpoint');
     return response;
@@ -102,6 +111,7 @@ class BaseService {
   }
 
   Future<dynamic> putMultiPartRequest(String endpoint, dynamic data) async {
+    print(data);
     final formData = FormData.fromMap({
       ...data,
       'photoFile': data['photoFile'] != null

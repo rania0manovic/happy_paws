@@ -16,6 +16,7 @@ namespace HappyPaws.Application.Interfaces
         Task SendPlacedOrderConfirmation(int id, CancellationToken cancellationToken = default);
         Task<List<TopUserDto>> GetTopBuyersAsync(int size, CancellationToken cancellationToken = default);
         Task<double> GetIncomeForMonthAsync(int month, CancellationToken cancellationToken = default);
+        Task<bool> HasAnyByProductIdAsync(int productId, CancellationToken cancellationToken = default);
 
     }
 }

@@ -238,9 +238,14 @@ abstract class $AppRouter extends _i40.RootStackRouter {
       );
     },
     PatientsRoute.name: (routeData) {
+      final args = routeData.argsAs<PatientsRouteArgs>(
+          orElse: () => const PatientsRouteArgs());
       return _i40.AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: const _i23.PatientsPage(),
+        child: _i23.PatientsPage(
+          key: args.key,
+          myPawNumber: args.myPawNumber,
+        ),
       );
     },
     PaypalDonationsRoute.name: (routeData) {
@@ -880,16 +885,40 @@ class OrdersRoute extends _i40.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i23.PatientsPage]
-class PatientsRoute extends _i40.PageRouteInfo<void> {
-  const PatientsRoute({List<_i40.PageRouteInfo>? children})
-      : super(
+class PatientsRoute extends _i40.PageRouteInfo<PatientsRouteArgs> {
+  PatientsRoute({
+    _i41.Key? key,
+    String? myPawNumber,
+    List<_i40.PageRouteInfo>? children,
+  }) : super(
           PatientsRoute.name,
+          args: PatientsRouteArgs(
+            key: key,
+            myPawNumber: myPawNumber,
+          ),
           initialChildren: children,
         );
 
   static const String name = 'PatientsRoute';
 
-  static const _i40.PageInfo<void> page = _i40.PageInfo<void>(name);
+  static const _i40.PageInfo<PatientsRouteArgs> page =
+      _i40.PageInfo<PatientsRouteArgs>(name);
+}
+
+class PatientsRouteArgs {
+  const PatientsRouteArgs({
+    this.key,
+    this.myPawNumber,
+  });
+
+  final _i41.Key? key;
+
+  final String? myPawNumber;
+
+  @override
+  String toString() {
+    return 'PatientsRouteArgs{key: $key, myPawNumber: $myPawNumber}';
+  }
 }
 
 /// generated route for

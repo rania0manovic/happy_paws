@@ -1,5 +1,5 @@
-﻿using HappyPaws.Core.Dtos.Employee;
-using HappyPaws.Core.Dtos.Pet;
+﻿using HappyPaws.Core.Dtos.Pet;
+using HappyPaws.Core.Dtos.User;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace HappyPaws.Core.Dtos.Appointment
         public PetDto? Pet { get; set; }
         public int PetId { get; set; }
 
-        public EmployeeDto? Employee { get; set; }
+        public UserDto? Employee { get; set; }
         public int? EmployeeId { get; set; }
     }
 }

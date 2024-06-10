@@ -115,7 +115,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             drawHorizontalLine: true,
                             drawVerticalLine: false),
                         alignment: BarChartAlignment.spaceAround,
-                        maxY: maxY + 1),
+                        maxY: maxY + 2),
                   ),
                 ),
               ),

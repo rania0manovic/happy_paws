@@ -235,73 +235,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("EmailVerificationRequests");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.Employee", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<int>("EmployeePosition")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<int>("Gender")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<int?>("ProfilePhotoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Role")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProfilePhotoId");
-
-                    b.ToTable("Employees");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -692,6 +625,11 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -923,6 +861,9 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int?>("EmployeePosition")
+                        .HasColumnType("int");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -932,6 +873,9 @@ namespace HappyPaws.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
+
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -952,7 +896,6 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("MyPawNumber")
-                        .IsRequired()
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
@@ -975,6 +918,8 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasDefaultValue(0);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
 
                     b.HasIndex("ProfilePhotoId");
 
@@ -1131,9 +1076,10 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
                 {
-                    b.HasOne("HappyPaws.Core.Entities.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId");
+                    b.HasOne("HappyPaws.Core.Entities.User", "Employee")
+                        .WithMany("Appointments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HappyPaws.Core.Entities.Pet", "Pet")
                         .WithMany("Appointments")
@@ -1166,15 +1112,6 @@ namespace HappyPaws.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("HappyPaws.Core.Entities.Employee", b =>
-                {
-                    b.HasOne("HappyPaws.Core.Entities.Image", "ProfilePhoto")
-                        .WithMany("Employees")
-                        .HasForeignKey("ProfilePhotoId");
-
-                    b.Navigation("ProfilePhoto");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Notification", b =>
@@ -1382,6 +1319,10 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.User", b =>
                 {
+                    b.HasOne("HappyPaws.Core.Entities.Image", null)
+                        .WithMany("Employees")
+                        .HasForeignKey("ImageId");
+
                     b.HasOne("HappyPaws.Core.Entities.Image", "ProfilePhoto")
                         .WithMany("Users")
                         .HasForeignKey("ProfilePhotoId");
@@ -1522,6 +1463,8 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.User", b =>
                 {
+                    b.Navigation("Appointments");
+
                     b.Navigation("Donations");
 
                     b.Navigation("Notifications");

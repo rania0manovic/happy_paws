@@ -1,14 +1,18 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
+import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/desktop/components/table/table_data.dart';
+import 'package:happypaws/desktop/components/table/table_data_photo.dart';
+import 'package:happypaws/desktop/components/table/table_head.dart';
 import '../dialogs/add_edit_category_dialog.dart';
 
 @RoutePage()
@@ -41,17 +45,21 @@ class _ProductsPageState extends State<CategoriesPage> {
         await ProductSubcategoriesService().getPaged("", 1, 999);
     if (responseSubcategories.statusCode == 200) {
       setState(() {
-        productSubcategories =responseSubcategories.data;
+        productSubcategories = responseSubcategories.data;
       });
     }
   }
 
-  Future<void> 
-  deleteCategory(int id) async {
+  Future<void> deleteCategory(int id) async {
     try {
       var response = await ProductCategoriesService().delete('/$id');
       if (response.statusCode == 200) {
-        fetchData();
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have succesfully deleted selected category.");
+        setState(() {
+          productCategories!['items'].removeWhere((x) => x['id'] == id);
+        });
       }
     } catch (e) {
       rethrow;
@@ -91,6 +99,7 @@ class _ProductsPageState extends State<CategoriesPage> {
             },
             fetchData: fetchData,
             data: data,
+            allCategories: productCategories,
             subcategories: productSubcategories!,
             listIds: listIds,
           ),
@@ -117,19 +126,22 @@ class _ProductsPageState extends State<CategoriesPage> {
                     const Text(
                       'Categories settings',
                       style: TextStyle(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w600
-                      ),
+                          fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
-                        icon: const Icon(Icons.add, color: Colors.white,),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                        ),
                         label: "Add new category"),
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                productCategories != null && productSubcategories!=null
-                    ? table()
+                productCategories != null && productSubcategories != null
+                    ? Expanded(
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.vertical, child: table()))
                     : const Expanded(
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
@@ -154,54 +166,29 @@ class _ProductsPageState extends State<CategoriesPage> {
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(0.1),
           ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 30),
-              child: tableHead('Category name'),
-            ),
-            Align(alignment: Alignment.center, child: tableHead('Photo')),
-            Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: tableHead('Actions'),
-                )),
+          children: const [
+            TableHead(
+                header: "Category name",
+                alignmentGeometry: Alignment.centerLeft),
+            TableHead(header: "Photo", alignmentGeometry: Alignment.center),
+            TableHead(
+                header: "Actions", alignmentGeometry: Alignment.centerRight),
           ],
         ),
         for (var category in productCategories!['items'])
           TableRow(
             children: [
-              tableCell(category['name']),
-              tableCellPhoto(category['photo']['data']),
+              TableData(
+                data: category['name'],
+                alignmentGeometry: Alignment.centerLeft,
+                paddingHorizontal: 25,
+              ),
+              TableDataPhoto(data: category['photo']['data']),
               tableActions(category)
             ],
           ),
       ],
     );
-  }
-
-  TableCell tableCell(String data) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20, left: 30),
-        child: Text(
-          data,
-          style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500),
-        ),
-      ),
-    );
-  }
-
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 0, bottom: 0.0),
-            child: Image.memory(
-              base64.decode(data.toString()),
-              height: 25,
-            )));
   }
 
   TableCell tableActions(Map<String, dynamic> data) {
@@ -220,7 +207,16 @@ class _ProductsPageState extends State<CategoriesPage> {
                 iconColor: AppColors.gray,
               ),
               ActionButton(
-                onPressed: () {
+                onPressed: () async {
+                  var response =
+                      await ProductsService().hasAnyWithCategoryId(data['id']);
+                  if (response.data == true) {
+                    if (!mounted) return;
+                    ToastHelper.showToastError(context,
+                        "You cannot delete this category because it contains one or more products.");
+                    return;
+                  }
+                  if (!mounted) return;
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -244,18 +240,6 @@ class _ProductsPageState extends State<CategoriesPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  TableCell tableHead(String header) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 12, bottom: 12),
-        child: Text(
-          header,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
     );

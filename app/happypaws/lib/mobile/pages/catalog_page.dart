@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
+import 'package:happypaws/common/services/UserCartsService.dart';
 import 'package:happypaws/common/services/UserFavouritesService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -51,13 +54,13 @@ class _CatalogPageState extends State<CatalogPage> {
     super.initState();
     _scrollController = ScrollController();
     _scrollControllerGrid = ScrollController();
-
     _scrollController.addListener(_scrollListener);
     setState(() {
       params['categoryId'] = widget.categoryId?.toString();
       params['subcategoryId'] = widget.subcategoryId?.toString();
       params['takePhotos'] = "1";
-      params['productOrBrandName'] = widget.searchInput;
+      params['onlyActive'] = true;
+      params['searchParams'] = widget.searchInput;
     });
     fetchData();
   }
@@ -119,14 +122,48 @@ class _CatalogPageState extends State<CatalogPage> {
       }
     });
   }
-  void resetFilters(){
+
+  void resetFilters() {
     setState(() {
-     products!['items'] = List.from(copyOfProducts!);
-      selectedValuePrice='none';
-      selectedValueReview='0';
+      products!['items'] = List.from(copyOfProducts!);
+      selectedValuePrice = 'none';
+      selectedValueReview = '0';
     });
   }
+ Future<void> addProductToCart(int id) async {
+    var productAlreadyInCart = await UserCartsService()
+        .get("/ProductAlreadyInCart?productId=$id");
+    if (productAlreadyInCart.statusCode != 200) {
+      throw Exception();
+    }
+    if (productAlreadyInCart.data) {
+      if (!mounted) return;
+      ToastHelper.showToastWarning(context,
+          "Product is already in cart! To increase the quantity please go to cart.");
+      return;
+    }
 
+    var fetchedUser = await AuthService().getCurrentUser();
+    var userId = fetchedUser?['Id'];
+    var data = {'userId': userId, 'productId':id};
+    try {
+      var response = await UserCartsService().post('', data);
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "Successfully added product into the cart!");
+      } else {
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "Something went wrong! Please try again.");
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ToastHelper.showToastError(
+          context, "An error has occured! Please try again later.");
+      rethrow;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     if (products == null) {
@@ -154,11 +191,14 @@ class _CatalogPageState extends State<CatalogPage> {
                           ? AppColors.primary
                           : Colors.grey,
                     ),
-                    if((selectedValuePrice != "none" ||
-                              selectedValueReview != '0'))
-                    GestureDetector(
-                      onTap: () => resetFilters(),
-                      child: const Icon(Icons.close, color: AppColors.error,)),
+                    if ((selectedValuePrice != "none" ||
+                        selectedValueReview != '0'))
+                      GestureDetector(
+                          onTap: () => resetFilters(),
+                          child: const Icon(
+                            Icons.close,
+                            color: AppColors.error,
+                          )),
                   ],
                 ),
                 if (widget.categoryName != null && widget.categoryPhoto != null)
@@ -187,7 +227,6 @@ class _CatalogPageState extends State<CatalogPage> {
 
   void _showFilterMenu(BuildContext context) {
     late OverlayEntry overlayEntry;
-
     overlayEntry = OverlayEntry(
       builder: (context) => Material(
         color: Colors.transparent,
@@ -229,60 +268,79 @@ class _CatalogPageState extends State<CatalogPage> {
             onTap: () =>
                 context.router.push(ProductDetailsRoute(productId: item['id'])),
             child: SizedBox.expand(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Stack(
                 children: [
-                  Image.memory(
-                    base64.decode(
-                      item['productImages'][0]['image']['data'],
-                    ),
-                    height: 110,
-                  ),
-                  Text(
-                    item['name'].length > 40
-                        ? '${item['name'].substring(0, 40)}...'
-                        : item['name'],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.w500),
-                  ),
-                  Row(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        '\$ ${item['price']}',
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 16),
-                      ),
-                      if (item!['review'] == 0)
-                        const Text(
-                          'No reviews ',
-                          style: TextStyle(fontSize: 12, color: AppColors.gray),
-                        )
-                      else
-                        Row(
-                          children: List.generate(5, (index) {
-                            if (index < item['review']) {
-                              return const Image(
-                                image: AssetImage("assets/images/star.png"),
-                                height: 14,
-                                width: 14,
-                              );
-                            } else {
-                              return const Opacity(
-                                opacity: 0.5,
-                                child: Image(
-                                  image: AssetImage(
-                                      "assets/images/star-empty.png"),
-                                  height: 14,
-                                  width: 14,
-                                ),
-                              );
-                            }
-                          }),
+                      Image.memory(
+                        base64.decode(
+                          item['productImages'][0]['image']['data'],
                         ),
+                        height: 110,
+                      ),
+                      Text(
+                        item['name'].length > 40
+                            ? '${item['name'].substring(0, 40)}...'
+                            : item['name'],
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            '\$ ${item['price']}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.w700, fontSize: 16),
+                          ),
+                          if (item!['review'] == 0)
+                            const Text(
+                              'No reviews ',
+                              style: TextStyle(
+                                  fontSize: 12, color: AppColors.gray),
+                            )
+                          else
+                            Row(
+                              children: List.generate(5, (index) {
+                                if (index < item['review']) {
+                                  return const Image(
+                                    image: AssetImage("assets/images/star.png"),
+                                    height: 14,
+                                    width: 14,
+                                  );
+                                } else {
+                                  return const Opacity(
+                                    opacity: 0.5,
+                                    child: Image(
+                                      image: AssetImage(
+                                          "assets/images/star-empty.png"),
+                                      height: 14,
+                                      width: 14,
+                                    ),
+                                  );
+                                }
+                              }),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                        style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primaryMediumLight),
+                        onPressed: () {
+                          addProductToCart(item['id']);
+                        },
+                        icon: const Icon(
+                          Icons.shopping_bag_outlined,
+                          color: Colors.white,
+                        )),
+                  )
                 ],
               ),
             ),

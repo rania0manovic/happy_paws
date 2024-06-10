@@ -20,13 +20,41 @@ namespace HappyPaws.Api.Controllers
             _memoryCache = memoryCache;
         }
 
-        public override Task<IActionResult> Post([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
+        public override async Task<IActionResult> Post([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
         {
-            return base.Post(upsertDto, cancellationToken);
+            try
+            {
+                var result = await Service.AddAsync(upsertDto, cancellationToken);
+                if (result != null)
+                {
+                    var product = await Service.GetByIdAsync(result.Id, cancellationToken);
+                    return Ok(product);
+                }
+                else throw new Exception();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when posting resource for product");
+                return BadRequest();
+            }
         }
-        public override Task<IActionResult> Put([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
+        public override async Task<IActionResult> Put([FromForm] ProductDto upsertDto, CancellationToken cancellationToken = default)
         {
-            return base.Put(upsertDto, cancellationToken);
+            try
+            {
+                var result = await Service.UpdateAsync(upsertDto, cancellationToken);
+                if (result != null)
+                {
+                    var product = await Service.GetByIdAsync(upsertDto.Id, cancellationToken);
+                    return Ok(product);
+                }
+                else throw new Exception();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when updating resource for productId {ProductId}", upsertDto.Id);
+                return BadRequest();
+            }
         }
 
         [HttpGet("{id}")]
@@ -43,31 +71,6 @@ namespace HappyPaws.Api.Controllers
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when getting resource for userId {UserId} and productId {ProductId}", userId, id);
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("RecommendedProductsForUser")]
-        public async Task<IActionResult> GetRecommendedProductsForUser(int size, CancellationToken cancellationToken = default)
-        {
-            var userId = _currentUser.Id;
-
-            try
-            {
-                if (!userId.HasValue) return StatusCode(403);
-                string cacheKey = $"RecommendedProducts_{userId.Value}";
-                if (_memoryCache.TryGetValue<List<ProductDto>>(cacheKey, out var recommendedProducts))
-                {
-                    return Ok(recommendedProducts);
-                }
-
-                var dto = await Service.GetRecommendedProductsForUserAsync(userId.Value, size, cancellationToken);
-                _memoryCache.Set(cacheKey, dto, TimeSpan.FromDays(1));
-                return Ok(dto);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Problem when getting resource for userId {UserId} ", userId);
                 return BadRequest();
             }
         }
@@ -106,6 +109,67 @@ namespace HappyPaws.Api.Controllers
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when updating stock resources for id {id}", id);
+                return BadRequest();
+            }
+        }
+
+        [HttpPatch("ActivityStatus")]
+        public async Task<IActionResult> UpdateActivityStatus([FromBody] ProductPatchDto dto, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                await Service.UpdateActivityStatusAsync(dto.Id, dto.IsActive, cancellationToken);
+                return Ok();
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when updating stock resources for id {id}", dto.Id);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("HasAnyWithCategoryId/{categoryId}")]
+        public async Task<IActionResult> HasAnyWithCategoryId(int categoryId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.HasAnyWithCategoryIdAsync(categoryId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when checking for any products with category id {CategoryId}!", categoryId);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("HasAnyWithSubcategoryId/{subcategoryId}")]
+        public async Task<IActionResult> HasAnyWithSubcategoryId(int subcategoryId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.HasAnyWithSubcategoryIdAsync(subcategoryId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when checking for any products with subcategory id {SubcategoryId}!", subcategoryId);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("HasAnyWithBrandId/{brandId}")]
+        public async Task<IActionResult> HasAnyWithBrandId(int brandId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await Service.HasAnyWithBrandIdAsync(brandId, cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when checking for any products with brand id {BrandId}!", brandId);
                 return BadRequest();
             }
         }

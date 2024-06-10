@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
 class AddEditPetBreedMenu extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
   final Map<String, dynamic>? data;
+  final Map<String, dynamic>? allbreeds;
 
   const AddEditPetBreedMenu({
     Key? key,
     required this.onClose,
     required this.fetchData,
     this.data,
+    this.allbreeds,
   }) : super(key: key);
 
   @override
@@ -24,6 +27,8 @@ class AddEditPetBreedMenu extends StatefulWidget {
 }
 
 class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
+  bool disabledButton = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,10 +52,16 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
 
   Future<void> addPetBreed() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       final response = await PetBreedsService().post("", data);
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
+        setState(() {
+          disabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have succesfully added a new pet breed!");
@@ -58,6 +69,9 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
         throw Exception('Error occured');
       }
     } catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
       if (!mounted) return;
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
@@ -67,10 +81,16 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
 
   Future<void> editPetBreed() async {
     try {
+       setState(() {
+          disabledButton = true;
+        });
       final response = await PetBreedsService().put("", widget.data);
       if (response.statusCode == 200) {
         widget.onClose();
         widget.fetchData();
+         setState(() {
+          disabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have succesfully edited the selected pet breed!");
@@ -78,6 +98,9 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
         throw Exception('Error occured');
       }
     } catch (e) {
+       setState(() {
+          disabledButton = false;
+        });
       if (!mounted) return;
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
@@ -88,17 +111,18 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
   Map<String, dynamic> data = {};
   Map<String, dynamic>? petTypes;
   String? selectedPetType;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 370,
-      height: 310,
       child: petTypes == null
           ? const Spinner()
           : Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
@@ -134,29 +158,46 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
                         alignment: WrapAlignment.start,
                         spacing: 20,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              dropdownMenu(petTypes!['items'], "Pet type",
-                                  (String? newValue) async {
-                                setState(() {
-                                  selectedPetType = newValue;
-                                  data['petTypeId'] = newValue;
-                                });
-                              }, selectedPetType),
-                              inputField("Breed name:", "name"),
-                              const SizedBox(
-                                height: 32,
-                              ),
-                              PrimaryButton(
-                                  onPressed: () {
-                                    widget.data != null
-                                        ? editPetBreed()
-                                        : addPetBreed();
-                                  },
-                                  width: double.infinity,
-                                  label: widget.data != null ? 'Edit' : "Add")
-                            ],
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ApiDataDropdownMenu(
+                                    items: petTypes!['items'],
+                                    label: 'Pet type:',
+                                    onChanged: (String? newValue) async {
+                                      setState(() {
+                                        selectedPetType = newValue;
+                                        data['petTypeId'] = newValue;
+                                      });
+                                    },
+                                    selectedOption: selectedPetType),
+                                InputField(
+                                  label: "Breed name:",
+                                  value: widget.data != null
+                                      ? widget.data!['name']
+                                      : '',
+                                  onChanged: (value) => setState(() {
+                                    data['name'] = value;
+                                  }),
+                                ),
+                                const SizedBox(
+                                  height: 32,
+                                ),
+                                PrimaryButton(
+                                  isDisabled: disabledButton,
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        widget.data != null
+                                            ? editPetBreed()
+                                            : addPetBreed();
+                                      }
+                                    },
+                                    width: double.infinity,
+                                    label: widget.data != null ? 'Edit' : "Add")
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -165,100 +206,6 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
                 ],
               ),
             ),
-    );
-  }
-
-  Column dropdownMenu(dynamic items, String label,
-      void Function(String? newValue) onChanged, String? selectedOption,
-      {bool isDisabeled = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 14,
-        ),
-        Container(
-            padding: const EdgeInsets.only(top: 10),
-            width: double.infinity,
-            height: 50,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: DropdownButton<String>(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                isExpanded: true,
-                value: selectedOption,
-                hint: const Text('Select'),
-                underline: Container(),
-                borderRadius: BorderRadius.circular(10),
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                onChanged: isDisabeled ? null : onChanged,
-                disabledHint: const Text("Select category first..."),
-                items: [
-                  for (var item in items)
-                    DropdownMenuItem<String>(
-                      value: item['id'].toString(),
-                      child: Text(item['name']),
-                    ),
-                ],
-              ),
-            )),
-      ],
-    );
-  }
-
-  Column inputField(String label, String key, {bool isObscure = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 40,
-          width: double.infinity,
-          child: TextFormField(
-            enabled: selectedPetType != null,
-            initialValue: widget.data != null ? widget.data!['name'] : '',
-            onChanged: (value) {
-              setState(() {
-                data[key] = value;
-              });
-            },
-            style: const TextStyle(
-              color:  Colors.black,
-            ),
-            obscureText: isObscure ? true : false,
-            decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.only(bottom: 5, left: 10, right: 10),
-                filled: true,
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color:  AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
-      ],
     );
   }
 }

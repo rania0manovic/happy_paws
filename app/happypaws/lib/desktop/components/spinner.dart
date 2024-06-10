@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/RegularText.dart';
+import 'package:happypaws/common/components/text/regular_text.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 
 class Spinner extends StatelessWidget {

@@ -68,10 +68,19 @@ class _MyPetsPageState extends State<MyPetsPage> {
                             const SizedBox(
                               height: 20,
                             ),
+                            if (userPets!['totalCount'] == 0)
+                              const Text(
+                                "You have not added any pets yet.",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
                             for (var pet in userPets!['items'])
                               GestureDetector(
                                 onTap: () => context.router.push(
-                                    PetDetailsRoute(userId: widget.userId, petId: pet['id'], onChangedData: fetchData)),
+                                    PetDetailsRoute(
+                                        userId: widget.userId,
+                                        petId: pet['id'],
+                                        onChangedData: fetchData)),
                                 child: Column(
                                   children: [
                                     SizedBox(
@@ -79,12 +88,13 @@ class _MyPetsPageState extends State<MyPetsPage> {
                                       height: 220,
                                       child: ClipRRect(
                                         borderRadius:
-                                            BorderRadius.circular(200),
-                                        child: Image.memory(
+                                            BorderRadius.circular(1000),
+                                        child: pet['photo']!=null ? Image.memory(
                                           base64.decode(
                                               pet['photo']['data'].toString()),
                                           fit: BoxFit.cover,
-                                        ),
+                                        ) : const Image(
+                              image: AssetImage("assets/images/pet_default.jpg"),)
                                       ),
                                     ),
                                     const SizedBox(
@@ -121,14 +131,14 @@ class _MyPetsPageState extends State<MyPetsPage> {
         bottom: 15,
         right: 15,
         child: GestureDetector(
-          onTap: () =>
-              context.router.push(PetDetailsRoute(userId: widget.userId, onChangedData: fetchData)),
+          onTap: () => context.router.push(
+              PetDetailsRoute(userId: widget.userId, onChangedData: fetchData)),
           child: Container(
             height: 54,
             width: 54,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
-                color:  AppColors.primary),
+                color: AppColors.primary),
             child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: SvgPicture.asset(

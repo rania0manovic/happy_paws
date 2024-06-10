@@ -205,13 +205,13 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           direction: Axis.horizontal,
           spacing: 10,
           children: [
-            if (product!['inStock'] > 0)
+            if (product!['inStock'] > 0 && product!['isActive'])
               GestureDetector(
                   onTap: () => addProductToCart(),
                   child: FractionallySizedBox(
                     widthFactor: 0.8,
                     child: PrimaryIconButton(
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.shopping_bag_outlined,
                         color: Colors.white,
                         size: 25,
@@ -224,6 +224,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       },
                     ),
                   ))
+            else if (product!['isActive'] == false)
+              const FractionallySizedBox(
+                widthFactor: 0.8,
+                child: Text(
+                  "Product is currently unavaliable for purchase.",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w500),
+                ),
+              )
             else
               FractionallySizedBox(
                   widthFactor: 0.8,

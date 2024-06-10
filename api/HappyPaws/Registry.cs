@@ -8,6 +8,7 @@ using HappyPaws.Common.Services.AuthService;
 using HappyPaws.Common.Services.CryptoService;
 using HappyPaws.Common.Services.EmailService;
 using HappyPaws.Common.Services.EnumsService;
+using HappyPaws.Common.Services.RecommenderSystemService;
 using HappyPaws.Core.Dtos;
 using HappyPaws.Core.Dtos.PetType;
 using HappyPaws.Infrastructure;
@@ -35,12 +36,20 @@ namespace HappyPaws.Api
             services.AddAutoMapper(typeof(Program), typeof(BaseProfile));
         }
 
-        public static void UseMiddlewares(this IApplicationBuilder app)
+        public static void UseMiddlewares()
         {
         }
-        public static void AddDatabase(this IServiceCollection services, ConnectionStringConfig config)
+        public static void AddDatabase(this IServiceCollection services, WebApplicationBuilder builder, ConnectionStringConfig config )
         {
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(config.Main));
+            services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseSqlServer(config.Main)
+                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+                if (builder.Environment.IsDevelopment())
+                {
+                    options.EnableSensitiveDataLogging();
+                }
+            });
         }
         public static void AddAuthenticationAndAuthorization(this IServiceCollection services, JwtTokenConfig jwtTokenConfig)
         {
@@ -113,6 +122,7 @@ namespace HappyPaws.Api
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEnumsService, EnumsService>();
+            services.AddScoped<IRecommenderSystemService, RecommenderSystemService>();
             services.AddHttpContextAccessor().AddScoped<CurrentUser>().AddSingleton<ClaimsPrincipalAccessor>();
             services.AddMemoryCache();
             services.AddSignalR();

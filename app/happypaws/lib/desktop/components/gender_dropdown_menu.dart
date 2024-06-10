@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 
 class GenderDropdownMenu extends StatefulWidget {
   final String? selectedGender;
@@ -43,7 +44,7 @@ class _GenderDropdownMenuState extends State<GenderDropdownMenu> {
            width: double.infinity,
         height: 40,
           decoration: BoxDecoration(
-            color: Color.fromARGB(117, 255, 255, 255),
+            color: AppColors.fill,
             borderRadius: BorderRadius.circular(10),
           ),
           child: DropdownButton<String>(

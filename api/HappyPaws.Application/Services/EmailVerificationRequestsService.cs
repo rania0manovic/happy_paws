@@ -28,7 +28,7 @@ namespace HappyPaws.Application.Services
             TimeSpan timespan = DateTime.Now - result.CreatedAt;
             result.IsExpired = true;
             UnitOfWork.EmailVerificationRequestsRepository.Update(result);
-            if (timespan.TotalSeconds > 60)
+            if (timespan.TotalSeconds > 120)
             {
                 return false;
             }

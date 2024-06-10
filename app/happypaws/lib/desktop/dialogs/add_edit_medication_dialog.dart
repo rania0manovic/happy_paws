@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/PetMedicationsService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';

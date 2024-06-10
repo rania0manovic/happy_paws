@@ -17,6 +17,7 @@ namespace HappyPaws.Common.Services.AuthService
         Task SendEmailVerificationCodeAsync(SignUpModel model, CancellationToken cancellationToken = default);
         Task<bool> VerifyEmail(EmailVerificationRequestDto model, CancellationToken cancellationToken = default);
         Task<TokenModel> UpdateUserAsync(UserDto model, CancellationToken cancellationToken = default);
+        Task UpdatePasswordAsync(ChangePasswordModel model, CancellationToken cancellationToken = default);
 
     }
 }

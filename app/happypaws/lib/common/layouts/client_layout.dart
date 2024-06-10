@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:happypaws/common/utilities/message_notifier.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -37,6 +36,7 @@ class _ClientLayoutState extends State<ClientLayout>
   @override
   void dispose() {
     _pageController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -86,7 +86,11 @@ class _ClientLayoutState extends State<ClientLayout>
       backgroundColor: const Color(0xffF2F2F2),
       currentIndex: tabsRouter.activeIndex,
       onTap: (index) {
-        tabsRouter.setActiveIndex(index);
+           if (index == tabsRouter.activeIndex) {
+                tabsRouter.stackRouterOfIndex(index)!.popUntilRoot();
+              } else {
+                tabsRouter.setActiveIndex(index);
+              }
       },
       items: [
         SalomonBottomBarItem(

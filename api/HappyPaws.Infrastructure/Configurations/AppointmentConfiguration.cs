@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,17 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.Property(x => x.StartDateTime).IsRequired(false);
             builder.Property(x => x.EndDateTime).IsRequired(false);
 
-            builder.HasOne(x => x.Pet).WithMany(x => x.Appointments).HasForeignKey(x => x.PetId).IsRequired();
+            builder.HasOne(x => x.Pet)
+                .WithMany(x => x.Appointments)
+                .HasForeignKey(x => x.PetId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+            builder.HasOne(x => x.Employee)
+                .WithMany(x => x.Appointments)
+                .HasForeignKey(x => x.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired(false);
         }
     }
 }

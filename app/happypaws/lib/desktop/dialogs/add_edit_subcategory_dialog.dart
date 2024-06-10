@@ -1,18 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddEditSubcategoryMenu extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
-
+  final Map<String, dynamic>? allSubcategories;
   final Map<String, dynamic>? data;
 
   const AddEditSubcategoryMenu({
@@ -20,6 +21,7 @@ class AddEditSubcategoryMenu extends StatefulWidget {
     required this.onClose,
     required this.fetchData,
     this.data,
+    this.allSubcategories,
   }) : super(key: key);
 
   @override
@@ -29,11 +31,14 @@ class AddEditSubcategoryMenu extends StatefulWidget {
 class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
   final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
+  final _formKey = GlobalKey<FormState>();
+  bool disabledButton = false;
+
   @override
   void initState() {
     super.initState();
     if (widget.data != null) {
-      data = widget.data!;
+      data = {...widget.data!};
     }
   }
 
@@ -51,15 +56,26 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
 
   Future<void> addSubcategory() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       final response = await ProductSubcategoriesService().post("", data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
+        widget.onClose();
+        widget.fetchData();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have succesfully added a new subcategory. Keep in mind that it may take up to 24 hours for changes to take place.");
-        widget.onClose();
-        widget.fetchData();
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
       rethrow;
@@ -68,14 +84,27 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
 
   Future<void> editSubcategory() async {
     try {
-      final response = await ProductSubcategoriesService().put("", widget.data);
+      setState(() {
+        disabledButton = true;
+      });
+      final response = await ProductSubcategoriesService().put("", data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
+        widget.onClose();
+        widget.fetchData();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have succesfully updated subcategory information. Keep in mind that it may take up to 24 hours for changes to take place.");
-        widget.onClose();
-        widget.fetchData();
-      } else {}
+      } else {
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
+      }
     } catch (e) {
       rethrow;
     }
@@ -86,110 +115,151 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SizedBox(
-        width: 340,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Row(
-              children: [
-                const IconButton(
-                  icon: Icon(Icons.inventory_2_outlined),
-                  onPressed: null,
-                  color: AppColors.gray,
-                ),
-                Text(
-                  widget.data != null
-                      ? 'Edit product subcategory'
-                      : "Add new product subcategory",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: 340,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  const IconButton(
+                    icon: Icon(Icons.inventory_2_outlined),
+                    onPressed: null,
+                    color: AppColors.gray,
                   ),
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: widget.onClose,
-                  icon: const Icon(Icons.close),
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-            SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Wrap(
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.start,
-                  spacing: 20,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        inputField("Name:", "name"),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        const LightText(
-                          label: "Image:",
-                          fontSize: 14,
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Stack(
+                  Text(
+                    widget.data != null
+                        ? 'Edit product subcategory'
+                        : "Add new product subcategory",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: widget.onClose,
+                    icon: const Icon(Icons.close),
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    alignment: WrapAlignment.start,
+                    spacing: 20,
+                    children: [
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: double.infinity,
-                              height: 200,
-                              decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: _selectedImage != null
-                                    ? Image.file(_selectedImage!)
-                                    : widget.data != null
-                                        ? Image.memory(
-                                            base64.decode(widget.data!['photo']
-                                                    ['data']
-                                                .toString()),
-                                            height: 25,
-                                          )
-                                        : const Image(
-                                            image: AssetImage(
-                                                "assets/images/gallery.png")),
-                              ),
+                            InputField(
+                              label: "Name:",
+                              value:
+                                  widget.data != null ? widget.data!['name'] : '',
+                              onChanged: (value) => setState(() {
+                                data['name'] = value;
+                              }),
+                              customValidation: () {
+                                if (widget.allSubcategories != null) {
+                                  bool hasSameName = widget
+                                          .allSubcategories!['items']
+                                          .any((category) =>
+                                              data['photoFile'] == null &&
+                                              category['name'] == data['name']) ??
+                                      false;
+                                  if (hasSameName) {
+                                    return false;
+                                  } else {
+                                    return true;
+                                  }
+                                } else {
+                                  return true;
+                                }
+                              },
+                              customMessage:
+                                  'Subcategory with the same name already exists or no changes have been detected!',
                             ),
-                            Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: ActionButton(
-                                  onPressed: _pickImage,
-                                  icon: Icons.add,
-                                  iconSize: 20,
-                                  iconColor: AppColors.primary,
-                                ))
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            const LightText(
+                              label: "Image:",
+                              fontSize: 14,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Stack(
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white38,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20.0),
+                                    child: _selectedImage != null
+                                        ? Image.file(_selectedImage!)
+                                        : widget.data != null
+                                            ? Image.memory(
+                                                base64.decode(widget
+                                                    .data!['photo']['data']
+                                                    .toString()),
+                                                height: 25,
+                                              )
+                                            : const Image(
+                                                image: AssetImage(
+                                                    "assets/images/gallery.png")),
+                                  ),
+                                ),
+                                Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: ActionButton(
+                                      onPressed: _pickImage,
+                                      icon: Icons.add,
+                                      iconSize: 20,
+                                      iconColor: AppColors.primary,
+                                    ))
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            PrimaryButton(
+                              isDisabled: disabledButton,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (widget.data == null &&
+                                        data["photoFile"] == null) {
+                                      ToastHelper.showToastError(context,
+                                          "Image is a required field!");
+                                      return;
+                                    }
+                                    widget.data != null
+                                        ? editSubcategory()
+                                        : addSubcategory();
+                                  }
+                                },
+                                width: double.infinity,
+                                label: widget.data != null ? 'Edit' : "Add")
                           ],
                         ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        PrimaryButton(
-                            onPressed: () {
-                              widget.data != null
-                                  ? editSubcategory()
-                                  : addSubcategory();
-                            },
-                            width: double.infinity,
-                            label: widget.data != null ? 'Edit' : "Add")
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
+              )
+            ],
+          ),
         ),
       ),
     );

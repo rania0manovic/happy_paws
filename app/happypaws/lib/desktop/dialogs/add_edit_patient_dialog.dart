@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
+import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
@@ -9,7 +10,7 @@ import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
 import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
-import 'package:happypaws/desktop/components/searchableDropdown.dart';
+import 'package:happypaws/desktop/components/searchable_dropdown.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/buttons/secondary_button.dart';
 import 'package:happypaws/desktop/components/gender_dropdown_menu.dart';
@@ -45,6 +46,9 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
   String selectedGender = "Unknown";
   String selectedDate = 'Select date';
   String? selectedPetType;
+  final _formKey = GlobalKey<FormState>();
+  bool disabledButton = false;
+
   String? selectedPetBreed;
   Map<String, dynamic>? petTypes;
   List<dynamic>? petBreeds;
@@ -58,10 +62,22 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
   void initState() {
     super.initState();
     if (widget.data != null) {
-      data = widget.data!;
-      selectedGender = widget.data!["gender"];
+      setInit();
     }
     fetchData();
+  }
+
+  Future<void> setInit() async {
+    setState(() {
+      data = widget.data!;
+      selectedGender = widget.data!["gender"];
+    });
+    if (widget.data!['photoId'] != null) {
+      var photo = await ImagesService().get("/${widget.data!['photoId']}");
+      setState(() {
+        data['photo'] = photo.data;
+      });
+    }
   }
 
   Future<void> fetchData() async {
@@ -109,14 +125,28 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
 
   Future<void> addPatient() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
+      if (data['weight'] is double) {
+        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      } else {
+        data['weight'] = data['weight'].replaceAll('.', ',');
+      }
       var response = await PetsService().postMultiPartRequest('', data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
         widget.onAdd(response.data);
         widget.onClose();
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully added a new patient!");
       } else {
+        setState(() {
+          disabledButton = false;
+        });
         throw Exception('Error occured');
       }
     } catch (e) {
@@ -126,14 +156,26 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
 
   Future<void> editPatient() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
+      if (data['weight'] is double || data['weight'] is String) {
+        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      }
       var response = await PetsService().putMultiPartRequest('', data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
         widget.onEdit(response.data);
         widget.onClose();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have successfully edited selected patient information!");
       } else {
+        setState(() {
+          disabledButton = false;
+        });
         throw Exception('Error occured');
       }
     } catch (e) {
@@ -146,8 +188,6 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(vertical: 150, horizontal: 200),
           contentPadding: const EdgeInsets.all(8),
           content: AddAllergyMenu(
             onAdd: (value) {
@@ -253,268 +293,282 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          SizedBox(
-                              height: 128,
-                              width: 128,
-                              child: Stack(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                                height: 128,
+                                width: 128,
+                                child: Stack(
+                                  children: [
+                                    SizedBox(
+                                      height: 128,
+                                      width: 128,
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          child: _selectedImage != null
+                                              ? Image.file(
+                                                  _selectedImage!,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : (widget.data != null &&
+                                                      widget.data!['photo'] !=
+                                                          null)
+                                                  ? Image.memory(
+                                                      base64.decode(widget
+                                                          .data!['photo']
+                                                              ['data']
+                                                          .toString()),
+                                                      fit: BoxFit.cover)
+                                                  : const Image(
+                                                      image: AssetImage(
+                                                          "assets/images/pet_default.jpg"),
+                                                      fit: BoxFit.cover)),
+                                    ),
+                                    Positioned(
+                                        bottom: 5,
+                                        right: 5,
+                                        child: GestureDetector(
+                                          onTap: () => _pickImage(),
+                                          child: const Image(
+                                              image: AssetImage(
+                                                  "assets/images/edit.png")),
+                                        ))
+                                  ],
+                                )),
+                            SearchableDropdown(
+                              onChanged: (value) => setState(() {
+                                data['ownerId'] = value;
+                              }),
+                              data: widget.data == null
+                                  ? null
+                                  : widget.data!['owner'],
+                            ),
+                            Wrap(
+                              direction: Axis.horizontal,
+                              alignment: WrapAlignment.start,
+                              spacing: 10,
+                              children: [
+                                FractionallySizedBox(
+                                  widthFactor: 0.48,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      InputField(
+                                        label: "Name:",
+                                        onChanged: (value) => setState(() {
+                                          data['name'] = value;
+                                        }),
+                                        value: data['name'],
+                                      ),
+                                      InputField(
+                                        label: "Weight (kg):",
+                                        onChanged: (value) => setState(() {
+                                          data['weight'] = value;
+                                        }),
+                                        isNumber: true,
+                                        value: data['weight']?.toString(),
+                                      ),
+                                      ApiDataDropdownMenu(
+                                          items: petTypes!['items'],
+                                          label: "Pet type:",
+                                          onChanged: (String? newValue) async {
+                                            setState(() {
+                                              selectedPetBreed = null;
+                                              selectedPetType = null;
+                                            });
+                                            await fetchPetBreeds(newValue);
+                                            setState(() {
+                                              selectedPetType = newValue;
+                                            });
+                                          },
+                                          selectedOption: selectedPetType),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      if (widget.data != null &&
+                                          !widget.data!['petAllergies'].isEmpty)
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const LightText(
+                                              label: "Allergies:",
+                                              fontSize: 14,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                for (var item in widget
+                                                    .data!['petAllergies'])
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8.0),
+                                                    child: GestureDetector(
+                                                      onTap: () =>
+                                                          showAddAllergyMenu(
+                                                              context,
+                                                              data: item),
+                                                      child: LightText(
+                                                        label: item['name'],
+                                                        fontSize: 14,
+                                                        color: item['allergySeverity'] ==
+                                                                'Mild'
+                                                            ? AppColors.success
+                                                            : item['allergySeverity'] ==
+                                                                    'Moderate'
+                                                                ? AppColors.info
+                                                                : AppColors
+                                                                    .error,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                FractionallySizedBox(
+                                  widthFactor: 0.48,
+                                  child: Column(
+                                    children: [
+                                      GenderDropdownMenu(
+                                        selectedGender: selectedGender,
+                                        onChanged: (newValue) => setState(() {
+                                          selectedGender = newValue!;
+                                          data['gender'] = newValue;
+                                        }),
+                                      ),
+                                      birthDateInput(context),
+                                      ApiDataDropdownMenu(
+                                        items: petBreeds == null
+                                            ? List.empty()
+                                            : petBreeds!,
+                                        label: "Pet breed:",
+                                        onChanged: (String? newValue) =>
+                                            setState(() {
+                                          selectedPetBreed = newValue;
+                                          data['petBreedId'] = newValue;
+                                        }),
+                                        selectedOption: selectedPetBreed,
+                                        isDisabled: selectedPetType == null
+                                            ? true
+                                            : false,
+                                      ),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      if (widget.data != null &&
+                                          !widget
+                                              .data!['petMedications'].isEmpty)
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const LightText(
+                                              label: "Medications:",
+                                              fontSize: 14,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                for (var item in widget
+                                                    .data!['petMedications'])
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8.0),
+                                                    child: GestureDetector(
+                                                      onTap: () =>
+                                                          showAddMedicationMenu(
+                                                              context,
+                                                              data: item),
+                                                      child: LightText(
+                                                        label: item[
+                                                                'medicationName'] +
+                                                            ' (' +
+                                                            item['dosage']
+                                                                .toString() +
+                                                            ' mg)',
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (widget.data != null)
+                              Row(
                                 children: [
-                                  SizedBox(
-                                    height: 128,
-                                    width: 128,
-                                    child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        child: _selectedImage != null
-                                            ? Image.file(
-                                                _selectedImage!,
-                                                fit: BoxFit.cover,
-                                              )
-                                            : (widget.data != null &&
-                                                    widget.data!['photo'] !=
-                                                        null)
-                                                ? Image.memory(
-                                                    base64.decode(widget
-                                                        .data!['photo']['data']
-                                                        .toString()),
-                                                    fit: BoxFit.cover)
-                                                : const Image(
-                                                    image: AssetImage(
-                                                        "assets/images/pet_default.jpg"),
-                                                    fit: BoxFit.cover)),
-                                  ),
-                                  Positioned(
-                                      bottom: 5,
-                                      right: 5,
-                                      child: GestureDetector(
-                                        onTap: () => _pickImage(),
-                                        child: const Image(
-                                            image: AssetImage(
-                                                "assets/images/edit.png")),
-                                      ))
-                                ],
-                              )),
-                          SearchableDropdown(onChanged: (value) => setState(() {
-                            data['ownerId']=value;
-                          }),
-                            data: widget.data == null
-                                ? null
-                                : widget.data!['owner'],
-                          ),
-                          Wrap(
-                            direction: Axis.horizontal,
-                            alignment: WrapAlignment.start,
-                            spacing: 10,
-                            children: [
-                              FractionallySizedBox(
-                                widthFactor: 0.48,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    InputField(
-                                      label: "Name:",
-                                      onChanged: (value) => setState(() {
-                                        data['name'] = value;
-                                      }),
-                                      value: data['name'],
-                                    ),
-                                    InputField(
-                                      label: "Weight (kg):",
-                                      onChanged: (value) => setState(() {
-                                        data['weight'] = value;
-                                      }),
-                                      value: data['weight'].toString(),
-                                    ),
-                                    ApiDataDropdownMenu(
-                                        items: petTypes!['items'],
-                                        label: "Pet type:",
-                                        onChanged: (String? newValue) async {
-                                          setState(() {
-                                            selectedPetBreed = null;
-                                            selectedPetType = null;
-                                          });
-                                          await fetchPetBreeds(newValue);
-                                          setState(() {
-                                            selectedPetType = newValue;
-                                          });
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: PrimaryButton(
+                                        onPressed: () {
+                                          showAddAllergyMenu(context);
                                         },
-                                        selectedOption: selectedPetType),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    if (widget.data != null &&
-                                        !widget.data!['petAllergies'].isEmpty)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const LightText(
-                                            label: "Allergies:",
-                                            fontSize: 14,
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              for (var item in widget
-                                                  .data!['petAllergies'])
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: GestureDetector(
-                                                    onTap: () =>
-                                                        showAddAllergyMenu(
-                                                            context,
-                                                            data: item),
-                                                    child: LightText(
-                                                      label: item['name'],
-                                                      fontSize: 14,
-                                                      color: item['allergySeverity'] ==
-                                                              'Mild'
-                                                          ? AppColors.success
-                                                          : item['allergySeverity'] ==
-                                                                  'Moderate'
-                                                              ? AppColors.info
-                                                              : AppColors.error,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                        ],
+                                        label: "Add new allergy",
                                       ),
-                                  ],
-                                ),
-                              ),
-                              FractionallySizedBox(
-                                widthFactor: 0.48,
-                                child: Column(
-                                  children: [
-                                    GenderDropdownMenu(
-                                      selectedGender: selectedGender,
-                                      onChanged: (newValue) => setState(() {
-                                        selectedGender = newValue!;
-                                        data['gender'] = newValue;
-                                      }),
                                     ),
-                                    birthDateInput(context),
-                                    ApiDataDropdownMenu(
-                                      items: petBreeds == null
-                                          ? List.empty()
-                                          : petBreeds!,
-                                      label: "Pet breed:",
-                                      onChanged: (String? newValue) =>
-                                          setState(() {
-                                        selectedPetBreed = newValue;
-                                        data['petBreedId'] = newValue;
-                                      }),
-                                      selectedOption: selectedPetBreed,
-                                      isDisabled: selectedPetType == null
-                                          ? true
-                                          : false,
-                                    ),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    if (widget.data != null &&
-                                        !widget.data!['petMedications'].isEmpty)
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const LightText(
-                                            label: "Medications:",
-                                            fontSize: 14,
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              for (var item in widget
-                                                  .data!['petMedications'])
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 8.0),
-                                                  child: GestureDetector(
-                                                    onTap: () =>
-                                                        showAddMedicationMenu(
-                                                            context,
-                                                            data: item),
-                                                    child: LightText(
-                                                      label: item[
-                                                              'medicationName'] +
-                                                          ' (' +
-                                                          item['dosage']
-                                                              .toString() +
-                                                          ' mg)',
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                        ],
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: PrimaryButton(
+                                        onPressed: () {
+                                          showAddMedicationMenu(context);
+                                        },
+                                        label: "Add new medication",
                                       ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          if(widget.data!=null)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: PrimaryButton(
-                                    onPressed: () {
-                                      showAddAllergyMenu(context);
-                                    },
-                                    label: "Add new allergy",
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: PrimaryButton(
-                                    onPressed: () {
-                                      showAddMedicationMenu(context);
-                                    },
-                                    label: "Add new medication",
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          PrimaryButton(
-                            onPressed: () => widget.data != null
-                                ? editPatient()
-                                : addPatient(),
-                            label: widget.data != null
-                                ? "Edit patient information"
-                                : "Add new patient",
-                            width: double.infinity,
-                          )
-                        ],
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            PrimaryButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  widget.data != null
+                                      ? editPatient()
+                                      : addPatient();
+                                }
+                              },
+                              isDisabled: disabledButton,
+                              label: widget.data != null
+                                  ? "Edit patient information"
+                                  : "Add new patient",
+                              width: double.infinity,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   )

@@ -2,14 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/components/dialogs/change_password_dialog.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
-import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/mobile/components/input_field.dart';
+import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,7 +32,6 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
   final _formKey = GlobalKey<FormState>();
-  Map<String, bool> errorStates = {};
 
   @override
   void initState() {
@@ -152,18 +153,69 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                                         ))
                                   ],
                                 )),
-                            inputField('Name', user["FirstName"], "FirstName"),
-                            inputField('Surname', user["LastName"], "LastName"),
-                            inputField('Email', user["Email"], "Email"),
+                            InputField(
+                              label: 'Name:',
+                              onChanged: (value) {
+                                setState(() {
+                                  user['firstName'] = value;
+                                });
+                              },
+                              initialValue: user["FirstName"],
+                            ),
+                            InputField(
+                              label: 'Surname:',
+                              onChanged: (value) {
+                                setState(() {
+                                  user['lastName'] = value;
+                                });
+                              },
+                              initialValue: user["LastName"],
+                            ),
+                             InputField(
+                              label: 'Email:',
+                              enabled: false,
+                              onChanged: (value) {
+                                
+                              },
+                              initialValue: user["Email"],
+                            ),
                             dropdownMenu("Gender"),
                             const SizedBox(
                               height: 20,
                             ),
-                            const Text("Change password",
-                                style: TextStyle(
-                                    decoration: TextDecoration.underline,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500)),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return AlertDialog(
+                                          contentPadding:
+                                              const EdgeInsets.all(8),
+                                          content: ChangePasswordMenu(
+                                            setState: setState,
+                                            onClosed: () {
+                                              Navigator.of(context).pop();
+                                              context.router
+                                                  .push(const LoginRoute());
+                                            },
+                                            onCanceled: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                              child: const Text("Change password",
+                                  style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500)),
+                            ),
                             const SizedBox(
                               height: 20,
                             ),
@@ -241,59 +293,5 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
     );
   }
 
-  Column inputField(String label, String? initialValue, String? objName) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: errorStates[objName] ?? false ? 75 : 50,
-          child: TextFormField(
-            onChanged: (value) {
-              setState(() {
-                user[objName] = value;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                setState(() {
-                  errorStates[objName!] = true;
-                });
-                return 'This field is required';
-              }
-              setState(() {
-                errorStates[objName!] = false;
-              });
-              return null;
-            },
-            initialValue: initialValue,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            decoration: InputDecoration(
-                errorStyle:
-                    const TextStyle(color: AppColors.error, fontSize: 14),
-                filled: true,
-                fillColor: const Color(0xfff2f2f2),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
-      ],
-    );
-  }
+ 
 }

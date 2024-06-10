@@ -9,9 +9,6 @@ namespace HappyPaws.Infrastructure
         public readonly IUserAddressesRepository UserAddressesRepository;
         public readonly IAppointmentsRepository AppointmentsRepository;
         public readonly IBrandsRepository BrandsRepository;
-        public readonly ICitiesRepository CitiesRepository;
-        public readonly ICountriesRepository CountriesRepository;
-        public readonly IEmployeesRepository EmployeesRepository;
         public readonly IImagesRepository ImagesRepository;
         public readonly IOrdersRepository OrdersRepository;
         public readonly IOrderDetailsRepository OrderDetailsRepository;
@@ -33,14 +30,11 @@ namespace HappyPaws.Infrastructure
         public readonly INotificationsRepository NotificationsRepository;
         public readonly IDonationsRepository DonationsRepository;
 
-        public UnitOfWork(DatabaseContext databaseContext, IAppointmentsRepository appointmentsRepository, IBrandsRepository brandsRepository, ICitiesRepository citiesRepository, ICountriesRepository countriesRepository, IEmployeesRepository employeesRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository, IPetMedicationsRepository petMedicationsRepository, IUserAddressesRepository userAddressesRepository, IOrderDetailsRepository orderDetailsRepository, INotificationsRepository notificationsRepository, IDonationsRepository donationsRepository)
+        public UnitOfWork(DatabaseContext databaseContext, IAppointmentsRepository appointmentsRepository, IBrandsRepository brandsRepository, IImagesRepository imagesRepository, IOrdersRepository ordersRepository, IPetAllergiesRepository petAllergiesRepository, IPetBreedsRepository petBreedsRepository, IPetsRepository petsRepository, IPetTypesRepository petTypesRepository, IProductCategoriesRepository productCategoriesRepository, IProductImagesRepository productImagesRepository, IProductReviewsRepository productReviewsRepository, IProductsRepository productsRepository, IProductSubcategoriesRepository productSubcategoriesRepository, IUserCartsRepository userCartsRepository, IUserFavouritesRepository userFavouritesRepository, IUsersRepository usersRepository, IEmailVerificationRequestsRepository emailVerificationRequestsRepository, IProductCategorySubcategoriesRepository productCategorySubcategoryRepository, IPetMedicationsRepository petMedicationsRepository, IUserAddressesRepository userAddressesRepository, IOrderDetailsRepository orderDetailsRepository, INotificationsRepository notificationsRepository, IDonationsRepository donationsRepository)
         {
             _databaseContext = databaseContext;
             AppointmentsRepository = appointmentsRepository;
             BrandsRepository = brandsRepository;
-            CitiesRepository = citiesRepository;
-            CountriesRepository = countriesRepository;
-            EmployeesRepository = employeesRepository;
             ImagesRepository = imagesRepository;
             OrdersRepository = ordersRepository;
             PetAllergiesRepository = petAllergiesRepository;

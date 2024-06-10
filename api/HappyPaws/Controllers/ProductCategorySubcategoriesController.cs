@@ -28,7 +28,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with categoryID {0}", categoryId);
+                Logger.LogError(e, "Problem when getting resource with categoryID {CategoryId}", categoryId);
                 return BadRequest();
             }
         }
@@ -49,7 +49,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with categoryID {0}", categoryId);
+                Logger.LogError(e, "Problem when getting resource with categoryID {CategoryId}", categoryId);
                 return BadRequest();
             }
         }

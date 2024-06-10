@@ -50,7 +50,7 @@ namespace HappyPaws.Application.Services
                         }
                         else
                         {
-                            ProductCategorySubcategory entity = new ProductCategorySubcategory()
+                            ProductCategorySubcategory entity = new()
                             {
                                 ProductCategoryId = dto.Id,
                                 ProductSubcategoryId = subcategoryId,
@@ -93,17 +93,18 @@ namespace HappyPaws.Application.Services
                 {
                     foreach (var subcategoryId in dto.AddedSubcategoryIds)
                     {
-                        
-                            ProductCategorySubcategory entity = new ProductCategorySubcategory()
-                            {
-                                ProductCategoryId = productCategory.Id,
-                                ProductSubcategoryId = subcategoryId,
-                            };
-                            await UnitOfWork.ProductCategorySubcategoriesRepository.AddAsync(entity, cancellationToken);
+
+                        ProductCategorySubcategory entity = new()
+                        {
+                            ProductCategoryId = productCategory.Id,
+                            ProductSubcategoryId = subcategoryId,
+                        };
+                        await UnitOfWork.ProductCategorySubcategoriesRepository.AddAsync(entity, cancellationToken);
                     }
                 }
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
                 await UnitOfWork.CommitTransactionAsync(cancellationToken);
+                dto.Photo = Mapper.Map<ImageDto>(photo);
                 return dto;
 
             }

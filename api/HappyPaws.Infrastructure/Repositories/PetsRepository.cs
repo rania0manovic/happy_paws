@@ -61,5 +61,16 @@ namespace HappyPaws.Infrastructure.Repositories
 
             return groupedPets;
         }
+
+        public async Task<bool> HasAnyWithPetTypeIdAsync(int petTypeId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.PetBreed.PetTypeId == petTypeId, cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithPetBreedIdAsync(int petBreedId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.PetBreedId == petBreedId, cancellationToken);
+
+        }
     }
 }

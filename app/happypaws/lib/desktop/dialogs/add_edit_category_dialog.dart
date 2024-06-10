@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:image_picker/image_picker.dart';
 
 // ignore: must_be_immutable
@@ -14,6 +15,7 @@ class AddEditCategoryOverlay extends StatefulWidget {
   final VoidCallback onClose;
   final VoidCallback fetchData;
   final Map<String, dynamic>? data;
+  final Map<String, dynamic>? allCategories;
   final Map<String, dynamic>? subcategories;
   List<int>? listIds;
 
@@ -23,7 +25,8 @@ class AddEditCategoryOverlay extends StatefulWidget {
       required this.fetchData,
       this.data,
       this.subcategories,
-      this.listIds})
+      this.listIds,
+      this.allCategories})
       : super(key: key);
 
   @override
@@ -31,17 +34,19 @@ class AddEditCategoryOverlay extends StatefulWidget {
 }
 
 class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
+  final _formKey = GlobalKey<FormState>();
   late List<bool> isCheckedList =
       List.generate(widget.subcategories!['totalCount'], (index) => false);
   final ImagePicker _imagePicker = ImagePicker();
   List<int> listIds = [];
+  bool disabledButton = false;
 
   File? _selectedImage;
   @override
   void initState() {
     super.initState();
     if (widget.data != null) {
-      data = widget.data!;
+      data = {...widget.data!};
     }
     if (widget.listIds != null) {
       isCheckedList = List.generate(
@@ -57,7 +62,6 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
   Future<void> _pickImage() async {
     final XFile? selectedImage =
         await _imagePicker.pickImage(source: ImageSource.gallery);
-
     if (selectedImage != null) {
       setState(() {
         _selectedImage = File(selectedImage.path);
@@ -68,17 +72,28 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
 
   Future<void> addCategory() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       widget.listIds ??= [];
       data['addedIds'] = listIds;
       final response = await ProductCategoriesService().post("", data);
       if (response.statusCode == 200) {
-         if (!mounted) return;
+        if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have succesfully added a new category. Keep in mind that it may take up to 24 hours for changes to take place.");
         widget.onClose();
         widget.fetchData();
+        setState(() {
+          disabledButton = false;
+        });
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
       rethrow;
@@ -87,6 +102,9 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
 
   Future<void> editCategory() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       widget.listIds ??= [];
       List<int> addedValues = listIds
           .where((element) => !widget.listIds!.contains(element))
@@ -94,16 +112,35 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
       List<int> removedValues = widget.listIds!
           .where((element) => !listIds.contains(element))
           .toList();
-      widget.data!['addedIds'] = addedValues;
-      widget.data!['removedIds'] = removedValues;
-      final response = await ProductCategoriesService().put("", widget.data);
+      if (addedValues.isNotEmpty) data['addedIds'] = addedValues;
+      if (removedValues.isNotEmpty) data['removedIds'] = removedValues;
+      if (removedValues.isNotEmpty && removedValues.length >= listIds.length && addedValues.isEmpty) {
+        ToastHelper.showToastError(
+            context, "You must select at least one subcategory!");
+             setState(() {
+        disabledButton = false;
+      });
+        return;
+      }
+      final response =
+          await ProductCategoriesService().put("", data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
+        widget.onClose();
+        widget.fetchData();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have succesfully updated category information. Keep in mind that it may take up to 24 hours for changes to take place.");
-        widget.onClose();
-        widget.fetchData();
-      } else {}
+      } else {
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
+      }
     } catch (e) {
       rethrow;
     }
@@ -158,119 +195,161 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
                       spacing: 20,
                       children: [
                         SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              inputField("Name:", "name"),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              const LightText(
-                                label: "Image:",
-                                fontSize: 14,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Stack(
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    height: 150,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey.withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: _selectedImage != null
-                                          ? Image.file(_selectedImage!)
-                                          : widget.data != null
-                                              ? Image.memory(
-                                                  base64.decode(widget
-                                                      .data!['photo']['data']
-                                                      .toString()),
-                                                  height: 25,
-                                                )
-                                              : const Image(
-                                                  image: AssetImage(
-                                                      "assets/images/gallery.png")),
-                                    ),
-                                  ),
-                                  Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: ActionButton(
-                                        onPressed: _pickImage,
-                                        icon: Icons.add,
-                                        iconSize: 20,
-                                        iconColor: AppColors.primary,
-                                      ))
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Wrap(
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                InputField(
+                                  label: "Name:",
+                                  value: widget.data != null
+                                      ? widget.data!['name']
+                                      : '',
+                                  onChanged: (value) => setState(() {
+                                    data['name'] = value;
+                                  }),
+                                  customValidation: () {
+                                    if (widget.allCategories != null) {
+                                      bool hasSameName = widget
+                                              .allCategories!['items']
+                                              .any((category) =>
+                                                  category['id'] !=
+                                                      data['id'] &&
+                                                  category['name'] ==
+                                                      data['name']) ??
+                                          false;
+                                      if (hasSameName) {
+                                        return false;
+                                      } else {
+                                        return true;
+                                      }
+                                    } else {
+                                      return true;
+                                    }
+                                  },
+                                  customMessage:
+                                      'Category with the same name already exists!',
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                const LightText(
+                                  label: "Image:",
+                                  fontSize: 14,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Stack(
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Wrap(
-                                        spacing: 16.0,
-                                        runSpacing: 8.0,
-                                        children: List.generate(
-                                          widget.subcategories!['totalCount'],
-                                          (index) => Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Checkbox(
-                                                activeColor: AppColors.primary,
-                                                value: isCheckedList[index],
-                                                onChanged: (bool? value) {
-                                                  setState(() {
+                                    Container(
+                                      width: double.infinity,
+                                      height: 150,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white30,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20.0),
+                                        child: _selectedImage != null
+                                            ? Image.file(_selectedImage!)
+                                            : widget.data != null
+                                                ? Image.memory(
+                                                    base64.decode(widget
+                                                        .data!['photo']['data']
+                                                        .toString()),
+                                                    height: 25,
+                                                  )
+                                                : const Image(
+                                                    image: AssetImage(
+                                                        "assets/images/gallery.png")),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: ActionButton(
+                                          onPressed: _pickImage,
+                                          icon: Icons.add,
+                                          iconSize: 20,
+                                          iconColor: AppColors.primary,
+                                        ))
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Wrap(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Wrap(
+                                          spacing: 16.0,
+                                          runSpacing: 8.0,
+                                          children: List.generate(
+                                            widget.subcategories!['totalCount'],
+                                            (index) => Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Checkbox(
+                                                  activeColor:
+                                                      AppColors.primary,
+                                                  value: isCheckedList[index],
+                                                  onChanged: (bool? value) {
                                                     setState(() {
-                                                      isCheckedList[index] =
-                                                          value!;
-                                                      if (value) {
-                                                        listIds.add(
-                                                            widget.subcategories![
-                                                                    'items']
-                                                                [index]['id']);
-                                                      } else {
-                                                        listIds.remove(
-                                                            widget.subcategories![
-                                                                    'items']
-                                                                [index]['id']);
-                                                      }
+                                                      setState(() {
+                                                        isCheckedList[index] =
+                                                            value!;
+                                                        if (value) {
+                                                          listIds.add(
+                                                              widget.subcategories![
+                                                                      'items'][
+                                                                  index]['id']);
+                                                        } else {
+                                                          listIds.remove(
+                                                              widget.subcategories![
+                                                                      'items'][
+                                                                  index]['id']);
+                                                        }
+                                                      });
                                                     });
-                                                  });
-                                                },
-                                              ),
-                                              Text(
-                                                  widget.subcategories!['items']
-                                                      [index]['name']),
-                                            ],
+                                                  },
+                                                ),
+                                                Text(widget
+                                                        .subcategories!['items']
+                                                    [index]['name']),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              PrimaryButton(
-                                  onPressed: () {
-                                    widget.data != null
-                                        ? editCategory()
-                                        : addCategory();
-                                  },
-                                  width: double.infinity,
-                                  label: widget.data != null ? 'Edit' : "Add")
-                            ],
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                PrimaryButton(
+                                    isDisabled: disabledButton,
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        if (widget.data == null &&
+                                            data["photoFile"] == null) {
+                                          ToastHelper.showToastError(context,
+                                              "Image is a required field and you must select at least one subcategory!");
+                                          return;
+                                        }
+                                        widget.data != null
+                                            ? editCategory()
+                                            : addCategory();
+                                      }
+                                    },
+                                    width: double.infinity,
+                                    label: widget.data != null ? 'Edit' : "Add")
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -282,53 +361,6 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
           ),
         ),
       ),
-    );
-  }
-
-  Column inputField(String label, String key, {bool isObscure = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 40,
-          width: double.infinity,
-          child: TextFormField(
-            initialValue: widget.data != null ? widget.data!['name'] : '',
-            onChanged: (value) {
-              setState(() {
-                data[key] = value;
-              });
-            },
-            style: const TextStyle(
-              color: Colors.black,
-            ),
-            obscureText: isObscure ? true : false,
-            decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.only(bottom: 5, left: 10, right: 10),
-                filled: true,
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
-      ],
     );
   }
 }

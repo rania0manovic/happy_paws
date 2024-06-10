@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/constants.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 
 class AddEditBrandMenu extends StatefulWidget {
   final VoidCallback onClose;
-  final VoidCallback fetchData;
-
+   final MyVoidCallback onAdd;
+  final MyVoidCallback onEdit;
   final Map<String, dynamic>? data;
+  final Map<String, dynamic>? allBrands;
 
   const AddEditBrandMenu({
     Key? key,
     required this.onClose,
-    required this.fetchData,
     this.data,
+    this.allBrands, required this.onAdd, required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -22,22 +25,39 @@ class AddEditBrandMenu extends StatefulWidget {
 }
 
 class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
+  final _formKey = GlobalKey<FormState>();
+  bool disabledButton = false;
+
   @override
   void initState() {
     super.initState();
     if (widget.data != null) {
-      data = widget.data!;
+      data = {...widget.data!};
     }
   }
 
   Future<void> addBrand() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       final response = await BrandsService().post("", data);
       if (response.statusCode == 200) {
         widget.onClose();
-        widget.fetchData();
+        widget.onAdd(response.data);
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully added a new brand");
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have successfully added a new allergy for the selected pet!");
       }
     } catch (e) {
       rethrow;
@@ -46,11 +66,27 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
 
   Future<void> editBrand() async {
     try {
-      final response = await BrandsService().put("", widget.data);
+      setState(() {
+        disabledButton = true;
+      });
+      final response = await BrandsService().put("", data);
       if (response.statusCode == 200) {
         widget.onClose();
-        widget.fetchData();
-      } else {}
+        widget.onEdit(response.data);
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully edited selected brand");
+      } else {
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have successfully added a new allergy for the selected pet!");
+      }
     } catch (e) {
       rethrow;
     }
@@ -62,10 +98,10 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 370,
-      height: 230,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Row(
@@ -98,20 +134,51 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
                   alignment: WrapAlignment.start,
                   spacing: 20,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        inputField("Name:", "name"),
-                        const SizedBox(
-                          height: 32,
-                        ),
-                        PrimaryButton(
-                            onPressed: () {
-                              widget.data != null ? editBrand() : addBrand();
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          InputField(
+                            label: "Name:",
+                            value: data['name'],
+                            onChanged: (value) => setState(() {
+                              data['name'] = value;
+                            }),
+                            customValidation: () {
+                              if (widget.allBrands != null) {
+                                bool hasSameName = widget.allBrands!['items']
+                                        .any((brand) =>
+                                            brand['name'] == data['name']) ??
+                                    false;
+                                if (hasSameName) {
+                                  return false;
+                                } else {
+                                  return true;
+                                }
+                              } else {
+                                return true;
+                              }
                             },
-                            width: double.infinity,
-                            label: widget.data != null ? 'Edit' : "Add")
-                      ],
+                            customMessage:
+                                'Brand with the same name already exists or no changes have been detected!',
+                          ),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          PrimaryButton(
+                              isDisabled: disabledButton,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  widget.data != null
+                                      ? editBrand()
+                                      : addBrand();
+                                }
+                              },
+                              width: double.infinity,
+                              label: widget.data != null ? 'Edit' : "Add")
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -120,53 +187,6 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
           ],
         ),
       ),
-    );
-  }
-
-  Column inputField(String label, String key, {bool isObscure = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 40,
-          width: double.infinity,
-          child: TextFormField(
-            initialValue: widget.data != null ? widget.data!['name'] : '',
-            onChanged: (value) {
-              setState(() {
-                data[key] = value;
-              });
-            },
-            style: const TextStyle(
-                color:  Colors.black,
-               ),
-            obscureText: isObscure ? true : false,
-            decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.only(bottom: 5, left: 10, right: 10),
-                filled: true,
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
-      ],
     );
   }
 }

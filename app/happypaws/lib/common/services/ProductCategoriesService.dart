@@ -40,11 +40,11 @@ class ProductCategoriesService extends BaseService {
         ),
       );
     }
-    if (data['addedIds'].length > 0) {
+    if (data['addedIds']!=null && data['addedIds'].isNotEmpty) {
       String subcategoryIdsString = data['addedIds'].join(',');
       request.fields['AddedIds'] = subcategoryIdsString;
     }
-     if (data['removedIds'].length > 0) {
+     if (data['removedIds']!=null && data['removedIds'].isNotEmpty) {
       String subcategoryIdsString = data['removedIds'].join(',');
       request.fields['RemovedIds'] = subcategoryIdsString;
     }

@@ -36,12 +36,12 @@ class _CartPageState extends State<CartPage> {
             .getPaged('', 1, 999, searchObject: {'userId': user['Id']});
         if (response.statusCode == 200) {
           if (response.data['items']
-              .any((e) => e['quantity'] > e['product']['inStock'] as bool)) {
+              .any((e) => e['quantity'] > e['product']['inStock'] as bool || e['product']['isActive']==false)) {
             setState(() {
               unableToOrder = true;
             });
             ToastHelper.showToastError(context,
-                "One or more products are out of stock. You won't be able to complete your order unless you remove them from cart or wait until they're back in stock.");
+                "One or more products are out of stock or not being sold anymore. You won't be able to complete your order unless you remove them from cart or wait until they're back in stock.");
           }
           setState(() {
             products = response.data;
@@ -68,6 +68,7 @@ class _CartPageState extends State<CartPage> {
             context, "You have successfully removed product from the cart!");
         setState(() {
           products!['items'].removeAt(index);
+          products!['totalCount']-=1;
         });
       } else {
         if (!mounted) return;
@@ -297,8 +298,19 @@ class _CartPageState extends State<CartPage> {
                                             TextStyle(color: AppColors.error),
                                       )
                                     ],
+                                  )
+                                  else if (item['product']['isActive']==false )
+                                  const Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Not being sold anymore",
+                                        style:
+                                            TextStyle(color: AppColors.error),
+                                      )
+                                    ],
                                   ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Container(
@@ -340,7 +352,7 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ),
                       PrimaryButton(
-                        isDisabled: unableToOrder,
+                        disabledWithoutSpinner: unableToOrder,
                         onPressed: () {
                           if (unableToOrder) return;
                           if (products!['items'].isEmpty) return;

@@ -31,7 +31,7 @@ class SecondaryButton extends StatelessWidget {
           padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)),
           elevation: MaterialStateProperty.all(0),
           side: MaterialStateBorderSide.resolveWith(
-              (states) => BorderSide(color: AppColors.primary)),
+              (states) => const BorderSide(color: AppColors.primary)),
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.hovered)) {

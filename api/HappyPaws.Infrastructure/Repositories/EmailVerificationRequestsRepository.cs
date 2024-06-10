@@ -19,7 +19,7 @@ namespace HappyPaws.Infrastructure.Repositories
 
         public async Task<EmailVerificationRequest?> VerifyCodeAsync(EmailVerificationRequestDto emailVerificationRequest, CancellationToken cancellationToken)
         {
-            return await DbSet.FirstOrDefaultAsync(x => x.IsExpired == false && x.Code == emailVerificationRequest.Code && x.Email == emailVerificationRequest.Email);
+            return await DbSet.FirstOrDefaultAsync(x => x.IsExpired == false && x.Code == emailVerificationRequest.Code && x.Email == emailVerificationRequest.Email, cancellationToken: cancellationToken);
         }
     }
 }

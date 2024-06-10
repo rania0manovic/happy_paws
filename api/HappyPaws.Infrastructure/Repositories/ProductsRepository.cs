@@ -27,38 +27,30 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
                 .Where(x => (searchObject.SubcategoryId == null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
-                && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
                 && (searchObject.SearchParams == null || x.UPC.StartsWith(searchObject.SearchParams) || x.Name.Contains(searchObject.SearchParams) || x.Brand.Name.Contains(searchObject.SearchParams))
+                && (searchObject.OnlyActive == false || x.IsActive == true)
+                && (searchObject.RecommendedProductIds == null || searchObject.RecommendedProductIds.Contains(x.Id))
                 ).ToPagedListAsync(searchObject, cancellationToken);
         }
-
+        public override async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.
+                Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
+                .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
+                .Include(x => x.ProductImages).ThenInclude(x => x.Image)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
         public async Task<Product?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default)
         {
-            return await DbSet
+            return await DbSet.
+                Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
+                .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
                 .Include(x => x.ProductImages).ThenInclude(x => x.Image)
                 .Include(x => x.UserFavouriteItems.Where(x => x.UserId == userId))
                 .Include(x => x.ProductReviews)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<List<Product>> FindSimilarProductsAsync(List<ProductDto> favouriteProducts, int size, CancellationToken cancellationToken = default)
-        {
-            var favoriteCategorySubcategoryIds = favouriteProducts.Select(p => p.ProductCategorySubcategoryId).Distinct();
-            var favoriteBrandIds = favouriteProducts.Select(p => p.BrandId).Distinct();
-            var averagePrice = favouriteProducts.Average(p => p.Price);
-
-
-            var filteredProducts = await DbSet.Include(x => x.ProductImages).ThenInclude(x => x.Image)
-                  .Where(p => !favouriteProducts.Select(x => x.Id).Contains(p.Id)
-                  && favoriteCategorySubcategoryIds.Contains(p.ProductCategorySubcategoryId)
-                  && favoriteBrandIds.Contains(p.BrandId)).
-                  OrderBy(p => Math.Abs(p.Price - averagePrice))
-                  .ToListAsync(cancellationToken: cancellationToken);
-
-            var similarProducts = filteredProducts.Take(size).ToList();
-
-            return similarProducts;
-        }
 
         public async Task<List<Product>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default)
         {
@@ -73,6 +65,22 @@ namespace HappyPaws.Infrastructure.Repositories
         {
             await DbSet.Where(e => e.Id.Equals(id)).ExecuteUpdateAsync(p => p
                   .SetProperty(e => e.InStock, size), cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithCategoryIdAsync(int categoryId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.ProductCategorySubcategory.ProductCategoryId == categoryId, cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithSubcategoryIdAsync(int subcategoryId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.ProductCategorySubcategory.ProductSubcategoryId == subcategoryId, cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithBrandIdAsync(int brandId, CancellationToken cancellationToken = default)
+        {
+            return await DbSet.AnyAsync(x => x.BrandId == brandId, cancellationToken);
+
         }
     }
 }

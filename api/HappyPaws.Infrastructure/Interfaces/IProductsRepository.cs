@@ -14,8 +14,11 @@ namespace HappyPaws.Infrastructure.Interfaces
     public interface IProductsRepository : IBaseRepository<Product, int, ProductSearchObject>
     {
         Task<Product?> GetByIdAsync(int id, int userId, CancellationToken cancellationToken = default);
-        Task<List<Product>> FindSimilarProductsAsync(List<ProductDto> favouriteProducts, int size, CancellationToken cancellationToken = default);
         Task<List<Product>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default);
-        Task UpdateStockAsync(int id, int size, CancellationToken cancellation = default);
+        Task UpdateStockAsync(int id, int size, CancellationToken cancellationToken = default);
+        Task<bool> HasAnyWithCategoryIdAsync(int categoryId, CancellationToken cancellationToken = default);
+        Task<bool> HasAnyWithSubcategoryIdAsync(int subcategoryId, CancellationToken cancellationToken = default);
+        Task<bool> HasAnyWithBrandIdAsync(int brandId, CancellationToken cancellationToken = default);
+
     }
 }

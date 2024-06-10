@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/main.dart';
+import 'package:happypaws/routes/auto_route_guard.dart';
 import 'app_router.gr.dart';
 
 @AutoRouterConfig()
@@ -30,8 +31,8 @@ class AppRouter extends $AppRouter {
         ], children: [
           AutoRoute(path: 'home', page: HomeTab.page, children: [
             AutoRoute(path: '', page: HomeRoute.page),
-            AutoRoute(path: '', page: DonateRoute.page),
-            AutoRoute(path: 'paypal', page: PaypalDonationsRoute.page)
+            // AutoRoute(path: 'donate', page: DonateRoute.page),
+            // AutoRoute(path: 'paypal', page: PaypalDonationsRoute.page)
           ]),
           AutoRoute(path: "clinic", page: ClinicTab.page, children: [
             AutoRoute(path: '', page: ClinicRoute.page),
@@ -55,7 +56,7 @@ class AppRouter extends $AppRouter {
               path: 'checkout',
               page: CheckoutRoute.page,
             ),
-            AutoRoute(path: 'paypal', page: PaypalDonationsRoute.page),
+            AutoRoute(path: 'donate', page: DonateRoute.page),
             AutoRoute(path: 'order-history', page: OrderHistoryRoute.page),
             AutoRoute(path: 'order-details', page: OrderDetailsRoute.page),
           ]),
@@ -78,7 +79,7 @@ class AppRouter extends $AppRouter {
             page: AdminLayout.page,
             children: [
               AutoRoute(
-                  path: 'dashboard', page: DashboardRoute.page, initial: true),
+                  path: 'dashboard', page: DashboardRoute.page, initial: true, guards: [AuthGuard()]),
               AutoRoute(path: 'shop/orders', page: OrdersRoute.page),
               AutoRoute(path: 'shop/inventory', page: InventoryRoute.page),
               AutoRoute(path: 'appointments', page: AppointmentsRoute.page),

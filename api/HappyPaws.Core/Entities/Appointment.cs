@@ -17,7 +17,8 @@ namespace HappyPaws.Core.Entities
         public required Pet Pet { get; set; }
         public int PetId { get; set; }
 
-        public Employee? Employee { get; set; }
+        public User? Employee { get; set; }
         public int? EmployeeId { get; set; }
+
     }
 }

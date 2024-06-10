@@ -14,35 +14,39 @@ namespace HappyPaws.Application.Helpers
 {
     public class ImageSharp
     {
-        public static MemoryStream OptimizeImage(MemoryStream memoryStream, int width = 256, int height = 256, int quality = 50)
+        public static MemoryStream OptimizeImage(MemoryStream inputMemoryStream, int width = 256, int height = 256, int quality = 75)
         {
-            var fileBytes = memoryStream.ToArray();
-            var image = Image.Load(memoryStream.ToArray());
+            var fileBytes = inputMemoryStream.ToArray();
+            var image = Image.Load(fileBytes);
             var format = image.Metadata.DecodedImageFormat;
 
             image.Mutate(x => x.Resize(new ResizeOptions
             {
                 Size = new Size(width, height),
-                Mode = ResizeMode.Max,
-
+                Mode = ResizeMode.Max
             }));
+
             IImageEncoder encoder;
-            if(format.Name=="PNG")
-               encoder= new PngEncoder
+            if (format.Name == "PNG")
+            {
+                encoder = new PngEncoder
                 {
-                    CompressionLevel= PngCompressionLevel.BestCompression
-               };
+                    CompressionLevel = PngCompressionLevel.BestCompression
+                };
+            }
             else
+            {
                 encoder = new JpegEncoder
                 {
                     Quality = quality
                 };
+            }
 
-
-
-            memoryStream.SetLength(0);
-            image.Save(memoryStream, encoder);
-            return memoryStream;
+            var outputMemoryStream = new MemoryStream();
+            image.Save(outputMemoryStream, encoder);
+            outputMemoryStream.Position = 0; 
+            return outputMemoryStream;
         }
+
     }
 }

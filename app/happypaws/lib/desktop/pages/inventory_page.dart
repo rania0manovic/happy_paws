@@ -23,7 +23,7 @@ class _InventoryPageState extends State<InventoryPage> {
   late ScrollController _scrollController;
   late int currentPage = 1;
   bool isLoadingMore = false;
-  Map<String, dynamic> params = {};
+  Map<String, dynamic> params = {'takePhotos': 0};
   Timer? _debounce;
 
   @override
@@ -166,7 +166,8 @@ class _InventoryPageState extends State<InventoryPage> {
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
                             child: Spinner())),
-                if (isLoadingMore) const Spinner()
+                if (isLoadingMore)
+                  Transform.scale(scale: 0.8, child: const Spinner())
               ],
             ),
           ),
@@ -242,7 +243,6 @@ class _InventoryPageState extends State<InventoryPage> {
                         product['newStockValue'] =
                             product['inStock'] + int.parse(newValue);
                       });
-                      print(product['newStockValue']);
                     },
                     style: const TextStyle(
                       color: Colors.black,

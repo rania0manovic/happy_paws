@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
+import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -37,7 +36,7 @@ class _ShopPageState extends State<ShopPage> {
       });
     }
     var responseRecommendedProducts =
-        await ProductsService().getRecommendedProductsForUser();
+        await UsersService().getRecommendedProducts();
     if (responseRecommendedProducts.statusCode == 200) {
       setState(() {
         recommendedProducts = responseRecommendedProducts.data;
@@ -60,13 +59,19 @@ class _ShopPageState extends State<ShopPage> {
         : SingleChildScrollView(
             child: Column(
               children: [
-                 Align(
+                Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
-                    padding: EdgeInsets.only(right:14.0, top: 8),
+                    padding: EdgeInsets.only(right: 14.0, top: 8),
                     child: GestureDetector(
-                      onTap: () => context.router.push(OrderHistoryRoute()),
-                      child: Text('Order history', style: TextStyle(fontWeight: FontWeight.w500, color: AppColors.primary, fontSize: 16),)),
+                        onTap: () => context.router.push(OrderHistoryRoute()),
+                        child: Text(
+                          'Order history',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primary,
+                              fontSize: 16),
+                        )),
                   ),
                 ),
                 const Align(
@@ -81,7 +86,7 @@ class _ShopPageState extends State<ShopPage> {
                   ),
                 ),
                 categoriesSection(context),
-                 const Align(
+                const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.all(14),
@@ -110,7 +115,6 @@ class _ShopPageState extends State<ShopPage> {
                       forYouSection(),
                     ],
                   ),
-               
               ],
             ),
           );
@@ -163,7 +167,8 @@ class _ShopPageState extends State<ShopPage> {
           children: [
             for (var product in bestsellers!)
               GestureDetector(
-                onTap: () => context.router.push(ProductDetailsRoute(productId: product['id'])),
+                onTap: () => context.router
+                    .push(ProductDetailsRoute(productId: product['id'])),
                 child: FractionallySizedBox(
                   widthFactor: 0.45,
                   child: Column(
@@ -190,7 +195,6 @@ class _ShopPageState extends State<ShopPage> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                       
                       ]),
                 ),
               ),
@@ -200,12 +204,7 @@ class _ShopPageState extends State<ShopPage> {
 
   Container categoriesSection(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(
-        top: 10,
-        bottom: 10,
-        left: 14,
-        right: 14
-      ),
+      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 14, right: 14),
       color: Color.fromARGB(255, 255, 255, 255),
       child: Scrollbar(
           thickness: 12,
@@ -233,7 +232,7 @@ class _ShopPageState extends State<ShopPage> {
                               base64
                                   .decode(category['photo']['data'].toString()),
                               height: 120,
-                                  fit: BoxFit.cover,
+                              fit: BoxFit.cover,
                             ),
                           ),
                           Padding(

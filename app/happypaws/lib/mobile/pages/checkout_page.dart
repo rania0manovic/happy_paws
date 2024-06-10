@@ -73,7 +73,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
               context, "Your order has been successfully created!");
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> placePaypalOrder(dynamic payId) async {
@@ -91,10 +93,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
           isLoading = false;
           ToastHelper.showToastSuccess(
               context, "Your order has been successfully created!");
-          context.router.push(OrderHistoryRoute());
+          context.router.push(const OrderHistoryRoute());
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> addUserAddress() async {
@@ -130,7 +134,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-        ? Spinner()
+        ? const Spinner()
         : SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(14),
@@ -303,92 +307,88 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                           ),
                         ),
-                        if (data.isNotEmpty)
-                          Visibility(
-                            visible: isSavedAddress,
-                            child: Opacity(
-                              opacity: 0.7,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
+                        if (isSavedAddress)
+                          Opacity(
+                            opacity: 0.7,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data['fullName'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  data['addressOne'] ?? '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                if (data['addressTwo'] != null &&
+                                    data['addressTwo'] != "")
                                   Text(
-                                    data['fullName'],
+                                    data['addressTwo'],
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 18,
                                     ),
                                   ),
+                                Text(
+                                  data['country'] ?? '',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  data['city'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  data['postalCode'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  data['phone'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                if (data['note'] != null && data['note'] != "")
                                   Text(
-                                    data['addressOne'],
+                                    data['note'],
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 18,
                                     ),
                                   ),
-                                  if (data['addressTwo'] != null &&
-                                      data['addressTwo'] != "")
-                                    Text(
-                                      data['addressTwo'],
-                                      style: const TextStyle(
+                                GestureDetector(
+                                  onTap: () => setState(() {
+                                    isSavedAddress = false;
+                                  }),
+                                  child: const Text(
+                                    "Change address",
+                                    style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: 18,
-                                      ),
-                                    ),
-                                  Text(
-                                    data['country'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
+                                        decoration: TextDecoration.underline,
+                                        color: AppColors.primary),
                                   ),
-                                  Text(
-                                    data['city'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                    data['postalCode'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                    data['phone'],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  if (data['note'] != null &&
-                                      data['note'] != "")
-                                    Text(
-                                      data['note'],
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  GestureDetector(
-                                    onTap: () => setState(() {
-                                      isSavedAddress = false;
-                                    }),
-                                    child: const Text(
-                                      "Change address",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                          decoration: TextDecoration.underline,
-                                          color: AppColors.primary),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  )
-                                ],
-                              ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                )
+                              ],
                             ),
                           ),
                         Visibility(

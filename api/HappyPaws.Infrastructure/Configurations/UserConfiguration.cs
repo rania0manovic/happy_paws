@@ -23,7 +23,8 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.Property(e => e.PasswordSalt).IsRequired().HasMaxLength(256);
             builder.Property(e => e.Role).IsRequired().HasDefaultValue(Role.User);
             builder.Property(e => e.Gender).IsRequired().HasDefaultValue(Gender.Unknown);
-            builder.Property(e => e.MyPawNumber).IsRequired().HasMaxLength(16);
+            builder.Property(e => e.MyPawNumber).IsRequired(false).HasMaxLength(16);
+            builder.Property(e => e.EmployeePosition).IsRequired(false); 
             builder.Property(e => e.IsVerified).IsRequired().HasDefaultValue(false);
 
             builder.HasOne(x => x.ProfilePhoto).WithMany(x => x.Users).HasForeignKey(x => x.ProfilePhotoId).IsRequired(false);

@@ -3,6 +3,7 @@ using HappyPaws.Api.Config;
 using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application;
 using HappyPaws.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,7 @@ builder.Services.AddValidators();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddOther();
-builder.Services.AddDatabase(connectionStringConfig);
+builder.Services.AddDatabase(builder, connectionStringConfig);
 builder.Services.AddAuthenticationAndAuthorization(jwtTokenConfig);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -26,7 +27,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 
 var app = builder.Build();
-app.UseMiddlewares();
 
 
 if (app.Environment.IsDevelopment())
@@ -41,4 +41,11 @@ app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
 app.MapHub<MessageHub>("/messageHub");
+using (var scope = app.Services.CreateScope())
+{
+    var dataContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    //dataContext.Database.EnsureCreated();
+    dataContext.Database.Migrate();
+}
+
 app.Run();

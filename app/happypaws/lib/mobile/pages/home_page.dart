@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/NotificationsService.dart';
@@ -25,14 +23,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Map<String, dynamic>? notifications;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   double currentPosition = 0;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_scrollListener);
     startConnection();
     fetchdata();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
   }
 
   void _scrollListener() {
@@ -50,6 +55,7 @@ class _HomePageState extends State<HomePage> {
         notifications = response.data;
       });
       if (response.data['items'].any((item) => item['seen'] == false)) {
+        if (!mounted) return;
         Provider.of<NotificationStatus>(context, listen: false)
             .setHasNewNotification(true);
       }
@@ -77,7 +83,6 @@ class _HomePageState extends State<HomePage> {
               ))
           .withAutomaticReconnect()
           .build();
-
       connection.on('NewNotification', (arguments) {
         Provider.of<NotificationStatus>(context, listen: false)
             .setHasNewNotification(true);
@@ -91,11 +96,8 @@ class _HomePageState extends State<HomePage> {
 
   String getTimeAgo(String dateTimeString) {
     DateTime dateTime = DateTime.parse(dateTimeString);
-
     Duration difference = DateTime.now().difference(dateTime);
-
     int minutes = difference.inMinutes;
-
     if (minutes < 60) {
       return '${minutes}m';
     } else if (minutes < 24 * 60) {
@@ -106,6 +108,8 @@ class _HomePageState extends State<HomePage> {
       return '${days}d';
     }
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +123,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  CircularPhotoLayout(),
+                  const CircularPhotoLayout(),
                   Column(
                     children: [
                       const Padding(
@@ -279,7 +283,10 @@ Column _cheritySection(BuildContext context) {
               fit: BoxFit.contain,
             ),
             PrimaryButton(
-              onPressed: ()=> context.router.push(const DonateRoute()),
+              onPressed: () {
+                 AutoTabsRouter.of(context).setActiveIndex(2);
+                AutoTabsRouter.of(context).navigate(DonateRoute());
+              },
               label: " Donate now ➜ ",
               fontSize: 18,
             )
@@ -465,3 +472,4 @@ class _CentralPhotoState extends State<CentralPhoto> {
     );
   }
 }
+

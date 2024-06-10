@@ -6,20 +6,27 @@ class ConfirmationDialog extends StatelessWidget {
   final String content;
   final VoidCallback onYesPressed;
   final VoidCallback onNoPressed;
+  final double insentPaddingY;
+  final double insentPaddingX;
 
-  ConfirmationDialog({
+  const ConfirmationDialog({
+    super.key,
     required this.title,
     required this.content,
     required this.onYesPressed,
     required this.onNoPressed,
+    this.insentPaddingX = 0,
+    this.insentPaddingY = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      insetPadding: EdgeInsets.symmetric(
+          vertical: insentPaddingY, horizontal: insentPaddingX),
       title: Text(
         title,
-        style: TextStyle(color: AppColors.primary),
+        style: const TextStyle(color: AppColors.primary),
       ),
       content: Text(content),
       actions: [
@@ -34,10 +41,10 @@ class ConfirmationDialog extends StatelessWidget {
             },
           )),
           onPressed: onYesPressed,
-          child: Text('Yes', style: TextStyle(color: AppColors.primary)),
+          child: const Text('Yes', style: TextStyle(color: AppColors.primary)),
         ),
         TextButton(
-            style: ButtonStyle(
+          style: ButtonStyle(
               overlayColor: MaterialStateProperty.resolveWith<Color>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.hovered)) {
@@ -47,7 +54,7 @@ class ConfirmationDialog extends StatelessWidget {
             },
           )),
           onPressed: onNoPressed,
-          child: Text('No', style: TextStyle(color: AppColors.primary)),
+          child: const Text('No', style: TextStyle(color: AppColors.primary)),
         ),
       ],
     );

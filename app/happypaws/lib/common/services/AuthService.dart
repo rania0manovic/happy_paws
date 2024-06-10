@@ -20,6 +20,11 @@ class AuthService extends BaseService {
     return response;
   }
 
+  Future<dynamic> updatePassword(dynamic data) async {
+    final response = await put('/UpdatePassword', data);
+    return response;
+  }
+
   Future<Map<String, dynamic>?> getCurrentUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");
@@ -29,18 +34,19 @@ class AuthService extends BaseService {
         final Map<String, dynamic> decoded = Jwt.parseJwt(token);
         return decoded;
       } catch (e) {
-        print("Error decoding JWT: $e");
+        rethrow;
       }
     }
 
     return null;
   }
+
   Future<dynamic> getToken() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");
 
     if (token != null) {
-     return token;
+      return token;
     }
 
     return null;

@@ -20,10 +20,12 @@ namespace HappyPaws.Infrastructure.Repositories
         public override async Task<PagedList<Appointment>> GetPagedAsync(AppointmentSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             return await DbSet.Include(x => x.Pet).ThenInclude(x => x.Owner)
-                .Include(x=>x.Employee)
+                .Include(x => x.Employee)
                 .Where(x => (searchObject.UserId == null || x.Pet.OwnerId == searchObject.UserId) &&
-                (searchObject.MinDateTime == null || x.StartDateTime> searchObject.MinDateTime) &&
-                (searchObject.IsCancelled == null || x.IsCancelled==searchObject.IsCancelled) &&
+                (searchObject.MinDateTime == null || x.StartDateTime > searchObject.MinDateTime) &&
+                (searchObject.StartDateTime == null || x.CreatedAt >= searchObject.StartDateTime) &&
+                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime) &&
+                (searchObject.IsCancelled == null || x.IsCancelled == searchObject.IsCancelled) &&
                 (searchObject.Date == null || x.StartDateTime.Value.Date == searchObject.Date.Value.Date))
                 .OrderByDescending(x => x.CreatedAt)
                 .ToPagedListAsync(searchObject, cancellationToken);
@@ -31,7 +33,7 @@ namespace HappyPaws.Infrastructure.Repositories
         public override async Task<Appointment?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await DbSet
-                .Include(x=>x.Pet).ThenInclude(y=>y.Owner)
+                .Include(x => x.Pet).ThenInclude(y => y.Owner)
                 .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
         }
     }

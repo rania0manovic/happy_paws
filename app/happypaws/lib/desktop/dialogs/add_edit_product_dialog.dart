@@ -2,30 +2,33 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
+import 'package:happypaws/common/utilities/constants.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddEditProductMenu extends StatefulWidget {
   final VoidCallback onClose;
-  final VoidCallback fetchData;
+  final MyVoidCallback onEdit;
+  final MyVoidCallback onAdd;
   final Map<String, dynamic>? data;
 
   const AddEditProductMenu({
     Key? key,
     required this.onClose,
-    required this.fetchData,
-    this.data,
+    this.data, required this.onEdit, required this.onAdd,
   }) : super(key: key);
 
   @override
@@ -44,6 +47,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   List<Map<String, dynamic>> productImages = [];
   int activeImageId = 0;
   int activeImageIndex = 0;
+  bool disabledButton = false;
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -114,36 +120,64 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
 
   Future<void> addProduct() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       data["imageFiles"] = _selectedImages;
       var response = await ProductsService().post('', data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
         widget.onClose();
-        widget.fetchData();
+        widget.onAdd(response.data);
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully added a new product!");
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
+      setState(() {
+          disabledButton = false;
+        });
       rethrow;
     }
   }
 
   Future<void> editProduct() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       data["imageFiles"] = _selectedImages;
       var response = await ProductsService().put('', widget.data);
       if (response.statusCode == 200) {
+        setState(() {
+          disabledButton = false;
+        });
         widget.onClose();
-        widget.fetchData();
+        widget.onEdit(response.data);
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully updated product information!");
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
+      setState(() {
+          disabledButton = false;
+        });
       rethrow;
     }
   }
@@ -153,7 +187,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       if (activeImageId != 0) {
         var response = await ImagesService().delete('/$activeImageId');
         if (response.statusCode == 200) {
-          widget.fetchData();
+          if (!mounted) return;
+          ToastHelper.showToastSuccess(
+              context, "You have successfully removed selected image!");
         }
       }
       setState(() {
@@ -172,212 +208,267 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       width: MediaQuery.of(context).size.width,
       child: (productCategories == null || productBrands == null)
           ? const Spinner()
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: [
-                    const IconButton(
-                      icon: Icon(Icons.inventory_2_outlined),
-                      onPressed: null,
-                      color: AppColors.gray,
-                    ),
-                    Text(
-                      widget.data != null ? "Edit product" : "Add new product",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: widget.onClose,
-                      icon: const Icon(Icons.close),
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, right: 12, bottom: 12),
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      alignment: WrapAlignment.start,
-                      spacing: 20,
+          : Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
                       children: [
-                        FractionallySizedBox(
-                          widthFactor: 0.33,
-                          child: Column(
-                            children: [
-                              inputField("Name:", "name"),
-                              inputField("Price:", "price"),
-                              textBox("Description:", "description"),
-                            ],
+                        const IconButton(
+                          icon: Icon(Icons.inventory_2_outlined),
+                          onPressed: null,
+                          color: AppColors.gray,
+                        ),
+                        Text(
+                          widget.data != null
+                              ? "Edit product"
+                              : "Add new product",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        FractionallySizedBox(
-                          widthFactor: 0.3,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              inputField("UPC:", "upc"),
-                              dropdownMenu(
-                                  productCategories!['items'], "Category:",
-                                  (String? newValue) async {
-                                setState(() {
-                                  selectedSubCategory = null;
-                                  selectedCategory = null;
-                                });
-                                await fetchSubcategories(newValue);
-                                setState(() {
-                                  selectedCategory = newValue;
-                                });
-                              }, selectedCategory),
-                              dropdownMenu(
-                                  productSubcategories == null
-                                      ? List.empty()
-                                      : productSubcategories!,
-                                  "Subcategory:",
-                                  (String? newValue) => setState(() {
-                                        selectedSubCategory = newValue;
-                                        data['productCategorySubcategoryId'] =
-                                            newValue;
-                                      }),
-                                  selectedSubCategory,
-                                  isDisabeled:
-                                      selectedCategory == null ? true : false),
-                              dropdownMenu(
-                                  productBrands!['items'],
-                                  "Brand:",
-                                  (String? newValue) => setState(() {
-                                        selectedBrand = newValue;
-                                        data['brandId'] = newValue;
-                                      }),
-                                  selectedBrand)
-                            ],
-                          ),
-                        ),
-                        FractionallySizedBox(
-                          widthFactor: 0.3,
-                          child: Column(
-                            children: [
-                              const SizedBox(
-                                height: 40,
-                              ),
-                              Container(
-                                  width: double.infinity,
-                                  height: 210,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: productImages.isNotEmpty
-                                      ? Stack(children: [
-                                          Swiper(
-                                            itemBuilder: (context, index) {
-                                              return Padding(
-                                                padding:
-                                                    const EdgeInsets.all(32.0),
-                                                child: Image.memory(
-                                                  base64.decode(
-                                                      productImages[index]
-                                                              ['image']['data']
-                                                          .toString()),
-                                                ),
-                                              );
-                                            },
-                                            onIndexChanged: (value) =>
-                                                setState(() {
-                                              if (productImages[value]['image']
-                                                      ['id'] !=
-                                                  null) {
-                                                activeImageId =
-                                                    productImages[value]
-                                                        ['image']['id'];
-                                              } else {
-                                                activeImageId = 0;
-                                              }
-                                              activeImageIndex = value;
-                                            }),
-                                            itemCount: productImages.length,
-                                            pagination: const SwiperPagination(
-                                              builder:
-                                                  DotSwiperPaginationBuilder(
-                                                activeColor: AppColors.primary,
-                                              ),
-                                            ),
-                                            control: const SwiperControl(
-                                                color: AppColors.primary,
-                                                size: 16),
-                                          ),
-                                          Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: ActionButton(
-                                                onPressed: _pickImage,
-                                                icon: Icons.add,
-                                                iconSize: 20,
-                                                iconColor: AppColors.primary,
-                                              )),
-                                          Positioned(
-                                              bottom: 0,
-                                              right: 20,
-                                              child: ActionButton(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return ConfirmationDialog(
-                                                        title: 'Confirmation',
-                                                        content:
-                                                            'Are you sure you want to delete this photo? This action cannot be undone and will take place immediatly.',
-                                                        onYesPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          deleteImage();
-                                                        },
-                                                        onNoPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                                icon: Icons
-                                                    .delete_forever_rounded,
-                                                iconSize: 20,
-                                                iconColor: AppColors.error,
-                                              ))
-                                        ])
-                                      : GestureDetector(
-                                          onTap: _pickImage,
-                                          child: Icon(
-                                            Icons.add,
-                                            size: 20,
-                                            color: AppColors.primary,
-                                          ))),
-                              const SizedBox(
-                                height: 50,
-                              ),
-                              PrimaryButton(
-                                onPressed: () => widget.data != null
-                                    ? editProduct()
-                                    : addProduct(),
-                                label: widget.data != null
-                                    ? "Edit product"
-                                    : "Add product",
-                                width: double.infinity,
-                              )
-                            ],
-                          ),
+                        const Spacer(),
+                        IconButton(
+                          onPressed: widget.onClose,
+                          icon: const Icon(Icons.close),
+                          color: Colors.grey,
                         ),
                       ],
                     ),
-                  ),
-                )
-              ],
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 12, right: 12, bottom: 12),
+                      child: SingleChildScrollView(
+                        child: Wrap(
+                          direction: Axis.horizontal,
+                          alignment: WrapAlignment.start,
+                          spacing: 20,
+                          children: [
+                            FractionallySizedBox(
+                              widthFactor: 0.33,
+                              child: Column(
+                                children: [
+                                  InputField(
+                                    label: "Name:",
+                                    value: widget.data != null
+                                        ? widget.data!['name']
+                                        : '',
+                                    onChanged: (value) => setState(() {
+                                      data['name'] = value;
+                                    }),
+                                  ),
+                                  InputField(
+                                    label: "Price:",
+                                    value: widget.data != null
+                                        ? widget.data!['price'].toString()
+                                        : '',
+                                    onChanged: (value) => setState(() {
+                                      data['price'] = value;
+                                    }),
+                                  ),
+                                  textBox("Description:", "description"),
+                                ],
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: 0.3,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  InputField(
+                                    label: "UPC:",
+                                    value: widget.data != null
+                                        ? widget.data!['upc']
+                                        : '',
+                                    onChanged: (value) => setState(() {
+                                      data['upc'] = value;
+                                    }),
+                                  ),
+                                  ApiDataDropdownMenu(
+                                    items: productCategories!['items'],
+                                    onChanged: (String? newValue) async {
+                                      setState(() {
+                                        selectedSubCategory = null;
+                                        selectedCategory = null;
+                                      });
+                                      await fetchSubcategories(newValue);
+                                      setState(() {
+                                        selectedCategory = newValue;
+                                      });
+                                    },
+                                    selectedOption: selectedCategory,
+                                    label: "Category:",
+                                  ),
+                                  ApiDataDropdownMenu(
+                                      items: productSubcategories == null
+                                          ? List.empty()
+                                          : productSubcategories!,
+                                      onChanged: (String? newValue) =>
+                                          setState(() {
+                                            selectedSubCategory = newValue;
+                                            data['productCategorySubcategoryId'] =
+                                                newValue;
+                                          }),
+                                      selectedOption: selectedSubCategory,
+                                      label: "Subcategory:",
+                                      isDisabled: selectedCategory == null
+                                          ? true
+                                          : false),
+                                  ApiDataDropdownMenu(
+                                    items: productBrands!['items'],
+                                    onChanged: (String? newValue) =>
+                                        setState(() {
+                                      selectedBrand = newValue;
+                                      data['brandId'] = newValue;
+                                    }),
+                                    selectedOption: selectedBrand,
+                                    label: "Brand:",
+                                  )
+                                ],
+                              ),
+                            ),
+                            FractionallySizedBox(
+                              widthFactor: 0.3,
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 40,
+                                  ),
+                                  Container(
+                                      width: double.infinity,
+                                      height: 210,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: productImages.isNotEmpty
+                                          ? Stack(children: [
+                                              Swiper(
+                                                itemBuilder: (context, index) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            32.0),
+                                                    child: Image.memory(
+                                                      base64.decode(
+                                                          productImages[index]
+                                                                      ['image']
+                                                                  ['data']
+                                                              .toString()),
+                                                    ),
+                                                  );
+                                                },
+                                                onIndexChanged: (value) =>
+                                                    setState(() {
+                                                  if (productImages[value]
+                                                          ['image']['id'] !=
+                                                      null) {
+                                                    activeImageId =
+                                                        productImages[value]
+                                                            ['image']['id'];
+                                                  } else {
+                                                    activeImageId = 0;
+                                                  }
+                                                  activeImageIndex = value;
+                                                }),
+                                                itemCount: productImages.length,
+                                                pagination:
+                                                    const SwiperPagination(
+                                                  builder:
+                                                      DotSwiperPaginationBuilder(
+                                                    activeColor:
+                                                        AppColors.primary,
+                                                  ),
+                                                ),
+                                                control: const SwiperControl(
+                                                    color: AppColors.primary,
+                                                    size: 16),
+                                              ),
+                                              Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: ActionButton(
+                                                    onPressed: _pickImage,
+                                                    icon: Icons.add,
+                                                    iconSize: 20,
+                                                    iconColor:
+                                                        AppColors.primary,
+                                                  )),
+                                              Positioned(
+                                                  bottom: 0,
+                                                  right: 20,
+                                                  child: ActionButton(
+                                                    onPressed: () {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return ConfirmationDialog(
+                                                            title:
+                                                                'Confirmation',
+                                                            content:
+                                                                'Are you sure you want to delete this photo? This action cannot be undone and will take place immediatly.',
+                                                            onYesPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                              deleteImage();
+                                                            },
+                                                            onNoPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: Icons
+                                                        .delete_forever_rounded,
+                                                    iconSize: 20,
+                                                    iconColor: AppColors.error,
+                                                  ))
+                                            ])
+                                          : GestureDetector(
+                                              onTap: _pickImage,
+                                              child: const Icon(
+                                                Icons.add,
+                                                size: 20,
+                                                color: AppColors.primary,
+                                              ))),
+                                  const SizedBox(
+                                    height: 55,
+                                  ),
+                                  PrimaryButton(
+                                    isDisabled: disabledButton,
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        widget.data != null
+                                            ? editProduct()
+                                            : addProduct();
+                                      }
+                                    },
+                                    fontSize: 16,
+                                    label: widget.data != null
+                                        ? "Edit product"
+                                        : "Add product",
+                                    width: double.infinity,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
     );
   }
@@ -407,7 +498,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
               ),
               child: DropdownButton<String>(
                 isExpanded: true,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 value: selectedOption,
                 hint: const Text('Select'),
                 underline: Container(),
@@ -446,6 +537,12 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
           padding: const EdgeInsets.only(top: 10),
           height: 130,
           child: TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "This field is required";
+              }
+              return null;
+            },
             initialValue: widget.data != null
                 ? widget.data![key[0].toLowerCase() + key.substring(1)]
                     .toString()
@@ -457,7 +554,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
             maxLines: 10,
             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
+                errorStyle: const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
+                fillColor: Colors.white38,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),
@@ -469,56 +568,6 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                     borderRadius: BorderRadius.circular(10))),
           ),
         ),
-      ],
-    );
-  }
-
-  Column inputField(String label, String key, {bool isObscure = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 14,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: 40,
-          width: double.infinity,
-          child: TextFormField(
-            initialValue: widget.data != null
-                ? widget.data![key[0].toLowerCase() + key.substring(1)]
-                    .toString()
-                : '',
-            onChanged: (value) {
-              setState(() {
-                data[key] = value;
-              });
-            },
-            style: const TextStyle(
-              color: Colors.black,
-            ),
-            obscureText: isObscure ? true : false,
-            decoration: InputDecoration(
-                contentPadding:
-                    const EdgeInsets.only(bottom: 5, left: 10, right: 10),
-                filled: true,
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
       ],
     );
   }

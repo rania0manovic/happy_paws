@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/EnumsService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -11,6 +13,7 @@ import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 @RoutePage()
 class OrdersPage extends StatefulWidget {
@@ -26,6 +29,11 @@ class _OrdersPageState extends State<OrdersPage> {
   String selectedStatus = '';
   List<dynamic>? orderStatuses;
   bool isLoadingOrder = false;
+  Map<String, dynamic> params = {};
+  bool newFirst = true;
+  final formatter = DateFormat('dd.MM.yyyy');
+  bool showNewOnly = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -33,13 +41,22 @@ class _OrdersPageState extends State<OrdersPage> {
     fetchData();
   }
 
-  Future<void> fetchData() async {
-    var response = await OrdersService().getPaged('', 1, 9999);
-    if (response.statusCode == 200) {
-      setState(() {
-        orders = response.data;
-      });
+  Future<void> fetchOrders() async {
+    try {
+      var response =
+          await OrdersService().getPaged('', 1, 9999, searchObject: params);
+      if (response.statusCode == 200) {
+        setState(() {
+          orders = response.data;
+        });
+      }
+    } catch (e) {
+      rethrow;
     }
+  }
+
+  Future<void> fetchData() async {
+    await fetchOrders();
     var enumsResponse = await EnumsService().getOrderStatuses();
     if (enumsResponse.statusCode == 200) {
       setState(() {
@@ -61,10 +78,25 @@ class _OrdersPageState extends State<OrdersPage> {
     }
   }
 
+  void sortData() {
+    setState(() {
+      if (newFirst) {
+        orders!['items'].sort((a, b) => DateTime.parse(b['createdAt'])
+            .compareTo(DateTime.parse(a['createdAt'])));
+      } else {
+        orders!['items'].sort((a, b) => DateTime.parse(a['createdAt'])
+            .compareTo(DateTime.parse(b['createdAt'])));
+      }
+    });
+  }
+
   Future<void> changeStatus(String? newValue) async {
     if (newValue == null) return;
     setState(() {
       selectedOrder['status'] = newValue;
+      orders!['items'][orders!['items']
+              .indexWhere((x) => x['id'] == selectedOrder['id'])]['status'] =
+          newValue;
     });
     var response = await OrdersService().put(
         "/${selectedOrder['id']}/$newValue/${selectedOrder['userId']}", null);
@@ -79,7 +111,12 @@ class _OrdersPageState extends State<OrdersPage> {
           context, "An error occured! Please try again.");
     }
   }
-
+ onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      fetchOrders();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     if (orders == null) {
@@ -102,15 +139,238 @@ class _OrdersPageState extends State<OrdersPage> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               width: double.infinity,
-                              height: 50,
-                              child: const Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "New orders",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w700),
-                                ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Orders history",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              var params = {};
+
+                                              return AlertDialog(
+                                                content: SizedBox(
+                                                  height: 300,
+                                                  width: 300,
+                                                  child: Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 250,
+                                                        child:
+                                                            SfDateRangePicker(
+                                                          enablePastDates: true,
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          selectionMode:
+                                                              DateRangePickerSelectionMode
+                                                                  .range,
+                                                          showNavigationArrow:
+                                                              true,
+                                                          selectionColor:
+                                                              AppColors.primary,
+                                                          headerStyle: const DateRangePickerHeaderStyle(
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .dimWhite,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              textStyle: TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700)),
+                                                          todayHighlightColor:
+                                                              AppColors.primary,
+                                                          onSelectionChanged:
+                                                              (DateRangePickerSelectionChangedArgs
+                                                                  args) {
+                                                            PickerDateRange
+                                                                range =
+                                                                args.value
+                                                                    as PickerDateRange;
+                                                            setState(() {
+                                                              params['startDate'] =
+                                                                  range
+                                                                      .startDate!;
+                                                              if (range
+                                                                      .endDate !=
+                                                                  null) {
+                                                                params['endDate'] =
+                                                                    range
+                                                                        .endDate;
+                                                              }
+                                                            });
+                                                          },
+                                                        ),
+                                                      ),
+                                                      const Spacer(),
+                                                      PrimaryButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            this.params[
+                                                                    'startDateTime'] =
+                                                                params[
+                                                                    'startDate'];
+                                                            this.params[
+                                                                    'endDateTime'] =
+                                                                params[
+                                                                    'endDate'];
+                                                          });
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                          fetchData();
+                                                        },
+                                                        label:
+                                                            'Confirm selection',
+                                                        width: double.infinity,
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              (params['startDateTime'] !=
+                                                          null ||
+                                                      params['endDateTime'] !=
+                                                          null
+                                                  ? (formatter
+                                                          .format(params[
+                                                              'startDateTime'])
+                                                          .toString() +
+                                                      (params['endDateTime'] !=
+                                                              null
+                                                          ? ' - ${formatter.format(params['endDateTime'])}'
+                                                          : ''))
+                                                  : 'Pick date'),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: params['startDateTime'] !=
+                                                              null ||
+                                                          params['endDateTime'] !=
+                                                              null
+                                                      ? AppColors.primary
+                                                      : Colors.black,
+                                                  fontSize: 14),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            const Icon(
+                                              Icons.date_range_rounded,
+                                              size: 16,
+                                              color: AppColors.gray,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            newFirst = !newFirst;
+                                          });
+                                          sortData();
+                                        },
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              newFirst
+                                                  ? 'Oldest first'
+                                                  : 'Newest first',
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 14),
+                                            ),
+                                            const SizedBox(
+                                              width: 5,
+                                            ),
+                                            Icon(
+                                              newFirst
+                                                  ? Icons.arrow_upward_outlined
+                                                  : Icons
+                                                      .arrow_downward_outlined,
+                                              size: 16,
+                                              color: AppColors.gray,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const Text(
+                                            "Show new only",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          Transform.scale(
+                                            scale: 0.8,
+                                            child: Checkbox(
+                                              activeColor: AppColors.primary,
+                                              value: showNewOnly,
+                                              visualDensity:
+                                                  VisualDensity.compact,
+                                              onChanged: (bool? value) {
+                                                setState(() {
+                                                  showNewOnly = value!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 200,
+                                        height: 50,
+                                        child: TextField(
+                                          onChanged: (value) {
+                                            setState(() {
+                                              params['id'] = value;
+                                            });
+                                            onSearchChanged(value);
+                                          },
+                                          decoration: InputDecoration(
+                                              labelText:
+                                                  "Search by order id",
+                                              labelStyle: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey.shade400,
+                                                  fontWeight: FontWeight.w500),
+                                              suffixIcon: const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Icon(
+                                                    Icons.search,
+                                                    size: 25,
+                                                    color: AppColors.primary,
+                                                  ))),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
                             ),
                             ListView.builder(
@@ -118,63 +378,98 @@ class _OrdersPageState extends State<OrdersPage> {
                               itemCount: orders!['totalCount'],
                               itemBuilder: (context, index) {
                                 var order = orders!['items'][index];
-                                return Container(
-                                  decoration: BoxDecoration(
-                                    color: order['status'] == "Pending"
-                                        ? AppColors.dimWhite
-                                        : Colors.transparent,
-                                    border: Border(
-                                      top: BorderSide(
-                                          color: Colors.grey.shade300),
-                                      bottom: BorderSide(
-                                          color: Colors.grey.shade300),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  width: double.infinity,
-                                  height: 80,
-                                  child: Row(
-                                    children: [
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Text(
-                                            order['user']['fullName'],
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700,
-                                            ),
+                                return !showNewOnly ||
+                                        (showNewOnly &&
+                                            order['status'] == 'Pending')
+                                    ? Container(
+                                        decoration: BoxDecoration(
+                                          color: order['status'] == "Pending"
+                                              ? AppColors.dimWhite
+                                              : Colors.transparent,
+                                          border: Border(
+                                            top: BorderSide(
+                                                color: Colors.grey.shade300),
+                                            bottom: BorderSide(
+                                                color: Colors.grey.shade300),
                                           ),
-                                          Text(
-                                            DateFormat('dd/MM/yyyy HH:mm')
-                                                .format(
-                                              DateTime.parse(
-                                                  order['createdAt']),
+                                        ),
+                                        padding: const EdgeInsets.all(10),
+                                        width: double.infinity,
+                                        child: Row(
+                                          children: [
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                  order['user']['fullName'],
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  DateFormat('dd/MM/yyyy HH:mm')
+                                                      .format(
+                                                    DateTime.parse(
+                                                        order['createdAt']),
+                                                  ),
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Text(
+                                                    order['status'][0] +
+                                                        order['status']
+                                                            .split(RegExp(
+                                                                r'(?=[A-Z])'))
+                                                            .join(' ')
+                                                            .toLowerCase()
+                                                            .substring(1),
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: (order['status'] ==
+                                                                  'Pending' ||
+                                                              order['status'] ==
+                                                                  'Processing' ||
+                                                              order['status'] ==
+                                                                  'OnHold')
+                                                          ? AppColors.info
+                                                          : (order['status'] ==
+                                                                      'ReadyToPickUp' ||
+                                                                  order['status'] ==
+                                                                      'Dispatched' ||
+                                                                  order['status'] ==
+                                                                      'Confirmed' ||
+                                                                  order['status'] ==
+                                                                      'Delivered')
+                                                              ? AppColors
+                                                                  .success
+                                                              : AppColors.error,
+                                                    )),
+                                              ],
                                             ),
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Spacer(),
-                                      PrimaryButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            selectedStatus = order['status'];
-                                            fetchOrder(order['id']);
-                                          });
-                                        },
-                                        label: "View details",
-                                        width: 140,
+                                            const Spacer(),
+                                            PrimaryButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  selectedStatus =
+                                                      order['status'];
+                                                  fetchOrder(order['id']);
+                                                });
+                                              },
+                                              label: "View details",
+                                              width: 140,
+                                            )
+                                          ],
+                                        ),
                                       )
-                                    ],
-                                  ),
-                                );
+                                    : const SizedBox();
                               },
                             )
                           ],
@@ -215,13 +510,24 @@ class _OrdersPageState extends State<OrdersPage> {
                                     )
                                   : selectedOrder == null
                                       ? const Padding(
-                                          padding:
-                                              EdgeInsets.only(top: 100.0),
+                                          padding: EdgeInsets.only(top: 100.0),
                                           child: Text(
                                               'Select view details to see order details.'),
                                         )
                                       : Column(
                                           children: [
+                                            Row(
+                                              children: [
+                                                const Text("Id: "),
+                                                Text(
+                                                  selectedOrder['id']
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                )
+                                              ],
+                                            ),
                                             Row(
                                               children: [
                                                 const Text("For: "),
@@ -239,8 +545,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                 null)
                                               Row(
                                                 children: [
-                                                  const Text(
-                                                      "Phone number: "),
+                                                  const Text("Phone number: "),
                                                   Text(
                                                     selectedOrder[
                                                             "shippingAddress"]
@@ -253,11 +558,9 @@ class _OrdersPageState extends State<OrdersPage> {
                                               ),
                                             Row(
                                               children: [
-                                                const Text(
-                                                    "Payment method: "),
+                                                const Text("Payment method: "),
                                                 Text(
-                                                  selectedOrder[
-                                                              'paymentMethod']
+                                                  selectedOrder['paymentMethod']
                                                           [0] +
                                                       selectedOrder[
                                                               'paymentMethod']
@@ -284,9 +587,9 @@ class _OrdersPageState extends State<OrdersPage> {
                                             ListView.builder(
                                               shrinkWrap: true,
                                               scrollDirection: Axis.vertical,
-                                              itemCount: selectedOrder![
-                                                      'orderDetails']
-                                                  .length,
+                                              itemCount:
+                                                  selectedOrder!['orderDetails']
+                                                      .length,
                                               itemBuilder: (context, index) {
                                                 final item = selectedOrder![
                                                     'orderDetails'][index];
@@ -328,8 +631,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                 const EdgeInsets
                                                                     .only(
                                                                     top: 16,
-                                                                    bottom:
-                                                                        16),
+                                                                    bottom: 16),
                                                             child: Wrap(
                                                               children: [
                                                                 FractionallySizedBox(
@@ -337,16 +639,17 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                         0.3,
                                                                     child: Image
                                                                         .memory(
-                                                                      base64.decode(
-                                                                          item['product']['productImages'][0]['image']['data'].toString()),
+                                                                      base64.decode(item['product']['productImages'][0]['image']
+                                                                              [
+                                                                              'data']
+                                                                          .toString()),
                                                                       height:
                                                                           100,
                                                                     )),
                                                                 FractionallySizedBox(
                                                                   widthFactor:
                                                                       0.5,
-                                                                  child:
-                                                                      Column(
+                                                                  child: Column(
                                                                     crossAxisAlignment:
                                                                         CrossAxisAlignment
                                                                             .start,
@@ -355,11 +658,13 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                             .center,
                                                                     children: [
                                                                       Text(
-                                                                        item['product']['name'].length > 40
+                                                                        item['product']['name'].length >
+                                                                                40
                                                                             ? '${item['product']['name'].substring(0, 40)}...'
                                                                             : item['product']['name'],
-                                                                        style:
-                                                                            const TextStyle(fontSize: 16),
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                16),
                                                                       ),
                                                                       const SizedBox(
                                                                         height:
@@ -368,8 +673,9 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                       Text(
                                                                         item['product']['brand']['name']
                                                                             .toUpperCase(),
-                                                                        style:
-                                                                            const TextStyle(fontSize: 14),
+                                                                        style: const TextStyle(
+                                                                            fontSize:
+                                                                                14),
                                                                       ),
                                                                     ],
                                                                   ),
@@ -377,8 +683,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                 FractionallySizedBox(
                                                                   widthFactor:
                                                                       0.2,
-                                                                  child:
-                                                                      Column(
+                                                                  child: Column(
                                                                     crossAxisAlignment:
                                                                         CrossAxisAlignment
                                                                             .end,
@@ -386,8 +691,10 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                       Text(
                                                                         "\$ ${item['product']['price']}",
                                                                         style: const TextStyle(
-                                                                            fontSize: 18,
-                                                                            fontWeight: FontWeight.w600),
+                                                                            fontSize:
+                                                                                18,
+                                                                            fontWeight:
+                                                                                FontWeight.w600),
                                                                       ),
                                                                       const SizedBox(
                                                                         height:
@@ -400,11 +707,13 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                               35,
                                                                           child:
                                                                               Container(
-                                                                            decoration: BoxDecoration(
+                                                                            decoration:
+                                                                                BoxDecoration(
                                                                               color: const Color(0xffF2F2F2),
                                                                               borderRadius: BorderRadius.circular(10),
                                                                             ),
-                                                                            child: Center(
+                                                                            child:
+                                                                                Center(
                                                                               child: Text(item['quantity'].toString()),
                                                                             ),
                                                                           )),
@@ -468,8 +777,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                     width: 160,
                                                     height: 35,
                                                     child: Container(
-                                                      decoration:
-                                                          BoxDecoration(
+                                                      decoration: BoxDecoration(
                                                         color: const Color(
                                                             0xffF2F2F2),
                                                         borderRadius:
@@ -485,19 +793,17 @@ class _OrdersPageState extends State<OrdersPage> {
                                                         child: DropdownButton<
                                                             String>(
                                                           isExpanded: true,
-                                                          value:
-                                                              selectedStatus,
+                                                          value: selectedStatus,
                                                           underline:
                                                               Container(),
                                                           borderRadius:
                                                               BorderRadius
-                                                                  .circular(
-                                                                      10),
+                                                                  .circular(10),
                                                           icon: const Icon(
                                                               Icons
                                                                   .arrow_drop_down,
-                                                              color: Colors
-                                                                  .grey),
+                                                              color:
+                                                                  Colors.grey),
                                                           onChanged: (String?
                                                               newValue) {
                                                             if (newValue ==
@@ -517,12 +823,14 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                         () {
                                                                       changeStatus(
                                                                           newValue);
-                                                                      Navigator.of(context)
+                                                                      Navigator.of(
+                                                                              context)
                                                                           .pop();
                                                                     },
                                                                     onNoPressed:
                                                                         () {
-                                                                      Navigator.of(context)
+                                                                      Navigator.of(
+                                                                              context)
                                                                           .pop();
                                                                     },
                                                                   );

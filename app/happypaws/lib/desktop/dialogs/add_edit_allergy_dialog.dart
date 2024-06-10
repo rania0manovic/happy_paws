@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/PetAllergiesService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -31,6 +31,8 @@ class AddAllergyMenu extends StatefulWidget {
 class _AddAllergyMenuState extends State<AddAllergyMenu> {
   Map<String, dynamic> data = {};
   String selectedSeverity = "Mild";
+  bool disabledButton = false;
+
   @override
   initState() {
     super.initState();
@@ -42,16 +44,27 @@ class _AddAllergyMenuState extends State<AddAllergyMenu> {
 
   Future<void> addAllergyForPatient() async {
     try {
+      setState(() {
+        disabledButton = true;
+      });
       data["petId"] = widget.petId;
       var response = await PetAllergiesService().post('', data);
       if (response.statusCode == 200) {
         widget.onAdd(response.data);
         widget.onClosed();
+        setState(() {
+          disabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have successfully added a new allergy for the selected pet!");
       } else {
-        throw Exception('Error occured');
+       setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
       rethrow;
@@ -60,15 +73,26 @@ class _AddAllergyMenuState extends State<AddAllergyMenu> {
 
   Future<void> editAllergyForPatient() async {
     try {
+      setState(() {
+        disabledButton=true;
+      });
       var response = await PetAllergiesService().put('', data);
       if (response.statusCode == 200) {
         widget.onEdit(response.data);
         widget.onClosed();
+         setState(() {
+          disabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully edited the allergy information!");
       } else {
-        throw Exception('Error occured');
+        setState(() {
+          disabledButton = false;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again later.");
       }
     } catch (e) {
       rethrow;
@@ -96,40 +120,42 @@ class _AddAllergyMenuState extends State<AddAllergyMenu> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
-            children: [
-              const IconButton(
-                icon: Icon(Icons.inventory_2_outlined),
-                onPressed: null,
-                color: AppColors.gray,
-              ),
-              const Text(
-                "Add new allergy",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+    return SingleChildScrollView(
+      child: SizedBox(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                const IconButton(
+                  icon: Icon(Icons.inventory_2_outlined),
+                  onPressed: null,
+                  color: AppColors.gray,
                 ),
-              ),
-              const Spacer(),
-              IconButton(
-                onPressed: widget.onClosed,
-                icon: const Icon(Icons.close),
-                color: Colors.grey,
-              ),
-            ],
-          ),
-          InputField(
-            label: "Allergen:",
-            value: widget.data != null ? widget.data!['name'] : '',
-            onChanged: (value) => setState(() {
-              data['name'] = value;
-            }),
-          ),
-          Expanded(
-            child: Column(
+                const Text(
+                  "Add new allergy",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: widget.onClosed,
+                  icon: const Icon(Icons.close),
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+            InputField(
+              label: "Allergen:",
+              value: widget.data != null ? widget.data!['name'] : '',
+              onChanged: (value) => setState(() {
+                data['name'] = value;
+              }),
+            ),
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(
@@ -188,8 +214,8 @@ class _AddAllergyMenuState extends State<AddAllergyMenu> {
                 const SizedBox(
                   height: 40,
                 ),
-                const Expanded(child: SizedBox()),
                 PrimaryButton(
+                  isDisabled: disabledButton,
                   onPressed: () {
                     widget.data == null
                         ? addAllergyForPatient()
@@ -212,9 +238,9 @@ class _AddAllergyMenuState extends State<AddAllergyMenu> {
                       width: double.infinity,
                     )),
               ],
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -21,8 +21,10 @@ namespace HappyPaws.Infrastructure.Repositories
         }
         public override async Task<PagedList<User>> GetPagedAsync(UserSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Where(x => searchObject.FullName == null
-            || (x.FirstName.ToLower().StartsWith(searchObject.FullName.ToLower())
+            return await DbSet
+                .Include(x => x.ProfilePhoto)
+                .Where(x => searchObject.Role == x.Role && (searchObject.FullName == null
+            || x.FirstName.ToLower().StartsWith(searchObject.FullName.ToLower())
             || x.LastName.ToLower().StartsWith(searchObject.FullName.ToLower())))
                 .ToPagedListAsync(searchObject, cancellationToken);
         }
@@ -42,6 +44,16 @@ namespace HappyPaws.Infrastructure.Repositories
         public async Task<int> GetCountByRoleAsync(Role role, CancellationToken cancellationToken = default)
         {
             return await DbSet.CountAsync(x => x.Role == role, cancellationToken);
+
+        }
+        public async Task<PagedList<User>> FindFreeEmployeesAsync(EmployeeSearchObject searchObject, CancellationToken cancellationToken)
+        {
+            var busyEmployees = DatabaseContext.Appointments
+                .Where(a => searchObject.StartDateTime < a.EndDateTime && searchObject.EndDateTime > a.StartDateTime)
+                .Select(a => a.EmployeeId)
+                .Distinct();
+
+            return await DbSet.Where(e => e.Role==Role.Employee && !busyEmployees.Contains(e.Id)).ToPagedListAsync(searchObject, cancellationToken);
 
         }
     }

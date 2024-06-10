@@ -1,35 +1,60 @@
+import 'package:dio/dio.dart';
 import 'package:happypaws/common/services/BaseService.dart';
-import 'package:http/http.dart' as http;
 
 class ProductsService extends BaseService {
   ProductsService() : super("Products");
 
+  Future<dynamic> updateActivityStatus(data) async {
+    var response = await patch('/ActivityStatus', data);
+    return response;
+  }
+
+  Future<dynamic> hasAnyWithCategoryId(int categoryId) async {
+    var response = await get('/HasAnyWithCategoryId/$categoryId');
+    return response;
+  }
+
+  Future<dynamic> hasAnyWithSubcategoryId(int subcategoryId) async {
+    var response = await get('/HasAnyWithSubcategoryId/$subcategoryId');
+    return response;
+  }
+
+  Future<dynamic> hasAnyWithBrandId(int brandId) async {
+    var response = await get('/HasAnyWithBrandId/$brandId');
+    return response;
+  }
+
   @override
   Future<dynamic> post(String endpoint, data) async {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse(baseUrl),
-    );
-    for (var file in data['imageFiles']) {
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'ImageFiles',
-          file.path,
-        ),
-      );
+    FormData formData = FormData();
+    if (data['imageFiles'] != null) {
+      for (var file in data['imageFiles']) {
+        formData.files.add(
+          MapEntry(
+            'ImageFiles',
+            await MultipartFile.fromFile(
+              file.path,
+              filename: file.path.split('/').last,
+            ),
+          ),
+        );
+      }
     }
     data.forEach((key, value) {
-      if (key == 'price') {
-        if (value is double) {
-          value = value.toString().replaceAll('.', ',');
-        } else {
-          value = value.replaceAll('.', ',');
+      if (value != null) {
+        if (key == 'price') {
+          if (value is double) {
+            value = value.toString().replaceAll('.', ',');
+          } else {
+            value = value.replaceAll('.', ',');
+          }
         }
+        formData.fields.add(MapEntry(key, value.toString()));
       }
-      request.fields[key] = value.toString();
     });
+
     try {
-      var response = await request.send();
+      var response = await super.post('', formData);
       return response;
     } catch (e) {
       rethrow;
@@ -57,16 +82,16 @@ class ProductsService extends BaseService {
 
   @override
   Future<dynamic> put(String endpoint, data) async {
-    var request = http.MultipartRequest(
-      'PUT',
-      Uri.parse(baseUrl),
-    );
+    FormData formData = FormData();
     if (data['imageFiles'] != null) {
       for (var file in data['imageFiles']) {
-        request.files.add(
-          await http.MultipartFile.fromPath(
+        formData.files.add(
+          MapEntry(
             'ImageFiles',
-            file.path,
+            await MultipartFile.fromFile(
+              file.path,
+              filename: file.path.split('/').last,
+            ),
           ),
         );
       }
@@ -80,11 +105,12 @@ class ProductsService extends BaseService {
             value = value.replaceAll('.', ',');
           }
         }
-        request.fields[key] = value.toString();
+        formData.fields.add(MapEntry(key, value.toString()));
       }
     });
+
     try {
-      var response = await request.send();
+      var response = await super.put('', formData);
       return response;
     } catch (e) {
       rethrow;

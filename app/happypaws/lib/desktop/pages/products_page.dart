@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:auto_route/auto_route.dart';
@@ -13,6 +13,9 @@ import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/desktop/components/table/table_data.dart';
+import 'package:happypaws/desktop/components/table/table_data_photo.dart';
+import 'package:happypaws/desktop/components/table/table_head.dart';
 import '../dialogs/add_edit_product_dialog.dart';
 
 @RoutePage()
@@ -32,7 +35,7 @@ class _ProductsPageState extends State<ProductsPage> {
   List<dynamic>? productSubcategories;
   String? selectedCategory;
   String? selectedSubCategory;
-  Map<String, dynamic> params = {};
+  Map<String, dynamic> params = { 'getReviews':false};
   Timer? _debounce;
 
   @override
@@ -40,7 +43,7 @@ class _ProductsPageState extends State<ProductsPage> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
-    fetchData();
+    fetchCategories();
   }
 
   Future<void> fetchProducts() async {
@@ -63,13 +66,13 @@ class _ProductsPageState extends State<ProductsPage> {
     _debounce = Timer(const Duration(milliseconds: 1000), () {
       setState(() {
         products = null;
-        currentPage=1;
+        currentPage = 1;
       });
       fetchProducts();
     });
   }
 
-  Future<void> fetchData() async {
+  Future<void> fetchCategories() async {
     var responseCategories =
         await ProductCategoriesService().getPaged("", 1, 999);
     if (responseCategories.statusCode == 200) {
@@ -113,14 +116,24 @@ class _ProductsPageState extends State<ProductsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(vertical: 100, horizontal: 200),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 200),
           contentPadding: const EdgeInsets.all(8),
           content: AddEditProductMenu(
             data: data,
-            fetchData: fetchData,
             onClose: () {
               Navigator.of(context).pop();
+            },
+            onEdit: (value) {
+              setState(() {
+                products!['items'][products!['items']
+                    .indexWhere((x) => x['id'] == value['id'])] = value;
+              });
+            },
+            onAdd: (value) {
+              if (products!['hasNextPage']) return;
+              setState(() {
+                products!['items'].add(value);
+              });
             },
           ),
         );
@@ -132,7 +145,31 @@ class _ProductsPageState extends State<ProductsPage> {
     try {
       var response = await ProductsService().delete('/$id');
       if (response.statusCode == 200) {
-        fetchData();
+        setState(() {
+          products!['items'].removeWhere((x) => x['id'] == id);
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully deleted selected product!");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> deactivateProduct(data) async {
+    try {
+      var response = await ProductsService().updateActivityStatus(
+          {'id': data['id'], 'isActive': !data['isActive']});
+      if (response.statusCode == 200) {
+        setState(() {
+          products!['items']
+                  .firstWhere((x) => x['id'] == data['id'])['isActive'] =
+              !data['isActive'];
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(context,
+            "You have successfully ${!data['isActive'] == false ? "activated" : " deactivated"} selected product!");
       }
     } catch (e) {
       rethrow;
@@ -164,10 +201,9 @@ class _ProductsPageState extends State<ProductsPage> {
                           fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
-                   
                     SizedBox(
                       width: 250,
-                      height:50,
+                      height: 50,
                       child: TextField(
                         onChanged: (value) {
                           setState(() {
@@ -178,7 +214,7 @@ class _ProductsPageState extends State<ProductsPage> {
                         decoration: InputDecoration(
                             labelText: "Search by brand, name or UPC...",
                             labelStyle: TextStyle(
-                              fontSize: 12,
+                                fontSize: 12,
                                 color: Colors.grey.shade400,
                                 fontWeight: FontWeight.w500),
                             suffixIcon: const Padding(
@@ -190,7 +226,7 @@ class _ProductsPageState extends State<ProductsPage> {
                                 ))),
                       ),
                     ),
-                     const SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     if (productCategories != null)
@@ -199,7 +235,6 @@ class _ProductsPageState extends State<ProductsPage> {
                         child: ApiDataDropdownMenu(
                           items: productCategories!['items'],
                           onChanged: (String? newValue) async {
-                            // await fetchSubcategories(newValue);
                             setState(() {
                               currentPage = 1;
                               products = null;
@@ -211,9 +246,29 @@ class _ProductsPageState extends State<ProductsPage> {
                           hint: "Select category...",
                         ),
                       ),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    if (params["categoryId"] != null &&
+                        params["categoryId"] != 0)
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                currentPage = 1;
+                                selectedCategory = null;
+                                products = null;
+                                params["categoryId"] = null;
+                              });
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                              size: 24,
+                              color: AppColors.error,
+                            ),
+                          ))
+                    else
+                      const SizedBox(
+                        width: 20,
+                      ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditProductMenu(context),
                         icon: const Icon(
@@ -244,7 +299,8 @@ class _ProductsPageState extends State<ProductsPage> {
                         child: Padding(
                             padding: EdgeInsets.only(top: 36.0),
                             child: Spinner())),
-                if (isLoadingMore) const Spinner()
+                if (isLoadingMore)
+                  Transform.scale(scale: 0.8, child: const Spinner())
               ],
             ),
           ),
@@ -265,58 +321,47 @@ class _ProductsPageState extends State<ProductsPage> {
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(0.1),
           ),
-          children: [
-            tableHead('Item Id.'),
-            tableHead('Photo'),
-            tableHead('Item name'),
-            tableHead('Item category'),
-            tableHead('Item subcategory'),
-            tableHead('UPC'),
-            tableHead('Actions'),
+          children: const [
+            TableHead(
+              header: "Id.",
+              alignmentGeometry: Alignment.center,
+            ),
+            TableHead(header: "Photo", alignmentGeometry: Alignment.center),
+            TableHead(header: "Name", alignmentGeometry: Alignment.center),
+            TableHead(header: "Category", alignmentGeometry: Alignment.center),
+            TableHead(
+                header: "Subcategory", alignmentGeometry: Alignment.center),
+            TableHead(header: "UPC", alignmentGeometry: Alignment.center),
+            TableHead(header: "Actions", alignmentGeometry: Alignment.center),
           ],
         ),
         for (var product in products!['items'])
           TableRow(
             children: [
-              tableCell(product['id'].toString()),
-              tableCellPhoto(product['productImages'][0]['image']['data']),
-              tableCell(product['name']),
-              tableCell(product['productCategorySubcategory']['productCategory']
-                  ['name']),
-              tableCell(product['productCategorySubcategory']
-                  ['productSubcategory']['name']),
-              tableCell(product['upc']),
-              tableActions(product)
+              TableData(
+                data: product['id'].toString(),
+              ),
+              TableDataPhoto(
+                  borderRadius: 0,
+                  size: 30,
+                  data: product['productImages'][0]['image']['data']),
+              TableData(
+                data: product['name'],
+              ),
+              TableData(
+                data: product['productCategorySubcategory']['productCategory']
+                    ['name'],
+              ),
+              TableData(
+                data: product['productCategorySubcategory']
+                    ['productSubcategory']['name'],
+              ),
+              TableData(data: product['upc']),
+              tableActions(product),
             ],
           ),
       ],
     );
-  }
-
-  TableCell tableCell(String data) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: Center(
-            child: Tooltip(
-          message: data.length > 20 ? data : '',
-          child: Text(
-            data.length > 20 ? '${data.substring(0, 20)}...' : data,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-          ),
-        )),
-      ),
-    );
-  }
-
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 0, bottom: 0.0),
-            child: Image.memory(
-              base64.decode(data.toString()),
-              height: 30,
-            )));
   }
 
   TableCell tableActions(Map<String, dynamic> data) {
@@ -325,50 +370,80 @@ class _ProductsPageState extends State<ProductsPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ActionButton(
-              onPressed: () {
-                showAddEditProductMenu(context, data: data);
-              },
-              icon: Icons.edit_outlined,
-              iconColor: AppColors.gray,
+            Tooltip(
+              message: 'Edit',
+              child: ActionButton(
+                onPressed: () {
+                  showAddEditProductMenu(context, data: data);
+                },
+                icon: Icons.edit_outlined,
+                iconColor: AppColors.gray,
+              ),
             ),
-            ActionButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return ConfirmationDialog(
-                      title: 'Confirmation',
-                      content: 'Are you sure you want to delete this product?',
-                      onYesPressed: () {
-                        Navigator.of(context).pop();
-                        deleteProduct(data['id']);
-                      },
-                      onNoPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    );
-                  },
-                );
-              },
-              icon: Icons.delete_outline_outlined,
-              iconColor: AppColors.error,
+            Tooltip(
+              message: data['isActive'] ? "Deactivate" : "Activate",
+              child: ActionButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmationDialog(
+                        title: 'Confirmation',
+                        content: data['isActive']
+                            ? 'Are you sure you want to deactivate this product? Deactivated product will be removed from shop for purchase. If you wish you can activate it again later.'
+                            : "Are you sure you want to activate this product? Active products are avaliable in shop for purchase.",
+                        onYesPressed: () {
+                          Navigator.of(context).pop();
+                          deactivateProduct(data);
+                        },
+                        onNoPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  );
+                },
+                icon: Icons.disabled_visible_outlined,
+                iconColor:
+                    data['isActive'] ? AppColors.error : AppColors.success,
+              ),
+            ),
+            Tooltip(
+              message: 'Delete',
+              child: ActionButton(
+                onPressed: () async {
+                  var response =
+                      await OrdersService().hasAnyByProductId(data['id']);
+                  if (response.data == true) {
+                    if (!mounted) return;
+                    ToastHelper.showToastError(context,
+                        "This product cannot be deleted as it has already been included in previous orders. You may deactivate the product if you wish to remove it from availability.");
+                    return;
+                  }
+                  if (!mounted) return;
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ConfirmationDialog(
+                        title: 'Confirmation',
+                        content:
+                            'Are you sure you want to delete this product?',
+                        onYesPressed: () {
+                          Navigator.of(context).pop();
+                          deleteProduct(data['id']);
+                        },
+                        onNoPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      );
+                    },
+                  );
+                },
+                icon: Icons.delete_outline_outlined,
+                iconColor: AppColors.error,
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  TableCell tableHead(String header) {
-    return TableCell(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 12),
-          child: Text(
-            header,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
         ),
       ),
     );

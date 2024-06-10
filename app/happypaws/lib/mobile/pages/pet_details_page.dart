@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/LightText.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
@@ -84,7 +84,10 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
 
   Future<void> addPet() async {
     try {
-      final response = await PetsService().post("", data);
+      if (data['weight'] is double || data['weight'] is String) {
+        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      }
+      final response = await PetsService().postMultiPartRequest("", data);
       if (response.statusCode == 200) {
         await widget.onChangedData!.call();
         if (!mounted) return;
@@ -103,7 +106,10 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
 
   Future<void> editPet() async {
     try {
-      final response = await PetsService().put("", data);
+      if (data['weight'] is double || data['weight'] is String) {
+        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      }
+      final response = await PetsService().putMultiPartRequest("", data);
       if (response.statusCode == 200) {
         await widget.onChangedData!.call();
 
@@ -156,7 +162,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     if (selectedImage != null) {
       setState(() {
         _selectedImage = File(selectedImage.path);
-        data["PhotoFile"] = selectedImage.path;
+        data["photoFile"] = selectedImage.path;
       });
     }
   }
@@ -508,8 +514,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding:
-              const EdgeInsets.symmetric(vertical: 100, horizontal: 0),
           contentPadding: const EdgeInsets.all(8),
           content: AddAllergyMenu(
             onAdd: (value) {
@@ -710,7 +714,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                   setState(() {
                     errorStates[key] = true;
                   });
-                  return "Input must be numerical value";
+                  return "Input must be numerical value (e.g. 5.5)";
                 }
               }
               setState(() {

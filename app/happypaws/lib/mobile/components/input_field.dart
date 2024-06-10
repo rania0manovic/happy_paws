@@ -8,15 +8,19 @@ class InputField extends StatefulWidget {
   final String? initialValue;
   final MyVoidCallback onChanged;
   final bool isRequired;
+  final bool isNumber;
+  final bool enabled;
 
-  const InputField({
-    Key? key,
-    required this.label,
-    this.isObscure = false,
-    required this.onChanged,
-    this.initialValue,
-    this.isRequired = true,
-  }) : super(key: key);
+  const InputField(
+      {Key? key,
+      required this.label,
+      this.isObscure = false,
+      required this.onChanged,
+      this.initialValue,
+      this.isRequired = true,
+      this.isNumber = false,
+      this.enabled=true})
+      : super(key: key);
 
   @override
   _InputFieldState createState() => _InputFieldState();
@@ -58,13 +62,22 @@ class _InputFieldState extends State<InputField> {
                 });
                 return "This field is required";
               }
+              if (widget.isNumber) {
+                if (double.tryParse(value) == null) {
+                  setState(() {
+                    isErrorShowing = true;
+                  });
+                  return "Input must be numerical value (e.g. 5.5)";
+                }
+              }
               setState(() {
                 isErrorShowing = false;
               });
               return null;
             },
+            enabled: widget.enabled,
             initialValue: widget.initialValue,
-            style: const TextStyle(color: Colors.black),
+            style:  TextStyle(color: widget.enabled ? Colors.black : AppColors.gray, fontSize: 16, fontWeight: FontWeight.w500),
             obscureText: widget.isObscure,
             decoration: InputDecoration(
               errorStyle: const TextStyle(color: AppColors.error, fontSize: 14),

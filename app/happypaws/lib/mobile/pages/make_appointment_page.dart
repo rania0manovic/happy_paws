@@ -44,6 +44,11 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
     var response = await PetsService()
         .getPaged('', 1, 999, searchObject: {'userId': user?['Id']});
     if (response.statusCode == 200) {
+      if (response.data['items'].length == 0) {
+        if(!mounted)return;
+        Navigator.of(context).pop();
+        ToastHelper.showToastError(context, "You must have at least one pet added before booking an appointment!");
+      }
       setState(() {
         userPets = response.data;
         selectedValue = userPets!['items'][0]['id'].toString();
@@ -192,6 +197,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return ConfirmationDialog(
+                                  insentPaddingX: 50,
                                   title: 'Confirmation',
                                   content:
                                       'Keep in mind that once your request is made, you won\'t be able to update the inserted data. Do you wish to proceed?',

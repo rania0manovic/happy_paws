@@ -8,5 +8,6 @@ namespace HappyPaws.Core.SearchObjects
 {
     public class BrandSearchObject:BaseSearchObject
     {
+        public string ? Name { get; set; }
     }
 }

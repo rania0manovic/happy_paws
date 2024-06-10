@@ -4,6 +4,11 @@ import 'package:http/http.dart' as http;
 class UsersService extends BaseService {
   UsersService() : super("Users");
 
+  Future<dynamic> getRecommendedProducts() async {
+    var response = await get('/RecommendedProducts');
+    return response;
+  }
+
   @override
   Future<dynamic> put(String endpoint, data) async {
     var request = http.MultipartRequest(

@@ -1,12 +1,17 @@
-import 'dart:convert';
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
+import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/desktop/components/table/table_data.dart';
+import 'package:happypaws/desktop/components/table/table_head.dart';
 import '../dialogs/add_edit_pet_type_dialog.dart';
 
 @RoutePage()
@@ -19,6 +24,9 @@ class PetTypesPage extends StatefulWidget {
 
 class _PetTypesPageState extends State<PetTypesPage> {
   Map<String, dynamic>? petTypes;
+  Map<String, dynamic> params={};
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -26,12 +34,16 @@ class _PetTypesPageState extends State<PetTypesPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await PetTypesService().getPaged("", 1, 999);
+   try {
+      var response = await PetTypesService().getPaged("", 1, 999, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         petTypes = response.data;
       });
     }
+   } catch (e) {
+     rethrow;
+   }
   }
 
   Future<void> deletePetType(int id) async {
@@ -55,13 +67,34 @@ class _PetTypesPageState extends State<PetTypesPage> {
               onClose: () {
                 Navigator.of(context).pop();
               },
-              fetchData: fetchData,
+              allPetTypes: petTypes,
+              onAdd: (value) {
+                setState(() {
+                  petTypes!['items'].add(value);
+                });
+              },
+              onEdit: (value) {
+                setState(() {
+                  petTypes!['items'][petTypes!['items']
+                          .indexWhere((x) => x['id'] == value['value']['id'])] =
+                      value['value'];
+                });
+              },
               data: data,
             ),
           );
         });
   }
 
+ onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        petTypes = null;
+      });
+      fetchData();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -75,13 +108,40 @@ class _PetTypesPageState extends State<PetTypesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     const Text(
                       'Pet types settings',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
                     ),
+                    const Spacer(),
+                     SizedBox(
+                      width: 250,
+                      height: 50,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['name'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by type name...",
+                            labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
+                      ),
+                    ),
+                    const SizedBox(width: 20,),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
                         icon: const Icon(
@@ -121,47 +181,27 @@ class _PetTypesPageState extends State<PetTypesPage> {
           decoration: BoxDecoration(
             color: Colors.grey.withOpacity(0.1),
           ),
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 30),
-              child: tableHead('Pet type name'),
-            ),
-            Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 30),
-                  child: tableHead('Actions'),
-                )),
+          children: const [
+            TableHead(
+                header: 'Pet type name',
+                alignmentGeometry: Alignment.centerLeft),
+            TableHead(
+                header: 'Actions', alignmentGeometry: Alignment.centerRight)
           ],
         ),
         for (var petType in petTypes!['items'])
           TableRow(
-            children: [tableCell(petType['name']), tableActions(petType)],
+            children: [
+              TableData(
+                data: petType['name'],
+                alignmentGeometry: Alignment.bottomLeft,
+                paddingHorizontal: 25,
+              ),
+              tableActions(petType)
+            ],
           ),
       ],
     );
-  }
-
-  TableCell tableCell(String data) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20, left: 30),
-        child: Text(
-          data,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ),
-    );
-  }
-
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 0, bottom: 0.0),
-            child: Image.memory(
-              base64.decode(data.toString()),
-              height: 25,
-            )));
   }
 
   TableCell tableActions(Map<String, dynamic> data) {
@@ -180,7 +220,16 @@ class _PetTypesPageState extends State<PetTypesPage> {
                 iconColor: AppColors.gray,
               ),
               ActionButton(
-                onPressed: () {
+                onPressed: () async {
+                  var response =
+                      await PetsService().hasAnyWithPetTypeId(data['id']);
+                  if (response.data == true) {
+                    if (!mounted) return;
+                    ToastHelper.showToastError(context,
+                        "You cannot delete this pet type because it contains one or more pets.");
+                    return;
+                  }
+                  if (!mounted) return;
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -204,18 +253,6 @@ class _PetTypesPageState extends State<PetTypesPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  TableCell tableHead(String header) {
-    return TableCell(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 12, bottom: 12),
-        child: Text(
-          header,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
     );

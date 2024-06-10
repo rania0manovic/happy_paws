@@ -8,5 +8,6 @@ namespace HappyPaws.Core.SearchObjects
 {
     public class PetBreedSearchObject : BaseSearchObject
     {
+        public int? PetTypeId { get; set; }
     }
 }

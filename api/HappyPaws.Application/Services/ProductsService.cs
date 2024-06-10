@@ -9,8 +9,10 @@ using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq;
+using System.Threading;
 
 namespace HappyPaws.Application.Services
 {
@@ -97,12 +99,15 @@ namespace HappyPaws.Application.Services
         }
         public override async Task<PagedList<ProductDto>> GetPagedAsync(ProductSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            var response = await base.GetPagedAsync(searchObject, cancellationToken);
-            foreach (var item in response.Items)
+            var response = Mapper.Map<PagedList<ProductDto>>(await CurrentRepository.GetPagedAsync(searchObject, cancellationToken));
+            if (searchObject.GetReviews)
             {
-                if (item != null && item.ProductReviews != null && item.ProductReviews.Count > 0)
+                foreach (var item in response.Items)
                 {
-                    item.Review = (int)item.ProductReviews.Average(x => x.Review);
+                    if (item != null && item.ProductReviews != null && item.ProductReviews.Count > 0)
+                    {
+                        item.Review = (int)item.ProductReviews.Average(x => x.Review);
+                    }
                 }
             }
             return response;
@@ -124,18 +129,7 @@ namespace HappyPaws.Application.Services
             return result;
         }
 
-        public async Task<List<ProductDto>> GetRecommendedProductsForUserAsync(int userId, int size, CancellationToken cancellationToken = default)
-        {
-            var favouriteProducts = await _userFavouritesService.GetPagedProductsAsync(new UserFavouriteSearchObject() { UserId = userId }, cancellationToken);
-            if (favouriteProducts != null && favouriteProducts.TotalCount > 0)
-            {
-                var similarProducts = await CurrentRepository.FindSimilarProductsAsync(favouriteProducts.Items, size, cancellationToken);
-                if (similarProducts != null) { return Mapper.Map<List<ProductDto>>(similarProducts); }
-                else return new();
-            }
-            return new();
-
-        }
+       
 
         public async Task<List<ProductDto>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default)
         {
@@ -145,6 +139,33 @@ namespace HappyPaws.Application.Services
         public async Task UpdateStockAsync(int id, int size, CancellationToken cancellation = default)
         {
             await CurrentRepository.UpdateStockAsync(id, size, cancellation);
+        }
+
+        public async Task UpdateActivityStatusAsync(int id, bool isActive, CancellationToken cancellation = default)
+        {
+            var product = await CurrentRepository.GetByIdAsync(id, cancellation);
+            if (product != null)
+            {
+                product.IsActive = isActive;
+                CurrentRepository.Update(product);
+                await UnitOfWork.SaveChangesAsync(cancellation);
+
+            }
+        }
+
+        public async Task<bool> HasAnyWithCategoryIdAsync(int categoryId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.HasAnyWithCategoryIdAsync(categoryId, cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithSubcategoryIdAsync(int subcategoryId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.HasAnyWithSubcategoryIdAsync(subcategoryId, cancellationToken);
+        }
+
+        public async Task<bool> HasAnyWithBrandIdAsync(int brandId, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.HasAnyWithBrandIdAsync(brandId, cancellationToken);
         }
     }
 }

@@ -11,9 +11,6 @@ namespace HappyPaws.Infrastructure
             services.AddScoped<IUserAddressesRepository, UserAddressesRepository>();
             services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             services.AddScoped<IBrandsRepository, BrandsRepository>();
-            services.AddScoped<ICitiesRepository, CitiesRepository>();
-            services.AddScoped<ICountriesRepository, CountriesRepository>();
-            services.AddScoped<IEmployeesRepository, EmployeesRepository>();
             services.AddScoped<IImagesRepository, ImagesRepository>();
             services.AddScoped<IOrdersRepository, OrdersRepository>();
             services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();

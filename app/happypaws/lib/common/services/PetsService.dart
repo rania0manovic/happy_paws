@@ -4,6 +4,16 @@ import 'package:http/http.dart' as http;
 class PetsService extends BaseService {
   PetsService() : super("Pets");
 
+  Future<dynamic> hasAnyWithPetBreedId(int breedId) async {
+    var response = await get('/HasAnyWithPetBreedId/$breedId');
+    return response;
+  }
+
+  Future<dynamic> hasAnyWithPetTypeId(int typeId) async {
+    var response = await get('/HasAnyWithPetTypeId/$typeId');
+    return response;
+  }
+
   @override
   Future<dynamic> post(String endpoint, data) async {
     var request = http.MultipartRequest(
@@ -30,6 +40,7 @@ class PetsService extends BaseService {
       rethrow;
     }
   }
+
   @override
   Future<dynamic> put(String endpoint, data) async {
     var request = http.MultipartRequest(
