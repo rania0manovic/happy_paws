@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.Entities
 {
-    public class Brand:BaseEntity
+    public class Brand : BaseEntity
     {
         public required string Name { get; set; }
 
-        public required ICollection<Product> Products { get; set; }
+        public ICollection<Product>? Products { get; set; }
     }
 }

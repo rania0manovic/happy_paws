@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/dialogs/change_password_dialog.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -83,12 +84,35 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
     final XFile? selectedImage =
         await _imagePicker.pickImage(source: ImageSource.gallery);
 
-    if (selectedImage != null) {
+    // if (selectedImage != null) {
+    //   setState(() {
+    //     _selectedImage = File(selectedImage.path);
+    //     user["photoFile"] = selectedImage.path;
+    //   });
+    // }
+     if (selectedImage != null) {
+    File imageFile = File(selectedImage.path);
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child("images/$fileName");
+      UploadTask uploadTask = ref.putFile(imageFile);
+
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
       setState(() {
-        _selectedImage = File(selectedImage.path);
-        user["photoFile"] = selectedImage.path;
+        _selectedImage = imageFile;
+        user["photoFile"] = downloadURL; // Store the download URL instead of the file path
       });
+
+      print("Image uploaded successfully. URL: $downloadURL");
+    } catch (e) {
+      print("Failed to upload image: $e");
     }
+     }
   }
 
   @override

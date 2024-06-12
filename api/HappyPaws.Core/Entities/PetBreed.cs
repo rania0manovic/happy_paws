@@ -10,9 +10,9 @@ namespace HappyPaws.Core.Entities
     {
         public required string Name { get; set; }
 
-        public required PetType PetType { get; set; }
+        public PetType PetType { get; set; } = null!;
         public int PetTypeId { get; set; }
 
-        public required ICollection<Pet> Pets { get; set; }
+        public  ICollection<Pet>? Pets { get; set; }
     }
 }

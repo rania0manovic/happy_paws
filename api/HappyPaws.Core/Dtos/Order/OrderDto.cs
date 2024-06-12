@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Dtos.Address;
+using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;

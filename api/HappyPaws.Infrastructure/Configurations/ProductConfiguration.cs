@@ -17,7 +17,7 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
             builder.Property(x => x.Description).IsRequired().HasMaxLength(1024);
             builder.HasIndex(p => p.UPC).IsUnique();
-            builder.Property(x => x.UPC).IsRequired().HasMaxLength(12);
+            builder.Property(x => x.UPC).IsRequired().HasMaxLength(13);
             builder.Property(x => x.Price).IsRequired();
             builder.Property(x => x.IsActive).HasDefaultValue(true);
             builder.Property(x => x.InStock).IsRequired().HasDefaultValue(0);

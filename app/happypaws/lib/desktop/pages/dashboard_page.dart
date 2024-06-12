@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AnalyticsService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
+import 'package:happypaws/common/services/SystemConfigsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/progress_bar.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 
@@ -19,6 +22,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   Map<String, dynamic>? basicAnalytics;
+  Map<String, dynamic>? configData;
   List<dynamic>? barChartData;
   List<dynamic>? topBuyers;
   double maxY = 0;
@@ -37,7 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
     var analytics = await AnalyticsService().get('');
     var chartData = await AnalyticsService().getCountByPetType();
     var topBuyersData = await OrdersService().getTopBuyers(size: 5);
-
+    var configData = await SystemConfigsService().get("/1");
     if (analytics.statusCode == 200) {
       setState(() {
         basicAnalytics = analytics.data;
@@ -55,6 +59,11 @@ class _DashboardPageState extends State<DashboardPage> {
     if (topBuyersData.statusCode == 200) {
       setState(() {
         topBuyers = topBuyersData.data;
+      });
+    }
+     if (configData.statusCode == 200) {
+      setState(() {
+        this.configData = configData.data;
       });
     }
   }
@@ -158,15 +167,56 @@ class _DashboardPageState extends State<DashboardPage> {
         Row(
           children: [
             Card(
-              child: SizedBox(
-                width: 250,
-                height: 250,
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: CustomProgressIndicator(
-                    targetProgress: 0.75,
+              child: Stack(
+                children: [
+                  SizedBox(
+                    width: 250,
+                    height: 250,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: CustomProgressIndicator(
+                        targetProgress: basicAnalytics!['monthlyDonations']/configData!['donationsGoal'],
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Tooltip(
+                        message: "Edit goal",
+                        child: IconButton(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    content: SizedBox(
+                                      width: 300,
+                                      height: 200,
+                                      child: Column(
+                                        children: [
+                                          InputField(
+                                            label: 'Monthly donations goal(in \$):',
+                                            onChanged: (value) {
+                                              setState(() {
+                                                configData!['donationsGoal']=value;
+                                              });
+                                            },
+                                            isNumber: true,
+                                            value: configData!['donationsGoal'].toString(),
+                                          ),
+                                          const Spacer(),
+                                          PrimaryButton(onPressed: (){}, label: 'Update data', width: double.infinity,fontSize: 18,)
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.more_horiz_outlined))),
+                  )
+                ],
               ),
             ),
             const SizedBox(
@@ -509,14 +559,14 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 const Text(
-                  'DONATIONS',
+                  'INCOME',
                   style: TextStyle(
                       fontSize: 20,
                       color: Colors.white38,
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '\$ ${basicAnalytics!['donationsTotal'].toStringAsFixed(2)}',
+                  '\$ ${basicAnalytics!['incomeTotal'].toStringAsFixed(2)}',
                   style: const TextStyle(
                       fontSize: 26,
                       color: Colors.white,

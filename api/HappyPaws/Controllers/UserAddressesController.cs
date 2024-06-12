@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
-    public class UserAddressesController : BaseCrudController<UserAddressDto, IUserAddressesService,UserAddressSearchObject>
+    public class UserAddressesController : BaseCrudController<UserAddressDto, IUserAddressesService, UserAddressSearchObject>
     {
         protected readonly CurrentUser _currentUser;
         public UserAddressesController(IUserAddressesService service, ILogger<BaseController> logger, CurrentUser currentUser) : base(service, logger)
@@ -20,10 +20,16 @@ namespace HappyPaws.Api.Controllers
         {
             var userId = _currentUser.Id;
             if (!userId.HasValue) throw new Exception("Unauthorized!");
-            upsertDto.UserId=userId.Value;
+            upsertDto.UserId = userId.Value;
             return base.Post(upsertDto, cancellationToken);
         }
-
+        public override Task<IActionResult> Put([FromBody] UserAddressDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            var userId = _currentUser.Id;
+            if (!userId.HasValue) throw new Exception("Unauthorized!");
+            upsertDto.UserId = userId.Value;
+            return base.Put(upsertDto, cancellationToken);
+        }
         public override Task<IActionResult> GetPaged([FromQuery] UserAddressSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             var userId = _currentUser.Id;

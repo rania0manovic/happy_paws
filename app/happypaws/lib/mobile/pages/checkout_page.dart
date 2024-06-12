@@ -1,10 +1,8 @@
-import 'dart:developer';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/services/UserAdressesService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -103,6 +101,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   Future<void> addUserAddress() async {
     try {
+      setState(() {
+        data['isInitialUserAddress'] = saveAsInitialAddress;
+      });
       if (data['id'] != null &&
           saveAsInitialAddress &&
           data['isInitialUserAddress']) {
@@ -120,6 +121,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       if (response.statusCode == 200) {
         setState(() {
           data['shippingAddressId'] = response.data['id'];
+          data['id'] = response.data['id'];
           isSavedAddress = true;
         });
       }
@@ -412,56 +414,110 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               isSavedAddress,
                           child: GestureDetector(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    PaypalCheckoutView(
-                                  sandboxMode: true,
-                                  clientId:
-                                      "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r",
-                                  secretKey:
-                                      "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW",
-                                  transactions: [
-                                    {
-                                      "amount": {
-                                        "total": widget.total,
-                                        "currency": "USD",
-                                        "details": {
-                                          "subtotal": widget.total,
-                                          "shipping": '0',
-                                          "shipping_discount": 0
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) => UsePaypal(
+                                      sandboxMode: true,
+                                      clientId: dotenv.env['SHOP_CLIENT_ID']!,
+                                      secretKey: dotenv.env['SHOP_SECRET_KEY']!,
+                                      returnURL:
+                                          "https://samplesite.com/return",
+                                      cancelURL:
+                                          "https://samplesite.com/cancel",
+                                      transactions: [
+                                        {
+                                          "amount": {
+                                            "total": widget.total,
+                                            "currency": "USD",
+                                            "details": {
+                                              "subtotal": widget.total,
+                                              "shipping": '0',
+                                              "shipping_discount": 0
+                                            }
+                                          },
+                                          "description":
+                                              "Donation for shelters.",
+                                          "item_list": {
+                                            "items": [
+                                              for (var item
+                                                  in widget.products['items'])
+                                                {
+                                                  "name": item['product']
+                                                      ['name'],
+                                                  "quantity": item['quantity'],
+                                                  "price": item['product']
+                                                      ['price'],
+                                                  "currency": "USD"
+                                                },
+                                            ],
+                                          }
                                         }
+                                      ],
+                                      note:
+                                          "Contact us for any questions on your order.",
+                                      onSuccess: (Map params) async {
+                                        placePaypalOrder(params['paymentId']);
                                       },
-                                      "description": "",
-                                      "item_list": {
-                                        "items": [
-                                          for (var item
-                                              in widget.products['items'])
-                                            {
-                                              "name": item['product']['name'],
-                                              "quantity": item['quantity'],
-                                              "price": item['product']['price'],
-                                              "currency": "USD"
-                                            },
-                                        ],
-                                      }
-                                    }
-                                  ],
-                                  note:
-                                      "Contact us for any questions on your order.",
-                                  onSuccess: (Map params) async {
-                                    log(params.toString());
-                                    Navigator.pop(context);
-                                    placePaypalOrder(params['data']['id']);
-                                  },
-                                  onError: (error) {
-                                    log("onError: $error");
-                                    Navigator.pop(context);
-                                  },
-                                  onCancel: () {
-                                    Navigator.pop(context);
-                                  },
+                                      onError: (error) {
+                                        Navigator.of(context).pop();
+                                        ToastHelper.showToastError(context,
+                                            "An error occursed. Please try again later!");
+                                      },
+                                      onCancel: (params) {
+                                        Navigator.of(context).pop();
+                                      }),
                                 ),
-                              ));
+                              );
+                              // Navigator.of(context).push(MaterialPageRoute(
+                              //   builder: (BuildContext context) =>
+                              //       PaypalCheckoutView(
+                              //     sandboxMode: true,
+                              //     clientId:
+                              //         "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r",
+                              //     secretKey:
+                              //         "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW",
+                              //     transactions: [
+                              //       {
+                              //         "amount": {
+                              //           "total": widget.total,
+                              //           "currency": "USD",
+                              //           "details": {
+                              //             "subtotal": widget.total,
+                              //             "shipping": '0',
+                              //             "shipping_discount": 0
+                              //           }
+                              //         },
+                              //         "description": "",
+                              //         "item_list": {
+                              //           "items": [
+                              //             for (var item
+                              //                 in widget.products['items'])
+                              //               {
+                              //                 "name": item['product']['name'],
+                              //                 "quantity": item['quantity'],
+                              //                 "price": item['product']['price'],
+                              //                 "currency": "USD"
+                              //               },
+                              //           ],
+                              //         }
+                              //       }
+                              //     ],
+                              //     note:
+                              //         "Contact us for any questions on your order.",
+                              //     onSuccess: (Map params) async {
+                              //       log(params.toString());
+                              //       Navigator.pop(context);
+                              //       placePaypalOrder(params['data']['id']);
+                              //     },
+                              //     onError: (error) {
+                              //       log("onError: $error");
+                              //       Navigator.pop(context);
+                              //     },
+                              //     onCancel: () {
+                              //       Navigator.pop(context);
+                              //     },
+                              //   ),
+                              // ));
                             },
                             child: Container(
                               width: double.infinity,

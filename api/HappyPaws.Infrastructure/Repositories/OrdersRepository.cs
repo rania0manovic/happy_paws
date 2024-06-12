@@ -34,6 +34,13 @@ namespace HappyPaws.Infrastructure.Repositories
 
         public async Task<double> GetIncomeForMonthAsync(int month, CancellationToken cancellationToken = default)
         {
+            if (month == 0)
+            {
+                return await DbSet.Where(x =>
+                x.Status != OrderStatus.Returned
+                && x.Status != OrderStatus.Refunded)
+                .SumAsync(x => x.Total, cancellationToken);
+            }
             return await DbSet.Where(x => x.CreatedAt.Month == month
                 && x.CreatedAt.Year == DateTime.Now.Year
                 && x.Status != OrderStatus.Returned

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using HappyPaws.Application.Interfaces;
-using HappyPaws.Core.Dtos;
+using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;

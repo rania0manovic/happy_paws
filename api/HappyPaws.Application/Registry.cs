@@ -2,7 +2,6 @@
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Application.Services;
 using HappyPaws.Application.Validators;
-using HappyPaws.Core.Dtos;
 using HappyPaws.Core.Dtos.Address;
 using HappyPaws.Core.Dtos.Appointment;
 using HappyPaws.Core.Dtos.Brand;
@@ -11,6 +10,7 @@ using HappyPaws.Core.Dtos.EmailVerificationRequest;
 using HappyPaws.Core.Dtos.Image;
 using HappyPaws.Core.Dtos.Notification;
 using HappyPaws.Core.Dtos.Order;
+using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.Dtos.Pet;
 using HappyPaws.Core.Dtos.PetAllergy;
 using HappyPaws.Core.Dtos.PetBreed;
@@ -22,6 +22,7 @@ using HappyPaws.Core.Dtos.ProductCategorySubcategory;
 using HappyPaws.Core.Dtos.ProductImage;
 using HappyPaws.Core.Dtos.ProductReview;
 using HappyPaws.Core.Dtos.ProductSubcategory;
+using HappyPaws.Core.Dtos.SystemConfig;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Dtos.UserCart;
 using HappyPaws.Core.Dtos.UserFavourite;
@@ -56,6 +57,7 @@ namespace HappyPaws.Application
             services.AddScoped<IProductCategorySubcategoriesService, ProductCategorySubcategoriesService>();
             services.AddScoped<INotificationsService, NotificationsService>();
             services.AddScoped<IDonationsService, DonationsService>();
+            services.AddScoped<ISystemConfigsService, SystemConfigsService>();
         }
 
         public static void AddValidators(this IServiceCollection services)
@@ -83,6 +85,7 @@ namespace HappyPaws.Application
             services.AddScoped<IValidator<ProductCategorySubcategoryDto>, ProductCategorySubcategoryValidator>();
             services.AddScoped<IValidator<NotificationDto>, NotificationValidator>();
             services.AddScoped<IValidator<DonationDto>, DonationValidator>();
+            services.AddScoped<IValidator<SystemConfigDto>, SystemConfigValidator>();
         }
     }
 }

@@ -109,8 +109,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -284,8 +282,7 @@ Column _cheritySection(BuildContext context) {
             ),
             PrimaryButton(
               onPressed: () {
-                 AutoTabsRouter.of(context).setActiveIndex(2);
-                AutoTabsRouter.of(context).navigate(DonateRoute());
+                AutoTabsRouter.of(context).navigate(const DonateRoute());
               },
               label: " Donate now ➜ ",
               fontSize: 18,
@@ -472,4 +469,3 @@ class _CentralPhotoState extends State<CentralPhoto> {
     );
   }
 }
-

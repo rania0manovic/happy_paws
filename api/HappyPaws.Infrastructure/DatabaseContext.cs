@@ -1,11 +1,13 @@
 ﻿using HappyPaws.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 
 namespace HappyPaws.Infrastructure
 {
     public partial class DatabaseContext : DbContext
     {
+
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Image> Images { get; set; }
@@ -29,6 +31,7 @@ namespace HappyPaws.Infrastructure
         public DbSet<ProductCategorySubcategory> ProductCategorySubcategories { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Donation> Donations { get; set; }
+        public DbSet<SystemConfig> SystemConfigs { get; set; }
 
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
@@ -39,6 +42,7 @@ namespace HappyPaws.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
             ApplyConfigurations(modelBuilder);
+            SeedData(modelBuilder);
         }
 
     }

@@ -1,4 +1,4 @@
-﻿using HappyPaws.Core.Dtos;
+﻿using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.SearchObjects;
 
 namespace HappyPaws.Application.Interfaces

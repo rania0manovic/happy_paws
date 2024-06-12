@@ -14,6 +14,6 @@ namespace HappyPaws.Core.Enums
         Groomer,
         PharmacyStaff,
         MaintenanceStaff,
-        RetailStaf
+        RetailStaff
     }
 }

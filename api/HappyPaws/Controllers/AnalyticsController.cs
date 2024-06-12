@@ -17,13 +17,15 @@ namespace HappyPaws.Api.Controllers
         protected readonly IUsersService _usersService;
         protected readonly IPetsService _petsService;
         protected readonly IOrdersService _ordersService;
+        protected readonly IDonationsService _donationsService;
         private readonly IMemoryCache _memoryCache;
-        public AnalyticsController(ILogger<BaseController> logger, IUsersService usersService, IPetsService petsService, IOrdersService ordersService, IMemoryCache memoryCache) : base(logger)
+        public AnalyticsController(ILogger<BaseController> logger, IUsersService usersService, IPetsService petsService, IOrdersService ordersService, IMemoryCache memoryCache, IDonationsService donationsService) : base(logger)
         {
             _usersService = usersService;
             _petsService = petsService;
             _ordersService = ordersService;
             _memoryCache = memoryCache;
+            _donationsService = donationsService;
         }
         [HttpGet]
         public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken = default)
@@ -38,12 +40,16 @@ namespace HappyPaws.Api.Controllers
                 var employees = await _usersService.GetCountByRoleAsync(Role.Employee, cancellationToken);
                 var patients = await _petsService.GetCountAsync(cancellationToken);
                 var monthlyIncome = await _ordersService.GetIncomeForMonthAsync(DateTime.Now.Month, cancellationToken);
+                var totalIncome = await _ordersService.GetIncomeForMonthAsync(0, cancellationToken);
+                var monthlyDonations = await _donationsService.GetAmountForMonthAsync(DateTime.Now.Month, cancellationToken);
                 var response = new AnalyticsDto()
                 {
                     AppUsersCount = appUsers,
                     EmployeesCount = employees,
                     PatientsCount = patients,
-                    MonthlyIncome = monthlyIncome
+                    MonthlyIncome = monthlyIncome,
+                    MonthlyDonations = monthlyDonations,
+                    IncomeTotal = totalIncome,
                 };
                 _memoryCache.Set("analytics", response, TimeSpan.FromDays(1));
                 return Ok(response);

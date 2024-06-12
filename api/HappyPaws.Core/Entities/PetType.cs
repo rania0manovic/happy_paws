@@ -10,6 +10,6 @@ namespace HappyPaws.Core.Entities
     {
         public required string Name { get; set; }
 
-        public required ICollection<PetBreed> PetBreeds { get; set; }
+        public  ICollection<PetBreed>?  PetBreeds { get; set; }
     }
 }

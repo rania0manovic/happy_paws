@@ -19,5 +19,10 @@ namespace HappyPaws.Application.Services
         public DonationsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<DonationDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
+
+        public async Task<double> GetAmountForMonthAsync(int month, CancellationToken cancellationToken = default)
+        {
+            return await CurrentRepository.GetAmountForMonthAsync(month, cancellationToken);
+        }
     }
 }

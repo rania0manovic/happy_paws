@@ -31,6 +31,7 @@ namespace HappyPaws.Infrastructure
             services.AddScoped<IProductCategorySubcategoriesRepository, ProductCategorySubcategoriesRepository>();
             services.AddScoped<INotificationsRepository, NotificationsRepository>();
             services.AddScoped<IDonationsRepository, DonationsRepository>();
+            services.AddScoped<ISystemConfigsRepository, SystemConfigsRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

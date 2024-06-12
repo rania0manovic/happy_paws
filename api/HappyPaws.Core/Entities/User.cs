@@ -19,20 +19,20 @@ namespace HappyPaws.Core.Entities
 
         public Image? ProfilePhoto { get; set; }
         public int? ProfilePhotoId { get; set; }
-        public  string? MyPawNumber { get; set; }
+        public string? MyPawNumber { get; set; }
         public string? ConnectionId { get; set; }
         public bool IsVerified { get; set; }
         public EmployeePosition? EmployeePosition { get; set; }
 
 
-        public required ICollection<Order> Orders { get; set; }
-        public required ICollection<Appointment> Appointments { get; set; }
-        public required ICollection<UserAddress> UserAddresses { get; set; }
-        public required ICollection<Pet> Pets { get; set; }
-        public required ICollection<UserCart> UserCartItems { get; set; }
-        public required ICollection<UserFavourite> UserFavouriteItems { get; set; }
-        public required ICollection<Notification> Notifications { get; set; }
-        public required ICollection<Donation> Donations { get; set; }
+        public ICollection<Order>? Orders { get; set; }
+        public ICollection<Appointment>? Appointments { get; set; }
+        public ICollection<UserAddress>? UserAddresses { get; set; }
+        public ICollection<Pet>? Pets { get; set; }
+        public ICollection<UserCart>? UserCartItems { get; set; }
+        public ICollection<UserFavourite>? UserFavouriteItems { get; set; }
+        public ICollection<Notification>? Notifications { get; set; }
+        public ICollection<Donation>? Donations { get; set; }
 
 
     }

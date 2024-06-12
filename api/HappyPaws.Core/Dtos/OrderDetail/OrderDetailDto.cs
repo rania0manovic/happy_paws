@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HappyPaws.Core.Dtos
+namespace HappyPaws.Core.Dtos.OrderDetail
 {
     public class OrderDetailDto : BaseDto
     {

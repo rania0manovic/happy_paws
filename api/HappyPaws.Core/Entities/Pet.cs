@@ -14,18 +14,18 @@ namespace HappyPaws.Core.Entities
         public double Weight { get; set; }
         public Gender Gender { get; set; }
 
-        public required User Owner { get; set; }
+        public User Owner { get; set; } = null!;
         public int OwnerId { get; set; }
 
-        public required PetBreed PetBreed { get; set; }
+        public PetBreed PetBreed { get; set; } = null!;
         public int PetBreedId { get; set; }
 
         public Image? Photo { get; set; }
         public int? PhotoId { get; set; }
 
-        public required ICollection<Appointment> Appointments { get; set; }
-        public required ICollection<PetAllergy> PetAllergies { get; set; }
-        public required ICollection<PetMedication> PetMedications { get; set; }
+        public  ICollection<Appointment>? Appointments { get; set; }
+        public  ICollection<PetAllergy>? PetAllergies { get; set; }
+        public  ICollection<PetMedication>? PetMedications { get; set; }
 
     }
 }

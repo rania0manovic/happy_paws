@@ -10,5 +10,6 @@ namespace HappyPaws.Application.Interfaces
 {
     public interface IDonationsService : IBaseService<int, DonationDto, DonationSearchObject>
     {
+        Task<double> GetAmountForMonthAsync(int month, CancellationToken cancellationToken = default);
     }
 }

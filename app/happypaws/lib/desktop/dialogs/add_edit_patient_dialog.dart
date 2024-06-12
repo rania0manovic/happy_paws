@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
@@ -111,16 +112,48 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
     }
   }
 
+  Future<String> uploadImage(File imageFile) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    Reference storageReference =
+        FirebaseStorage.instance.ref().child('images/$fileName');
+    UploadTask uploadTask = storageReference.putFile(imageFile);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String downloadURL = await taskSnapshot.ref.getDownloadURL();
+    return downloadURL;
+  }
+
   Future<void> _pickImage() async {
     final XFile? selectedImage =
         await _imagePicker.pickImage(source: ImageSource.gallery);
 
-    if (selectedImage != null) {
+    // if (selectedImage != null) {
+    //   setState(() {
+    //     _selectedImage = File(selectedImage.path);
+    //     user["photoFile"] = selectedImage.path;
+    //   });
+    // }
+     if (selectedImage != null) {
+    File imageFile = File(selectedImage.path);
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child("images/$fileName");
+      UploadTask uploadTask = ref.putFile(imageFile);
+
+      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+
+      String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
       setState(() {
-        _selectedImage = File(selectedImage.path);
-        data["photoFile"] = selectedImage.path;
+        _selectedImage = imageFile;
       });
+
+      print("Image uploaded successfully. URL: $downloadURL");
+    } catch (e) {
+      print("Failed to upload image: $e");
     }
+     }
   }
 
   Future<void> addPatient() async {
@@ -273,6 +306,7 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
                         onPressed: null,
                         color: AppColors.gray,
                       ),
+                      //  Image.network("https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718234082914?alt=media&token=6e302f75-090a-4aa2-a9a5-be23da488e12"),
                       Text(
                         widget.data != null
                             ? "Edit patient info"

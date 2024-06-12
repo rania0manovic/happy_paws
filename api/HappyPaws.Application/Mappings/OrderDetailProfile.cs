@@ -1,4 +1,4 @@
-﻿using HappyPaws.Core.Dtos;
+﻿using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.Entities;
 using System;
 using System.Collections.Generic;

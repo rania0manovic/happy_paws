@@ -8,6 +8,7 @@ namespace HappyPaws.Infrastructure
     {
         public override int SaveChanges()
         {
+
             ModifyTimestamps();
 
             return base.SaveChanges();
@@ -15,6 +16,7 @@ namespace HappyPaws.Infrastructure
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+
             ModifyTimestamps();
 
             return base.SaveChangesAsync(cancellationToken);

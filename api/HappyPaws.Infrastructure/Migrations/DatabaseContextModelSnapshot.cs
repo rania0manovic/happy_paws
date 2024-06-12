@@ -103,74 +103,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("Brands");
                 });
 
-            modelBuilder.Entity("HappyPaws.Core.Entities.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("HappyPaws.Core.Entities.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
-                });
-
             modelBuilder.Entity("HappyPaws.Core.Entities.Donation", b =>
                 {
                     b.Property<int>("Id")
@@ -842,6 +774,31 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.ToTable("ProductSubcategories");
                 });
 
+            modelBuilder.Entity("HappyPaws.Core.Entities.SystemConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("DonationsGoal")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemConfigs");
+                });
+
             modelBuilder.Entity("HappyPaws.Core.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -948,9 +905,6 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Country")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -993,8 +947,6 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CityId");
 
                     b.HasIndex("UserId");
 
@@ -1090,17 +1042,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Pet");
-                });
-
-            modelBuilder.Entity("HappyPaws.Core.Entities.City", b =>
-                {
-                    b.HasOne("HappyPaws.Core.Entities.Country", "Country")
-                        .WithMany("Cities")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Donation", b =>
@@ -1332,10 +1273,6 @@ namespace HappyPaws.Infrastructure.Migrations
 
             modelBuilder.Entity("HappyPaws.Core.Entities.UserAddress", b =>
                 {
-                    b.HasOne("HappyPaws.Core.Entities.City", null)
-                        .WithMany("Addresses")
-                        .HasForeignKey("CityId");
-
                     b.HasOne("HappyPaws.Core.Entities.User", "User")
                         .WithMany("UserAddresses")
                         .HasForeignKey("UserId")
@@ -1386,16 +1323,6 @@ namespace HappyPaws.Infrastructure.Migrations
             modelBuilder.Entity("HappyPaws.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("HappyPaws.Core.Entities.City", b =>
-                {
-                    b.Navigation("Addresses");
-                });
-
-            modelBuilder.Entity("HappyPaws.Core.Entities.Country", b =>
-                {
-                    b.Navigation("Cities");
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Image", b =>

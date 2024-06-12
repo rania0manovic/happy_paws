@@ -4,6 +4,7 @@ using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application;
 using HappyPaws.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,8 +45,8 @@ app.MapHub<MessageHub>("/messageHub");
 using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    //dataContext.Database.EnsureCreated();
-    dataContext.Database.Migrate();
+    dataContext.Database.EnsureCreated();
+    //dataContext.Database.Migrate();
 }
 
 app.Run();

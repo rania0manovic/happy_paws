@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using HappyPaws.Core.Dtos;
+using HappyPaws.Core.Dtos.OrderDetail;
 using System;
 using System.Collections.Generic;
 using System.Linq;

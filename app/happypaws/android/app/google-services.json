@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "461071135746",
+    "project_id": "happy-paws-fb",
+    "storage_bucket": "happy-paws-fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:461071135746:android:795613c5f351e1eb47231b",
+        "android_client_info": {
+          "package_name": "com.example.happypaws"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYh2jKducVqzi3vKcRsyF64gPFrOS9eh4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

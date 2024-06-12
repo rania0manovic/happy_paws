@@ -7,13 +7,18 @@ import 'package:happypaws/common/utilities/platform_info.dart';
 import 'package:happypaws/routes/app_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'mobile/app_mobile.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'desktop/app_desktop.dart';
+import 'firebase_options.dart';
 
 GetIt getIt = GetIt.instance;
 PlatformInfo platformInfo = PlatformInfo();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+   await Firebase.initializeApp(
+     options: DefaultFirebaseOptions.currentPlatform,
+   );
   await LocalNotificationService().setup();
    await Permission.notification.isDenied.then((value) {
         if (value) {

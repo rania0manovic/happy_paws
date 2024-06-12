@@ -1,5 +1,5 @@
 ﻿using HappyPaws.Application.Interfaces;
-using HappyPaws.Core.Dtos;
+using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
