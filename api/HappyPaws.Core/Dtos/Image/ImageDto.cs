@@ -8,7 +8,6 @@ namespace HappyPaws.Core.Dtos.Image
 {
     public class ImageDto : BaseDto
     {
-        public byte[] Data { get; set; } = null!;
-        public string ContentType { get; set; } = null!;
+        public string DownloadURL { get; set; } = null!;
     }
 }

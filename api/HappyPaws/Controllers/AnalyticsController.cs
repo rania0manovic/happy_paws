@@ -1,11 +1,14 @@
-﻿using HappyPaws.Application.Interfaces;
+﻿using HappyPaws.Api.HostedServices.Kafka;
+using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Helpers;
+using HappyPaws.Core.Dtos.Image;
 using HappyPaws.Core.Dtos.ProductCategory;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;
 using HappyPaws.Core.Models;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -27,12 +30,13 @@ namespace HappyPaws.Api.Controllers
             _memoryCache = memoryCache;
             _donationsService = donationsService;
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetAnalytics(bool refresh=false, CancellationToken cancellationToken = default)
         {
             try
             {
-                if (_memoryCache.TryGetValue<AnalyticsDto>("analytics", out var analytics))
+                if (!refresh && _memoryCache.TryGetValue<AnalyticsDto>("analytics", out var analytics))
                 {
                     return Ok(analytics);
                 }
@@ -61,17 +65,13 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetCountByPetType")]
         public async Task<IActionResult> GetCountByPetType(CancellationToken cancellationToken = default)
         {
             try
             {
-                if (_memoryCache.TryGetValue<List<PetTypeCountDto>>("countByPetType", out var countByPetType))
-                {
-                    return Ok(countByPetType);
-                }
                 var response = await _petsService.GetCountByPetTypeAsync(cancellationToken);
-                _memoryCache.Set("countByPetType", response, TimeSpan.FromDays(1));
                 return Ok(response);
             }
             catch (Exception e)

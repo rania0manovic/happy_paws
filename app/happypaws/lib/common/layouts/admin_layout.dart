@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -87,12 +86,9 @@ class _AdminLayoutState extends State<AdminLayout> {
                                                     height: 30,
                                                     child: FittedBox(
                                                       fit: BoxFit.cover,
-                                                      child: Image.memory(
-                                                        base64.decode(
-                                                          profilePhoto!['data']
-                                                              .toString(),
-                                                        ),
-                                                      ),
+                                                      child: Image.network(
+                                                          profilePhoto![
+                                                              'downloadURL']),
                                                     ),
                                                   )
                                                 : const Image(
@@ -144,11 +140,11 @@ class _AdminLayoutState extends State<AdminLayout> {
                                                                     .all(8),
                                                             content:
                                                                 ChangePasswordMenu(
-                                                                  onCanceled: () {
-                                                                     Navigator.of(
+                                                              onCanceled: () {
+                                                                Navigator.of(
                                                                         context)
                                                                     .pop();
-                                                                  },
+                                                              },
                                                               setState:
                                                                   setState,
                                                               onClosed: () {
@@ -213,38 +209,63 @@ class _AdminLayoutState extends State<AdminLayout> {
             child: barTile(0, context, "Dashboard",
                 "assets/icons/dashboard.svg", const DashboardRoute()),
           ),
-          ExpansionTile(
-            iconColor: AppColors.primary,
-            collapsedIconColor: Colors.white,
-            leading: SvgPicture.asset(
-              "assets/icons/storefront.svg",
-              color: Colors.white,
-              width: 20,
+          Visibility(
+            visible: user!['Role'] == 'Admin' ||
+                user!['EmployeePosition'] == 'PharmacyStaff' ||
+                user!['EmployeePosition'] == 'RetailStaff',
+            child: ExpansionTile(
+              iconColor: AppColors.primary,
+              collapsedIconColor: Colors.white,
+              leading: SvgPicture.asset(
+                "assets/icons/storefront.svg",
+                color: Colors.white,
+                width: 20,
+              ),
+              title: const Text(
+                "Shop",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+              children: [
+                Visibility(
+                    visible: user!['Role'] == 'Admin' ||
+                        user!['EmployeePosition'] == 'PharmacyStaff',
+                    child:
+                        barTile(1, context, "Orders", "", const OrdersRoute())),
+                Visibility(
+                    visible: user!['Role'] == 'Admin' ||
+                        user!['EmployeePosition'] == 'RetailStaff',
+                    child: barTile(
+                        2, context, "Inventory", "", const InventoryRoute())),
+              ],
             ),
-            title: const Text(
-              "Shop",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
-            ),
-            children: [
-              barTile(1, context, "Orders", "",
-                  const OrdersRoute()),
-              barTile(2, context, "Inventory", "",
-                  const InventoryRoute()),
-            ],
           ),
-          barTile(3, context, "Appointments", "assets/icons/calender.svg",
-              const AppointmentsRoute()),
-          barTile(5, context, "Patients", "assets/icons/paw.svg",
-               PatientsRoute()),
+          Visibility(
+            visible: user!['Role'] == 'Admin' ||
+                user!['EmployeePosition'] == 'Veterinarian' ||
+                user!['EmployeePosition'] == 'VeterinarianTechnician' ||
+                user!['EmployeePosition'] == 'VeterinarianAssistant' ||
+                user!['EmployeePosition'] == 'Groomer',
+            child: barTile(3, context, "Appointments",
+                "assets/icons/calender.svg", const AppointmentsRoute()),
+          ),
+          Visibility(
+            visible: user!['Role'] == 'Admin' ||
+                user!['EmployeePosition'] == 'Veterinarian' ||
+                user!['EmployeePosition'] == 'VeterinarianTechnician' ||
+                user!['EmployeePosition'] == 'VeterinarianAssistant' ||
+                user!['EmployeePosition'] == 'Groomer' ||
+                user!['EmployeePosition'] == 'PharmacyStaff',
+            child: barTile(4, context, "Patients", "assets/icons/paw.svg",
+                PatientsRoute()),
+          ),
           Visibility(
             visible: user!['Role'] == 'Admin' ? true : false,
-            child: barTile(4, context, "Employees",
+            child: barTile(5, context, "Employees",
                 "assets/icons/employees.svg", const EmployeesRoute()),
           ),
-          
           Visibility(
             visible: user!['Role'] == 'Admin' ? true : false,
             child: ExpansionTile(
@@ -268,8 +289,7 @@ class _AdminLayoutState extends State<AdminLayout> {
                 barTile(8, context, "Product subcategories", "",
                     const SubcategoriesRoute()),
                 barTile(9, context, "Brands", "", const BrandsRoute()),
-                barTile(10, context, "Products", "",
-                    const ProductsRoute()),
+                barTile(10, context, "Products", "", const ProductsRoute()),
                 barTile(11, context, "Pet types", "", const PetTypesRoute()),
                 barTile(12, context, "Pet breeds", "", const PetBreedsRoute()),
               ],
@@ -291,12 +311,16 @@ class _AdminLayoutState extends State<AdminLayout> {
       padding: const EdgeInsets.only(top: 5, bottom: 5),
       child: ListTile(
         titleAlignment: ListTileTitleAlignment.center,
-        leading: iconUrl=="" ? SizedBox(width: 10,): SvgPicture.asset(
-          iconUrl,
-          color: const Color.fromARGB(208, 217, 217, 217),
-          height: 20,
-          width: 20,
-        ),
+        leading: iconUrl == ""
+            ? const SizedBox(
+                width: 10,
+              )
+            : SvgPicture.asset(
+                iconUrl,
+                color: const Color.fromARGB(208, 217, 217, 217),
+                height: 20,
+                width: 20,
+              ),
         title: Text(name,
             style: const TextStyle(
                 color: Colors.white,

@@ -10,5 +10,6 @@ namespace HappyPaws.Common.Services.EnumsService
     {
         Task<IEnumerable<KeyValuePair<int, string>>> GetEmployeePositionsAsync(CancellationToken cancellationToken=default);
         Task<IEnumerable<KeyValuePair<int, string>>> GetOrderStatusesAsync(CancellationToken cancellationToken=default);
+        Task<IEnumerable<KeyValuePair<int, string>>> GetNewsletterTopics(CancellationToken cancellationToken=default);
     }
 }

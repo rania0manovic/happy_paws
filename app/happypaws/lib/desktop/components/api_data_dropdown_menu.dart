@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 
@@ -23,7 +22,7 @@ class ApiDataDropdownMenu extends StatefulWidget {
       : super(key: key);
 
   @override
-  _ApiDataDropdownMenuState createState() => _ApiDataDropdownMenuState();
+  State<ApiDataDropdownMenu> createState() => _ApiDataDropdownMenuState();
 }
 
 class _ApiDataDropdownMenuState extends State<ApiDataDropdownMenu> {
@@ -51,12 +50,11 @@ class _ApiDataDropdownMenuState extends State<ApiDataDropdownMenu> {
             ],
           ),
         SizedBox(
-          height: isError ? 65 : 40,
           width: double.infinity,
           child: DropdownButtonFormField<String>(
             decoration: const InputDecoration(
               errorStyle: TextStyle(color: AppColors.error, fontSize: 14),
-              fillColor: Colors.white38,
+              fillColor: AppColors.fill,
               filled: true,
               border: UnderlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10))),

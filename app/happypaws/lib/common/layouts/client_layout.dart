@@ -7,6 +7,7 @@ import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
 class ClientLayout extends StatefulWidget {
@@ -39,6 +40,14 @@ class _ClientLayoutState extends State<ClientLayout>
     _animationController.dispose();
     super.dispose();
   }
+void launchDialer(String phoneNumber) async {
+  final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+  if (await canLaunch(telUri.toString())) {
+    await launch(telUri.toString());
+  } else {
+    throw 'Could not launch $telUri';
+  }
+}
 
   Future<void> search() async {
     if (searchInput == "") {
@@ -151,6 +160,10 @@ class _ClientLayoutState extends State<ClientLayout>
                     searchInput = value;
                   });
                 },
+                textInputAction: TextInputAction.search,
+                onSubmitted: (value) {
+                  search();
+                },
                 decoration: InputDecoration(
                     labelText: "Search...",
                     labelStyle: TextStyle(
@@ -231,7 +244,7 @@ class _ClientLayoutState extends State<ClientLayout>
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
                                   color:
-                                      AppColors.error, // Change color as needed
+                                      AppColors.error, 
                                 ),
                               ),
                             )
@@ -247,22 +260,28 @@ class _ClientLayoutState extends State<ClientLayout>
           visible: tabsRouter.activeIndex == 1,
           child: Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: Row(
-              children: [
-                const Text(
-                  "Emergency call",
-                  style: TextStyle(
-                      color: Color(0xffBA1A36),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600),
-                ),
-                SvgPicture.asset(
-                  "assets/icons/phone.svg",
-                  height: 25,
-                  width: 25,
-                  color: const Color(0xffBA1A36),
-                )
-              ],
+            child: GestureDetector(
+              onTap: () {
+                // demo phone number
+                launchDialer("+38761 111 222");
+              },
+              child: Row(
+                children: [
+                  const Text(
+                    "Emergency call",
+                    style: TextStyle(
+                        color: Color(0xffBA1A36),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SvgPicture.asset(
+                    "assets/icons/phone.svg",
+                    height: 25,
+                    width: 25,
+                    color: const Color(0xffBA1A36),
+                  )
+                ],
+              ),
             ),
           ),
         ),

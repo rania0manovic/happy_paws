@@ -12,7 +12,9 @@ namespace HappyPaws.Application.Validators
     {
         public OrderValidator()
         {
-
+            RuleFor(x => x.Total).NotNull();
+            RuleFor(x => x.PaymentMethod).NotNull();
+            RuleFor(x => x.UserId).NotNull();
         }
     }
 }

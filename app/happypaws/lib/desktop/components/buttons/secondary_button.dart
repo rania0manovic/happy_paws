@@ -8,18 +8,18 @@ class SecondaryButton extends StatelessWidget {
   final double? width;
   final double? height;
 
-
   const SecondaryButton(
       {super.key,
       required this.onPressed,
       required this.icon,
       required this.label,
-      this.width, this.height});
+      this.width,
+      this.height});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height ,
+      height: height,
       child: ElevatedButton.icon(
         onPressed: onPressed,
         icon: Icon(
@@ -28,7 +28,8 @@ class SecondaryButton extends StatelessWidget {
         ),
         style: ButtonStyle(
           alignment: Alignment.center,
-          padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.all(10)),
+          padding:
+              MaterialStateProperty.all<EdgeInsets>(const EdgeInsets.all(10)),
           elevation: MaterialStateProperty.all(0),
           side: MaterialStateBorderSide.resolveWith(
               (states) => const BorderSide(color: AppColors.primary)),

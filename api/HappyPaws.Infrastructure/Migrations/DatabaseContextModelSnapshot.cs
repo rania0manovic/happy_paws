@@ -72,6 +72,55 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PetId");
 
                     b.ToTable("Appointments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 4, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsCancelled = false,
+                            IsDeleted = false,
+                            Note = "Eats less and sleeps more",
+                            PetId = 1,
+                            Reason = "Behavioral changes"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 6, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsCancelled = false,
+                            IsDeleted = false,
+                            PetId = 2,
+                            Reason = "Regular health check-up"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 10, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsCancelled = false,
+                            IsDeleted = false,
+                            Note = "Itching and hair loss",
+                            PetId = 5,
+                            Reason = "Skin issues"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 12, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsCancelled = false,
+                            IsDeleted = false,
+                            PetId = 6,
+                            Reason = "Pregnancy"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 14, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsCancelled = false,
+                            IsDeleted = false,
+                            PetId = 13,
+                            Reason = "Vaccination and check-up"
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Brand", b =>
@@ -101,6 +150,169 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Brands");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Brit"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Blue Buffalo"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Hill's Science Diet"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Purina"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Royal Canin"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Iams"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Merrick"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Taste of the Wild"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Wellness"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Acana"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Orijen"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Natural Balance"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Earthborn Holistic"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Diamond Naturals"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Zignature"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Fromm"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Canidae"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Nutro"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Instinct"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Science Diet"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Petcurean"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Tetra"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "GLEE"
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Donation", b =>
@@ -175,17 +387,13 @@ namespace HappyPaws.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("Data")
+                    b.Property<string>("DownloadURL")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -198,6 +406,554 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718571880926?alt=media&token=9452f92a-f6d4-4378-a6be-ad245c627a44",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718571890300?alt=media&token=defe1580-5d1b-4606-8e7e-a527e25b5cc3",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718571904326?alt=media&token=c214401f-1e66-4b09-b045-551a24e26a21",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718571914808?alt=media&token=f218dd55-8525-4ec0-a7da-829b43979610",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572194372?alt=media&token=72cfbf3c-269b-47b3-8341-a57e33a95e81",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572203797?alt=media&token=aabc3cb5-2b8f-4f0c-85d7-04d721af205c",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572229582?alt=media&token=e77740e8-eadf-4e89-b41e-36609caba757",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572463285?alt=media&token=75702f07-f74d-4d2e-815d-5f48ab5491f4",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572471391?alt=media&token=2eb29f60-7a0a-4a94-a4ea-e0b9203bd67e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572479874?alt=media&token=5555d732-76e7-47af-a75c-9ef60f0d603c",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572488286?alt=media&token=42c52ab6-a70e-4c45-80f1-6a45bb27b419",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572501204?alt=media&token=2f342a96-e8a7-48a3-8ccc-129e2c1affac",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572509258?alt=media&token=23217630-22d3-4401-8f1c-1d347f084c56",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572753515?alt=media&token=621d4b83-c4db-48ad-980f-0fa2706297a8",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572519196?alt=media&token=ed519c4f-a764-4816-8ec4-450ae6b2b420",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572531782?alt=media&token=86c37db9-6bd3-4cdf-9642-6af3f94204fa",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572543532?alt=media&token=a0d40c26-ec1f-48fc-9d51-ad9ff92bc6be",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572552307?alt=media&token=d3aa85c9-c704-44f4-b04e-c97587fe2151",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572559793?alt=media&token=8fed84e5-c237-4830-b2d0-08a1a85d8def",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718572567952?alt=media&token=d4f4c6cd-20fe-4b00-9621-66690039bd74",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573577409?alt=media&token=4667380c-c2af-4f8a-9848-17eabef5be5e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573675523?alt=media&token=d4f313ec-7ba2-4a88-9995-4886fec87777",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573705237?alt=media&token=beeff100-e5a4-4257-9f1b-151b79f01770",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573727398?alt=media&token=ec11af2d-8146-4599-bf14-5001cb694faa",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573748174?alt=media&token=8435ac5a-6414-44e4-a93b-6ca8530f62c8",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573772707?alt=media&token=39b108f1-c9c0-484f-a3d2-a21e4ef73ee4",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573788405?alt=media&token=b54020b0-1307-4677-ac69-2a811274681e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573816596?alt=media&token=2824be7a-7f93-4ec5-b3e7-d9ae0d09abcb",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573834055?alt=media&token=a826219d-f27f-4ba2-b0c7-14633c4d27c0",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573851364?alt=media&token=9f2dfeec-5f64-4cf9-ade1-da4ee17505a1",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718573883211?alt=media&token=71dac2f2-ea73-469f-8870-715b2f4a6a7c",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623454876?alt=media&token=b7220a38-2813-45dc-b482-3a9195c61d4e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623476263?alt=media&token=01bd0df0-293f-40b2-964f-f4b3c6d277d1",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623498777?alt=media&token=2eb52d97-b653-4431-9a68-1e24d9d0cb49",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623517796?alt=media&token=117bbcdb-0eff-4687-a4f3-1b7aab54a522",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623548126?alt=media&token=f9938823-a187-4e57-9529-f2ac7afb7821",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623567565?alt=media&token=a27c2f7c-3bbb-46e3-940d-cc9684e70fbc",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623591139?alt=media&token=34f0e077-d64e-4d45-9d2c-a7fa15b6d27d",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623617605?alt=media&token=cfaafb23-7aee-4173-83ce-292f0bf4a8a1",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623645714?alt=media&token=5eda632e-77bd-47fb-bb22-e7dffac3a90a",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623681116?alt=media&token=86687a37-61da-4172-aaec-8484f7724913",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718623704058?alt=media&token=1f20a15b-05a2-4c0a-840f-53bd0781719e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 68,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188175265?alt=media&token=1d28bf60-d5e1-46b5-bb5b-dd7ba84a7cd3",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 69,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188226696?alt=media&token=ac3295bc-095a-4b24-ba21-60203c511991",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 70,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188271275?alt=media&token=4ea322e7-a0d8-494f-a419-9168f1720cbf",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 71,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188335655?alt=media&token=6d94b773-625c-41a0-80dc-bb75042f9a78",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 72,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188349717?alt=media&token=c836de92-44e1-4b82-8048-c91fd9f7ff06",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 73,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188375367?alt=media&token=aa8385fc-dfb7-4e33-8e05-bdbd7942eed8",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 74,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188411179?alt=media&token=0e02d3fb-b2b0-4242-a440-aab3b07c9471",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 75,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188475589?alt=media&token=cadfb3d8-4163-4a89-ba89-1ab2629b644a",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 76,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188488399?alt=media&token=5b81af29-2404-4d00-a7f8-0fffafbdaa33",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 77,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188509030?alt=media&token=dc0ec218-fe19-4228-969e-97fa07cf0052",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 78,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188535155?alt=media&token=aa57abdf-9abc-4844-a17f-0d8659f4c49a",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 79,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188586588?alt=media&token=7e18c575-283a-4d77-b12b-04dbf9b1e5d9",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 80,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720188600838?alt=media&token=b26949fa-ea16-4160-a819-06242ef076ac",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718574227806?alt=media&token=48f261b8-b34c-483c-86ad-35bb92267c3e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718574247502?alt=media&token=8f3ea19a-1300-4be1-bf8f-bb285525e23c",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718574275926?alt=media&token=b548245c-e59e-47c5-b9ff-35a6b285266e",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718574320317?alt=media&token=4f9122af-ac3d-46be-9bc6-1a629bd649c2",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718574343800?alt=media&token=da6bc504-ac55-4ae9-9552-26c1525304f3",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575174572?alt=media&token=b054a3f5-2b70-48ed-922e-6e8efe356a0a",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575192827?alt=media&token=e0753162-98e5-455d-8132-32c46fbdec4c",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575207880?alt=media&token=367aaa4c-9b53-4796-9517-5b37f9bbab79",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575231513?alt=media&token=ef0460cd-a83f-4d5a-9bc1-cdf7f4b634e0",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575295800?alt=media&token=25cd953d-b3f4-449f-981c-d1e7f0199a74",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718575323931?alt=media&token=3e12eed2-edb9-4521-a9b0-ea61e183dcd8",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183528420?alt=media&token=e745de6d-808b-4378-94da-1bcb4e618ca5",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183584963?alt=media&token=496474ba-fc89-40dd-b05a-081370c2947a",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183651216?alt=media&token=76d4c8df-5bde-4490-9bf1-4b740c96dfa8",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183686317?alt=media&token=31f4391a-7c1a-44d6-a45e-4ff3048d40ea",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183715469?alt=media&token=4393223e-f1c6-4521-861e-84150496698d",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183746025?alt=media&token=6fd025f0-a18e-4d5c-8f18-2842446e9caf",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 62,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183793274?alt=media&token=8dcf22a2-b5ef-4152-8c4e-73a0333f8770",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 63,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183808286?alt=media&token=4bf2e052-7c52-413b-9b5f-918276c81ca0",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 64,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183835895?alt=media&token=7ddeb36c-6a6b-4b2b-8099-02362dfe98ff",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 65,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183874113?alt=media&token=8c48fc5d-a3fe-44f7-b182-6ec76624e231",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 66,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183926627?alt=media&token=50ea6235-4853-4516-9f2f-78ba8037d87f",
+                            IsDeleted = false
+                        },
+                        new
+                        {
+                            Id = 67,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DownloadURL = "https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1720183945529?alt=media&token=ab38060d-2012-4058-adbb-498f080d2cec",
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Notification", b =>
@@ -261,9 +1017,6 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("PayId")
                         .HasColumnType("nvarchar(max)");
 
@@ -294,6 +1047,58 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 483641,
+                            CreatedAt = new DateTime(2024, 6, 26, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            PaymentMethod = 0,
+                            Status = 5,
+                            Total = 20.989999999999998,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 483642,
+                            CreatedAt = new DateTime(2024, 6, 28, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            PaymentMethod = 0,
+                            Status = 5,
+                            Total = 23.940000000000001,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 483643,
+                            CreatedAt = new DateTime(2024, 7, 5, 10, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            PaymentMethod = 0,
+                            Status = 0,
+                            Total = 51.920000000000002,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 483644,
+                            CreatedAt = new DateTime(2024, 7, 5, 15, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            PaymentMethod = 0,
+                            Status = 0,
+                            Total = 39.979999999999997,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 483645,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            PaymentMethod = 0,
+                            Status = 0,
+                            Total = 36.950000000000003,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.OrderDetail", b =>
@@ -334,6 +1139,118 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderDetails");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483641,
+                            ProductId = 1,
+                            Quantity = 1,
+                            UnitPrice = 10.99
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483641,
+                            ProductId = 2,
+                            Quantity = 1,
+                            UnitPrice = 10.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483642,
+                            ProductId = 14,
+                            Quantity = 2,
+                            UnitPrice = 3.9900000000000002
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483642,
+                            ProductId = 15,
+                            Quantity = 4,
+                            UnitPrice = 3.9900000000000002
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483643,
+                            ProductId = 26,
+                            Quantity = 4,
+                            UnitPrice = 3.4900000000000002
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483643,
+                            ProductId = 31,
+                            Quantity = 4,
+                            UnitPrice = 3.4900000000000002
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483643,
+                            ProductId = 3,
+                            Quantity = 2,
+                            UnitPrice = 12.0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483644,
+                            ProductId = 21,
+                            Quantity = 2,
+                            UnitPrice = 19.989999999999998
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483645,
+                            ProductId = 5,
+                            Quantity = 1,
+                            UnitPrice = 15.0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483645,
+                            ProductId = 10,
+                            Quantity = 1,
+                            UnitPrice = 13.99
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            OrderId = 483645,
+                            ProductId = 11,
+                            Quantity = 4,
+                            UnitPrice = 1.99
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Pet", b =>
@@ -387,6 +1304,200 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PhotoId");
 
                     b.ToTable("Pets");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Tommy",
+                            OwnerId = 2,
+                            PetBreedId = 1,
+                            Weight = 3.0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Buddy",
+                            OwnerId = 2,
+                            PetBreedId = 6,
+                            Weight = 2.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Bella",
+                            OwnerId = 3,
+                            PetBreedId = 2,
+                            Weight = 5.0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Snowball",
+                            OwnerId = 3,
+                            PetBreedId = 13,
+                            Weight = 1.0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Max",
+                            OwnerId = 3,
+                            PetBreedId = 16,
+                            Weight = 0.20000000000000001
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Luna",
+                            OwnerId = 4,
+                            PetBreedId = 3,
+                            Weight = 4.0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Charlie",
+                            OwnerId = 4,
+                            PetBreedId = 21,
+                            Weight = 0.10000000000000001
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Milo",
+                            OwnerId = 5,
+                            PetBreedId = 8,
+                            Weight = 7.0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Lucy",
+                            OwnerId = 6,
+                            PetBreedId = 41,
+                            Weight = 0.050000000000000003
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Rocky",
+                            OwnerId = 6,
+                            PetBreedId = 36,
+                            Weight = 1.5
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Oreo",
+                            OwnerId = 7,
+                            PetBreedId = 51,
+                            Weight = 0.029999999999999999
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Mittens",
+                            OwnerId = 8,
+                            PetBreedId = 62,
+                            Weight = 1.2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Shadow",
+                            OwnerId = 8,
+                            PetBreedId = 31,
+                            Weight = 0.40000000000000002
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Simba",
+                            OwnerId = 9,
+                            PetBreedId = 10,
+                            Weight = 9.0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 1,
+                            IsDeleted = false,
+                            Name = "Lily",
+                            OwnerId = 9,
+                            PetBreedId = 41,
+                            Weight = 0.080000000000000002
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BirthDate = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Gender = 2,
+                            IsDeleted = false,
+                            Name = "Max",
+                            OwnerId = 10,
+                            PetBreedId = 9,
+                            Weight = 2.0
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.PetAllergy", b =>
@@ -459,6 +1570,528 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PetTypeId");
 
                     b.ToTable("PetBreeds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Persian",
+                            PetTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Siamese",
+                            PetTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Maine Coon",
+                            PetTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "British Shorthair",
+                            PetTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Sphynx",
+                            PetTypeId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Labrador Retriever",
+                            PetTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "German Shepherd",
+                            PetTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Golden Retriever",
+                            PetTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "French Bulldog",
+                            PetTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Beagle",
+                            PetTypeId = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Dutch",
+                            PetTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Holland Lop",
+                            PetTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Mini Rex",
+                            PetTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Netherland Dwarf",
+                            PetTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Flemish Giant",
+                            PetTypeId = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Budgerigar",
+                            PetTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Cockatiel",
+                            PetTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "African Grey Parrot",
+                            PetTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Canary",
+                            PetTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Macaw",
+                            PetTypeId = 4
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Goldfish",
+                            PetTypeId = 5
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Betta",
+                            PetTypeId = 5
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Guppy",
+                            PetTypeId = 5
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Angelfish",
+                            PetTypeId = 5
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Koi",
+                            PetTypeId = 5
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Syrian Hamster",
+                            PetTypeId = 6
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Dwarf Hamster",
+                            PetTypeId = 6
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Roborovski Hamster",
+                            PetTypeId = 6
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Chinese Hamster",
+                            PetTypeId = 6
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Campbell's Dwarf Hamster",
+                            PetTypeId = 6
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "American Guinea Pig",
+                            PetTypeId = 7
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Peruvian Guinea Pig",
+                            PetTypeId = 7
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Abyssinian Guinea Pig",
+                            PetTypeId = 7
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Teddy Guinea Pig",
+                            PetTypeId = 7
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Silkie Guinea Pig",
+                            PetTypeId = 7
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Ball Python",
+                            PetTypeId = 8
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Corn Snake",
+                            PetTypeId = 8
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Boa Constrictor",
+                            PetTypeId = 8
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "King Snake",
+                            PetTypeId = 8
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Milk Snake",
+                            PetTypeId = 8
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Leopard Gecko",
+                            PetTypeId = 9
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Bearded Dragon",
+                            PetTypeId = 9
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Crested Gecko",
+                            PetTypeId = 9
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Blue-Tongued Skink",
+                            PetTypeId = 9
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Green Anole",
+                            PetTypeId = 9
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Standard Ferret",
+                            PetTypeId = 10
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Angora Ferret",
+                            PetTypeId = 10
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Sable Ferret",
+                            PetTypeId = 10
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Albino Ferret",
+                            PetTypeId = 10
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Black-Footed Ferret",
+                            PetTypeId = 10
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "House Mouse",
+                            PetTypeId = 11
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Fancy Mouse",
+                            PetTypeId = 11
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Lab Mouse",
+                            PetTypeId = 11
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Pygmy Mouse",
+                            PetTypeId = 11
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Harvest Mouse",
+                            PetTypeId = 11
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Standard Chinchilla",
+                            PetTypeId = 12
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Mutant Chinchilla",
+                            PetTypeId = 12
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Wilson White Chinchilla",
+                            PetTypeId = 12
+                        },
+                        new
+                        {
+                            Id = 59,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Black Velvet Chinchilla",
+                            PetTypeId = 12
+                        },
+                        new
+                        {
+                            Id = 60,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Beige Chinchilla",
+                            PetTypeId = 12
+                        },
+                        new
+                        {
+                            Id = 61,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Red-Eared Slider",
+                            PetTypeId = 13
+                        },
+                        new
+                        {
+                            Id = 62,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Eastern Box Turtle",
+                            PetTypeId = 13
+                        },
+                        new
+                        {
+                            Id = 63,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Painted Turtle",
+                            PetTypeId = 13
+                        },
+                        new
+                        {
+                            Id = 64,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Russian Tortoise",
+                            PetTypeId = 13
+                        },
+                        new
+                        {
+                            Id = 65,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Map Turtle",
+                            PetTypeId = 13
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.PetMedication", b =>
@@ -531,6 +2164,99 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PetTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Cat"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Dog"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Rabbit"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Bird"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Fish"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Hamster"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Guinea Pig"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Snake"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Lizard"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Ferret"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Mouse"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Chinchilla"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Turtle"
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Product", b =>
@@ -583,8 +2309,8 @@ namespace HappyPaws.Infrastructure.Migrations
 
                     b.Property<string>("UPC")
                         .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.HasKey("Id");
 
@@ -596,6 +2322,762 @@ namespace HappyPaws.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Food Dry Sterilized Urinary Health",
+                            Price = 10.99,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183858"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Food Dry Indoor",
+                            Price = 10.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183859"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Food Kitten",
+                            Price = 12.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183860"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Food Insects",
+                            Price = 11.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183861"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Food Adult",
+                            Price = 15.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183862"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Food Sensitive",
+                            Price = 12.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183863"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Haircare",
+                            Price = 12.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183864"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Food Sterilized Sensitive",
+                            Price = 12.0,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183865"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Sterilized Weight Control",
+                            Price = 13.99,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183866"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Brit care dry foods are formulated to provide a balanced and nutritious diet for cats of all ages, breeds, and sizes. These premium-quality cat foods are crafted with high-quality ingredients to ensure optimal health, vitality, and wellbeing for your feline companions.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Dry Sterilized Large Cats",
+                            Price = 13.99,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183867"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Fillets in Jelly with Savory Salmon enriched with Carrot & Rosemary. Complete superpremium wet food for Kittens.Delicate pouches for increasing the diversity of your cat’s diet, perfect for extra picky cats and cats with issues eating food. To make your cat’s belly feel even better, they also contain rosemary and carrots to support proper digestion.",
+                            InStock = 100,
+                            IsDeleted = false,
+                            Name = "Brit Care Cat Pouch Savory Salmon Jelly KITTEN",
+                            Price = 1.99,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183868"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Spayed & Neutered Thin Slices in Gravy Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183869"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Indoor Adult Morsels in Gravy Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183870"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Weight Care Thin Slices in Gravy Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183871"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Adult Instinctive Loaf in Sauce Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183872"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Mother & Babycat Ultra Soft Mousse in Sauce Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183873"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Mother & Babycat Ultra Soft Mousse in Sauce Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183874"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Appetite Control Care Thin Slices in Gravy Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183875"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Kitten Thin Slices in Gravy",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183876"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Kitten Loaf in Sauce Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183877"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Persian Adult Loaf in Sauce canned cat food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183878"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            BrandId = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Complete and balanced nutrition for cats.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Digest Sensitive Thin Slices in Gravy Canned Cat Food",
+                            Price = 3.4900000000000002,
+                            ProductCategorySubcategoryId = 4,
+                            UPC = "7515066183879"
+                        },
+                        new
+                        {
+                            Id = 46,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable beds for cats where they can relax and rest. With a very soft polyester.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Circular pouf bed",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183880"
+                        },
+                        new
+                        {
+                            Id = 47,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Flamingo Jean blue bed",
+                            Price = 25.489999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183881"
+                        },
+                        new
+                        {
+                            Id = 48,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "GLEE for pets beds “Insect Protection” keep your pets safe from insects & parasites since their revolutionary technology repels mosquitoes, mites, ticks, flies, fleas and other bugs that can carry dangerous illnesses such as Lyme disease and heartworm. The active ingredients permethrin-infused was tightly bonded to the fabric fibre used nanotechnology offers invisible, odorless, long-lasting, and effective protection for your dogs all year long.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Beds Insect Protection",
+                            Price = 28.0,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183882"
+                        },
+                        new
+                        {
+                            Id = 49,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular bed CATS",
+                            Price = 23.989999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183883"
+                        },
+                        new
+                        {
+                            Id = 50,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular bed FISHES",
+                            Price = 23.989999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183884"
+                        },
+                        new
+                        {
+                            Id = 51,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular bed JEAN blue",
+                            Price = 22.0,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183885"
+                        },
+                        new
+                        {
+                            Id = 52,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular bed terracotta",
+                            Price = 24.489999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183886"
+                        },
+                        new
+                        {
+                            Id = 53,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable sofas for cats with removable cushion cover.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular Sofas",
+                            Price = 33.289999999999999,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183887"
+                        },
+                        new
+                        {
+                            Id = 54,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable sofa for cats with removable cushion cover.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Rectangular sofa with pattern brown",
+                            Price = 26.300000000000001,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183888"
+                        },
+                        new
+                        {
+                            Id = 55,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable mattresses for and cats with removable cushion cover.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Waterproof rectangular beds",
+                            Price = 24.989999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183889"
+                        },
+                        new
+                        {
+                            Id = 56,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable beds “THE ORIGINALS” for cats where they can relax and rest.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Beds OYSTER",
+                            Price = 29.989999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183890"
+                        },
+                        new
+                        {
+                            Id = 57,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable beds “THE ORIGINALS” for cats where they can relax and rest.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Circular bed brown",
+                            Price = 23.489999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183891"
+                        },
+                        new
+                        {
+                            Id = 58,
+                            BrandId = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Comfortable beds “THE ORIGINALS” for cats where they can relax and rest.",
+                            InStock = 20,
+                            IsDeleted = false,
+                            Name = "Circular bed pink",
+                            Price = 23.489999999999998,
+                            ProductCategorySubcategoryId = 1,
+                            UPC = "7515066183892"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Functional Complementary Dog Food for Puppies.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Brit Care Dog Crunchy Cracker Insect And Lamb",
+                            Price = 3.9900000000000002,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183908"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Functional Complementary Dog Food for Puppies.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Brit Care Dog Crunchy Cracker Insect And Rabbit",
+                            Price = 3.9900000000000002,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183909"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Functional Complementary Dog Food for Puppies.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Brit Care Dog Crunchy Cracker Insect And Salmon",
+                            Price = 3.9900000000000002,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183910"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Functional Complementary Dog Food for Puppies.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Brit Care Dog Crunchy Cracker Insect And Tuna",
+                            Price = 3.9900000000000002,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183911"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BrandId = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Functional Complementary Dog Food for Puppies.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Brit Care Dog Crunchy Cracker Insect And Whey",
+                            Price = 3.9900000000000002,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183912"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "ACANA Classics, Chicken and Barley Recipe",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 17,
+                            UPC = "7515066183913"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "ACANA Classics, Beef and Barley Recipe",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 14,
+                            UPC = "7515066183914"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "ACANA Classics, Salmon and Barley Recipe",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 14,
+                            UPC = "7515066183915"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Butcher's Favorites, Free-Run Poultry & Liver Recipe",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 14,
+                            UPC = "7515066183916"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Butcher's Favorites, Farm-Raised Beef & Liver Recipe",
+                            Price = 19.989999999999998,
+                            ProductCategorySubcategoryId = 14,
+                            UPC = "7515066183917"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BrandId = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Help your dog feel so good inside, you’ll see it on the outside! Nurture your dog with the simple nutrition and wholesome ingredients in ACANA. . Your dog will love its delicious taste, and you’ll love that its nutritious ingredients help support 4 key health benefits, including Immune Health, Healthy Skin & Coat, Digestive Health and Healthy Weight.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Butcher's Favorites, Wild-Caught Salmon Recipe",
+                            Price = 21.989999999999998,
+                            ProductCategorySubcategoryId = 14,
+                            UPC = "7515066183918"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Active Life Formula helps nutritionally support fish’s immune system for optimal health and long life. Based on long-term university studies, the proprietary formula joins high quality, complete nutrition with even more benefits.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraMin Tropical Flakes",
+                            Price = 2.9900000000000002,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183958"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Tetra brands original tropical fish diet, TetraMin XL Tropical Flakes is nutritionally balanced for optimum fish health. This formula is packed with patented ProCare that offers precise doses of select vitamins and nutrients to support immune system health, Biotin to help maintain metabolism, and Omega-3 fatty acids to provide energy and growth. TetraMin XL Tropical Flakes are scientifically developed to be easily digested and feature color enhancers that bring out the bright colors of your tropical fish. All the benefits of TetraMin, the world’s leading flake food, in a larger flake for bigger fish.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraMin XL Tropical Flakes",
+                            Price = 5.9900000000000002,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183959"
+                        },
+                        new
+                        {
+                            Id = 36,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Contains three different types of food for various fish diets:\r\nFlakes for top and mid-water feeders\r\nSlow-sinking granules for mid-water feeders\r\nMini wafers for bottom feeders",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "Community 3-in-1 Select-A-Food",
+                            Price = 6.5899999999999999,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183960"
+                        },
+                        new
+                        {
+                            Id = 37,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "This premium food offers all of the advantages of the \"Clean and Clear Water Formula\" plus the added benefit of natural shrimp. The aroma and flavor of real shrimp are a natural attractant for aquarium fish.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraMin Plus Tropical Flakes",
+                            Price = 4.79,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183961"
+                        },
+                        new
+                        {
+                            Id = 38,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "TetraPro Tropical Crisps provide advanced nutrition for the discerning fish-keeper. This nutritionally balanced diet feeds cleaner than ordinary flakes, leaving behind less waste in the aquarium and in the can. Each crisp is made using an exclusive low-heat process which preserves essential vitamins for a healthier, more nutritious diet. TetraPro Crisps float longer to allow fish more time to eat and are precision crafted with Biotin to support fish immune system health.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraPro Tropical Crisps",
+                            Price = 4.9900000000000002,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183962"
+                        },
+                        new
+                        {
+                            Id = 39,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Features shrimp fish food treats and granules. Unique four-section canister provides highest quality nutrition and feeding fun. Contains two chambers of TetraMin® Tropical Crisps staple food, one chamber of BabyShrimp treats and one chamber of TetraMin® Granules. Easy-to-use dispenser top allows you to dial in the food that is desired. This versatile product provides healthy feeding and variety all in one package.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraMin Crisps Select-A-Food",
+                            Price = 3.29,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183963"
+                        },
+                        new
+                        {
+                            Id = 40,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "Tetra PRO Cory wafers are a premium 2-in-1 food with shrimp and potato protein for easy digestibility and ideal protein for Omnivorous Grazers. This sinking food is ideal for bottom feeders and is protein rich for complete nutrition.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "PRO Cory Wafers",
+                            Price = 4.7999999999999998,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183964"
+                        },
+                        new
+                        {
+                            Id = 41,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "TetraPro Tropical Color Crisps provide advanced nutrition for the discerning fish-keeper. This nutritionally balanced diet floats longer and feeds cleaner than ordinary flakes; leaving less waste in the aquarium. Each crisp features a high content of natural color enhancers and special ingredient that ensure the full development of beautiful and rich coloration. TetraPro Tropical Color Crisps support fish immune health with Biotin and are created through a low-heat process that preserves more of the natural ingredients.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraPro Tropical Color Crisps",
+                            Price = 8.9900000000000002,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183965"
+                        },
+                        new
+                        {
+                            Id = 42,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "TetraBetta Plus Floating Mini Pellets is a nutritionally balanced, premium diet with powerful color enhancers. This high-protein formula includes precise amounts of selected vitamins and nutrients to help support fish immune system, and Omega 3 fatty acids for energy and growth. Small, carotene-rich, highly-palatable, floating pellets are ideally sized for Siamese Fighting Fish (Betta splendens).",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraBetta Plus Floating Mini Pellets",
+                            Price = 2.9900000000000002,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183966"
+                        },
+                        new
+                        {
+                            Id = 43,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "This premium food offers all of the advantages of \"Clean and Clear Water Formula\" plus the added benefit of added Spirulina algae flakes for optimal digestibility. Extra vegetable matter and specialized high protein fish meal makes this fish food most digestible food ever. Optimal digestibility means fewer uneaten particles and reduced fish waste for cleaner and clearer aquarium water.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "TetraFin Plus Goldfish Flakes",
+                            Price = 3.3999999999999999,
+                            ProductCategorySubcategoryId = 40,
+                            UPC = "7515066183967"
+                        },
+                        new
+                        {
+                            Id = 44,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "JumboKrill Freeze-Dried Jumbo Shrimp",
+                            Price = 5.0999999999999996,
+                            ProductCategorySubcategoryId = 44,
+                            UPC = "7515066183968"
+                        },
+                        new
+                        {
+                            Id = 45,
+                            BrandId = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Description = "BloodWorms is a premium quality, nutritious supplement to primary diets such as TetraMin Flakes. This tasty, freeze-dried treat provides extra energy and condition and is perfect for Bettas or other small to medium sized tropical and marine fish. BloodWorms are specially processed and tested to minimize the presence of undesirable organisms found in live bloodworms.",
+                            InStock = 50,
+                            IsDeleted = false,
+                            Name = "BloodWorms",
+                            Price = 2.5,
+                            ProductCategorySubcategoryId = 44,
+                            UPC = "7515066183969"
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.ProductCategory", b =>
@@ -630,6 +3112,56 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PhotoId");
 
                     b.ToTable("ProductCategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Cats",
+                            PhotoId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Dogs",
+                            PhotoId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Birds",
+                            PhotoId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Fish",
+                            PhotoId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Small animals",
+                            PhotoId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Other",
+                            PhotoId = 6
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.ProductCategorySubcategory", b =>
@@ -664,6 +3196,384 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("ProductSubcategoryId");
 
                     b.ToTable("ProductCategorySubcategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 4
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 5
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 9
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 10
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 11
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 12
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 13
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 1,
+                            ProductSubcategoryId = 14
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 2
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 4
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 5
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 8
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 9
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 10
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 11
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 12
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 13
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 2,
+                            ProductSubcategoryId = 14
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 3
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 9
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 10
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 11
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 13
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 3,
+                            ProductSubcategoryId = 14
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 1
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 6
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 9
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 11
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 13
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 4,
+                            ProductSubcategoryId = 14
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 3
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 4
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 8
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 9
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 10
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 11
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 12
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 13
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 5,
+                            ProductSubcategoryId = 14
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 6,
+                            ProductSubcategoryId = 7
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductCategoryId = 6,
+                            ProductSubcategoryId = 14
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.ProductImage", b =>
@@ -698,6 +3608,472 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 21,
+                            IsDeleted = false,
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 22,
+                            IsDeleted = false,
+                            ProductId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 23,
+                            IsDeleted = false,
+                            ProductId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 24,
+                            IsDeleted = false,
+                            ProductId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 25,
+                            IsDeleted = false,
+                            ProductId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 26,
+                            IsDeleted = false,
+                            ProductId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 27,
+                            IsDeleted = false,
+                            ProductId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 28,
+                            IsDeleted = false,
+                            ProductId = 8
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 29,
+                            IsDeleted = false,
+                            ProductId = 9
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 30,
+                            IsDeleted = false,
+                            ProductId = 10
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 31,
+                            IsDeleted = false,
+                            ProductId = 11
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 43,
+                            IsDeleted = false,
+                            ProductId = 23
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 44,
+                            IsDeleted = false,
+                            ProductId = 24
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 45,
+                            IsDeleted = false,
+                            ProductId = 25
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 46,
+                            IsDeleted = false,
+                            ProductId = 26
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 47,
+                            IsDeleted = false,
+                            ProductId = 27
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 48,
+                            IsDeleted = false,
+                            ProductId = 28
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 49,
+                            IsDeleted = false,
+                            ProductId = 29
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 50,
+                            IsDeleted = false,
+                            ProductId = 30
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 51,
+                            IsDeleted = false,
+                            ProductId = 31
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 52,
+                            IsDeleted = false,
+                            ProductId = 32
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 53,
+                            IsDeleted = false,
+                            ProductId = 33
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 68,
+                            IsDeleted = false,
+                            ProductId = 46
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 69,
+                            IsDeleted = false,
+                            ProductId = 47
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 70,
+                            IsDeleted = false,
+                            ProductId = 48
+                        },
+                        new
+                        {
+                            Id = 49,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 71,
+                            IsDeleted = false,
+                            ProductId = 49
+                        },
+                        new
+                        {
+                            Id = 50,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 72,
+                            IsDeleted = false,
+                            ProductId = 50
+                        },
+                        new
+                        {
+                            Id = 51,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 73,
+                            IsDeleted = false,
+                            ProductId = 51
+                        },
+                        new
+                        {
+                            Id = 52,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 74,
+                            IsDeleted = false,
+                            ProductId = 52
+                        },
+                        new
+                        {
+                            Id = 53,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 75,
+                            IsDeleted = false,
+                            ProductId = 53
+                        },
+                        new
+                        {
+                            Id = 54,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 76,
+                            IsDeleted = false,
+                            ProductId = 54
+                        },
+                        new
+                        {
+                            Id = 55,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 77,
+                            IsDeleted = false,
+                            ProductId = 55
+                        },
+                        new
+                        {
+                            Id = 56,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 78,
+                            IsDeleted = false,
+                            ProductId = 56
+                        },
+                        new
+                        {
+                            Id = 57,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 79,
+                            IsDeleted = false,
+                            ProductId = 57
+                        },
+                        new
+                        {
+                            Id = 58,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 80,
+                            IsDeleted = false,
+                            ProductId = 58
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 32,
+                            IsDeleted = false,
+                            ProductId = 12
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 33,
+                            IsDeleted = false,
+                            ProductId = 13
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 34,
+                            IsDeleted = false,
+                            ProductId = 14
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 35,
+                            IsDeleted = false,
+                            ProductId = 15
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 36,
+                            IsDeleted = false,
+                            ProductId = 16
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 37,
+                            IsDeleted = false,
+                            ProductId = 17
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 38,
+                            IsDeleted = false,
+                            ProductId = 18
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 39,
+                            IsDeleted = false,
+                            ProductId = 19
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 40,
+                            IsDeleted = false,
+                            ProductId = 20
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 41,
+                            IsDeleted = false,
+                            ProductId = 21
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 42,
+                            IsDeleted = false,
+                            ProductId = 22
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 56,
+                            IsDeleted = false,
+                            ProductId = 34
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 57,
+                            IsDeleted = false,
+                            ProductId = 35
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 58,
+                            IsDeleted = false,
+                            ProductId = 36
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 59,
+                            IsDeleted = false,
+                            ProductId = 37
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 60,
+                            IsDeleted = false,
+                            ProductId = 38
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 61,
+                            IsDeleted = false,
+                            ProductId = 39
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 62,
+                            IsDeleted = false,
+                            ProductId = 40
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 63,
+                            IsDeleted = false,
+                            ProductId = 41
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 64,
+                            IsDeleted = false,
+                            ProductId = 42
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 65,
+                            IsDeleted = false,
+                            ProductId = 43
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 66,
+                            IsDeleted = false,
+                            ProductId = 44
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            ImageId = 67,
+                            IsDeleted = false,
+                            ProductId = 45
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.ProductReview", b =>
@@ -738,6 +4114,242 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("ReviewerId");
 
                     b.ToTable("ProductReviews");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 1,
+                            Review = 5,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 2,
+                            Review = 5,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 2,
+                            Review = 4,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 3,
+                            Review = 4,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 5,
+                            Review = 3,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 10,
+                            Review = 4,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 20,
+                            Review = 5,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 22,
+                            Review = 4,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 14,
+                            Review = 4,
+                            ReviewerId = 2
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 10,
+                            Review = 3,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 23,
+                            Review = 4,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 24,
+                            Review = 5,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 24,
+                            Review = 4,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 25,
+                            Review = 5,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 29,
+                            Review = 3,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 31,
+                            Review = 5,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 32,
+                            Review = 4,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 33,
+                            Review = 5,
+                            ReviewerId = 3
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 37,
+                            Review = 5,
+                            ReviewerId = 5
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 40,
+                            Review = 5,
+                            ReviewerId = 5
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 42,
+                            Review = 5,
+                            ReviewerId = 5
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 45,
+                            Review = 5,
+                            ReviewerId = 5
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 48,
+                            Review = 4,
+                            ReviewerId = 6
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 48,
+                            Review = 5,
+                            ReviewerId = 4
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 55,
+                            Review = 4,
+                            ReviewerId = 6
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 57,
+                            Review = 5,
+                            ReviewerId = 3
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.ProductSubcategory", b =>
@@ -772,6 +4384,120 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("PhotoId");
 
                     b.ToTable("ProductSubcategories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Aquariums",
+                            PhotoId = 7
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Beds",
+                            PhotoId = 8
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Cages",
+                            PhotoId = 9
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Carriers",
+                            PhotoId = 10
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Collars",
+                            PhotoId = 11
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Fish Flakes",
+                            PhotoId = 12
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Food",
+                            PhotoId = 13
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Houses",
+                            PhotoId = 14
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Medicine",
+                            PhotoId = 15
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Snacks",
+                            PhotoId = 16
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Hygine",
+                            PhotoId = 17
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Toys",
+                            PhotoId = 18
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Treats",
+                            PhotoId = 19
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            Name = "Other",
+                            PhotoId = 20
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.SystemConfig", b =>
@@ -797,6 +4523,15 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SystemConfigs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            DonationsGoal = 100.0,
+                            IsDeleted = false
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.User", b =>
@@ -835,6 +4570,11 @@ namespace HappyPaws.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSubscribed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
@@ -881,6 +4621,327 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("ProfilePhotoId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "admin@happypaws.com",
+                            FirstName = "Main",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Admin",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "user@happypaws.com",
+                            FirstName = "Emily",
+                            Gender = 0,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Johnson",
+                            MyPawNumber = "2224189566583186",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "sophia.williams@happypaws.com",
+                            FirstName = "Sophia",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Williams",
+                            MyPawNumber = "8904181155885348",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "michael.martinez@happypaws.com",
+                            FirstName = "Michael",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Martinez",
+                            MyPawNumber = "8975663765604160",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "olivia.taylor@happypaws.com",
+                            FirstName = "Olivia",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Taylor",
+                            MyPawNumber = "9495816737342002",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "james.davis@happypaws.com",
+                            FirstName = "James",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Davis",
+                            MyPawNumber = "3885224776304963",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "ava.miller@happypaws.com",
+                            FirstName = "Ava",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Miller",
+                            MyPawNumber = "3574862835168799",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "william.anderson@happypaws.com",
+                            FirstName = "William",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Anderson",
+                            MyPawNumber = "3863165142311849",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "isabella.wilson@happypaws.com",
+                            FirstName = "Isabella",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Wilson",
+                            MyPawNumber = "1375029585103447",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "john.smith@happypaws.com",
+                            FirstName = "John",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Smith",
+                            MyPawNumber = "6514730626631608",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "vet@happypaws.com",
+                            EmployeePosition = 0,
+                            FirstName = "Emma",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Collins",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "liam.roberts@happypaws.com",
+                            EmployeePosition = 1,
+                            FirstName = "Liam",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Roberts",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "ava.stewart@happypaws.com",
+                            EmployeePosition = 2,
+                            FirstName = "Ava",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Stewart",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "noah.harris@happypaws.com",
+                            EmployeePosition = 3,
+                            FirstName = "Noah",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Harris",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "pharmacy@happypaws.com",
+                            EmployeePosition = 4,
+                            FirstName = "Olivia",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Clark",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "william.young@happypaws.com",
+                            EmployeePosition = 5,
+                            FirstName = "William",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Young",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "retail@happypaws.com",
+                            EmployeePosition = 6,
+                            FirstName = "Sophia",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "King",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "james.lee@happypaws.com",
+                            EmployeePosition = 5,
+                            FirstName = "James",
+                            Gender = 2,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Lee",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "isabella.moore@happypaws.com",
+                            EmployeePosition = 6,
+                            FirstName = "Isabella",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Moore",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            Email = "mia.turner@happypaws.com",
+                            EmployeePosition = 2,
+                            FirstName = "Mia",
+                            Gender = 1,
+                            IsDeleted = false,
+                            IsSubscribed = false,
+                            IsVerified = true,
+                            LastName = "Turner",
+                            PasswordHash = "b4I5yA4Mp+0Pg1C3EsKU17sS13eDExGtBjjI07Vh/JM=",
+                            PasswordSalt = "1wQEjdSFeZttx6dlvEDjOg==",
+                            Role = 1
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.UserAddress", b =>
@@ -951,6 +5012,22 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserAddresses");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AddressOne = "Test address 1",
+                            City = "Mostar",
+                            Country = "Bosnia and Herzegowina",
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            FullName = "Emily Johnson",
+                            IsDeleted = false,
+                            IsInitialUserAddress = true,
+                            Phone = "061 222 333",
+                            PostalCode = "88000",
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.UserCart", b =>
@@ -1024,6 +5101,112 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserFavourites");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 1,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 1,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 1,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 5,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 5,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 11,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 30,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 33,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 9,
+                            UserId = 4
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 2,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 48,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 48,
+                            UserId = 3
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(2024, 7, 5, 16, 36, 4, 476, DateTimeKind.Local).AddTicks(8186),
+                            IsDeleted = false,
+                            ProductId = 48,
+                            UserId = 4
+                        });
                 });
 
             modelBuilder.Entity("HappyPaws.Core.Entities.Appointment", b =>
@@ -1195,13 +5378,13 @@ namespace HappyPaws.Infrastructure.Migrations
                     b.HasOne("HappyPaws.Core.Entities.ProductCategory", "ProductCategory")
                         .WithMany("ProductCategorySubcategories")
                         .HasForeignKey("ProductCategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("HappyPaws.Core.Entities.ProductSubcategory", "ProductSubcategory")
                         .WithMany("ProductCategorySubcategories")
                         .HasForeignKey("ProductSubcategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ProductCategory");

@@ -24,7 +24,17 @@ namespace HappyPaws.Application.Services
 
         public async Task<PagedList<ProductDto>> GetPagedProductsAsync(UserFavouriteSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return Mapper.Map<PagedList<ProductDto>>(await CurrentRepository.GetPagedProductsAsync(searchObject, cancellationToken));
+            var response = Mapper.Map<PagedList<ProductDto>>(await CurrentRepository.GetPagedProductsAsync(searchObject, cancellationToken));
+
+            foreach (var item in response.Items)
+            {
+                if (item != null && item.ProductReviews != null && item.ProductReviews.Count > 0)
+                {
+                    item.Review = (int)item.ProductReviews.Average(x => x.Review);
+                }
+            }
+
+            return response;
         }
     }
 }

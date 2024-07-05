@@ -28,12 +28,12 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.HasOne(pcs => pcs.ProductCategory)
            .WithMany(pc => pc.ProductCategorySubcategories)
            .HasForeignKey(pcs => pcs.ProductCategoryId)
-           .OnDelete(DeleteBehavior.NoAction); ;
+           .OnDelete(DeleteBehavior.NoAction); 
 
             builder.HasOne(pcs => pcs.ProductSubcategory)
            .WithMany(psc => psc.ProductCategorySubcategories)
            .HasForeignKey(pcs => pcs.ProductSubcategoryId)
-           .OnDelete(DeleteBehavior.NoAction); ;
+           .OnDelete(DeleteBehavior.NoAction); 
 
         }
     }

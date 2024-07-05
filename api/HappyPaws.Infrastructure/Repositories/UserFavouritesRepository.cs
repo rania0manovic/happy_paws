@@ -21,8 +21,21 @@ namespace HappyPaws.Infrastructure.Repositories
 
         public async Task<PagedList<Product>> GetPagedProductsAsync(UserFavouriteSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Include(x => x.Product).ThenInclude(x => x.ProductImages.Take(1)).ThenInclude(x => x.Image)
-                .Where(x => x.UserId == searchObject.UserId).Select(x => x.Product).ToPagedListAsync(searchObject, cancellationToken);
+            var result = DbSet.Include(x=>x.Product).ThenInclude(x => x.ProductImages).ThenInclude(x => x.Image)
+                .Include(x => x.Product).ThenInclude(x => x.ProductReviews)
+                .Where(x => x.UserId == searchObject.UserId)
+                .Select(x => x.Product)
+                .Where(x => searchObject.MinReview == null || x.ProductReviews.Average(x => x.Review) >= searchObject.MinReview).AsQueryable();
+
+            if (searchObject.LowestPriceFirst != null)
+            {
+                if (searchObject.LowestPriceFirst == true)
+                    result = result.OrderBy(x => x.Price);
+                else
+                    result = result.OrderByDescending(x => x.Price);
+            }
+
+            return await result.ToPagedListAsync(searchObject, cancellationToken);
         }
     }
 }

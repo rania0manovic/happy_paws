@@ -16,7 +16,6 @@ namespace HappyPaws.Infrastructure.Configurations
         {
             base.Configure(builder);
 
-            builder.Property(x => x.OrderDate).IsRequired();
             builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.Pending);
             builder.Property(x => x.PaymentMethod).IsRequired();
             builder.Property(x => x.Shipping).IsRequired(false);

@@ -170,7 +170,6 @@ class _LoginPageState extends State<LoginPage> {
           height: 10,
         ),
         SizedBox(
-          height: errorStates[key] ?? false ? 75 : 50,
           child: TextFormField(
             onChanged: (value) {
               setState(() {
@@ -195,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                 errorStyle:
                     const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
-                fillColor: error ? AppColors.dimError : AppColors.dimWhite,
+                fillColor: error ? AppColors.dimError : AppColors.fill,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

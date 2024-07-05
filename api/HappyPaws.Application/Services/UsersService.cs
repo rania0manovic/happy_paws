@@ -5,6 +5,7 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Common.Services.CryptoService;
 using HappyPaws.Common.Services.EmailService;
 using HappyPaws.Common.Services.RecommenderSystemService;
+using HappyPaws.Core.Dtos.Image;
 using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Dtos.UserFavourite;
@@ -58,15 +59,11 @@ namespace HappyPaws.Application.Services
                 user.PasswordHash = _cryptoService.GenerateHash(password, user.PasswordSalt);
                 user.IsVerified = true;
                 await _emailService.SendAsync("Welcome to Happy Paws", $"<p style='font-family: Calibri; margin-bottom:30px'>Hello {dto.FirstName} {dto.LastName},</p>\r\n<p style='font-family: Calibri'>We are happy to welcome you to our platform. Your account has been successfully created. Here is your temporary password: </p>\r\n<h2 style='font-family: Calibri'>{password}</h2>\r\n<p style='font-family: Calibri'>Please remember to change your password once you sign in for the first time in your profile settings.</p>\r\n<p style='font-family: Calibri'>For further enquiries, please feel free to contact our customer service team at happypaws_support@gmail.com.</p>\r\n<p style='font-family: Calibri;margin-top:30px'>Best regards<br/>HappyPaws Team </p><hr style='background-color:#78498d9e;border:none;height:0.5px' /><p style='font-family: Cambria'>This email is auto-generated. Please do not reply to this message.</p>\r\n", user.Email);
-                if (user.PhotoFile != null)
+                if (dto.DownloadURL != null)
                 {
-                    var memoryStream = new MemoryStream();
-                    await user.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                    ImageSharp.OptimizeImage(memoryStream);
                     var photo = new Image()
                     {
-                        ContentType = user.PhotoFile.ContentType,
-                        Data = memoryStream.ToArray(),
+                        DownloadURL = dto.DownloadURL,
                     };
                     await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
                     await UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -82,32 +79,25 @@ namespace HappyPaws.Application.Services
         {
             var user = await CurrentRepository.GetByIdAsync(dto.Id, cancellationToken) ?? throw new Exception("User not found");
 
-            if (dto.PhotoFile != null)
+            if (dto.DownloadURL != null)
             {
-                var memoryStream = new MemoryStream();
-                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                ImageSharp.OptimizeImage(memoryStream);
-                if (user.ProfilePhotoId != null)
+                if (dto.ProfilePhotoId != null)
                 {
-                    var photo = await UnitOfWork.ImagesRepository.GetByIdAsync((int)user.ProfilePhotoId, cancellationToken);
-
-                    photo!.ContentType = dto.PhotoFile.ContentType;
-                    photo.Data = memoryStream.ToArray();
-                    UnitOfWork.ImagesRepository.Update(photo);
-                    await UnitOfWork.SaveChangesAsync(cancellationToken);
-
+                    dto.ProfilePhoto ??= Mapper.Map<ImageDto>(user.ProfilePhoto);
+                    dto.ProfilePhoto.DownloadURL = dto.DownloadURL;
                 }
                 else
                 {
                     var photo = new Image()
                     {
-                        ContentType = dto.PhotoFile.ContentType,
-                        Data = memoryStream.ToArray(),
+                        DownloadURL = dto.DownloadURL,
                     };
                     await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
-                    await UnitOfWork.SaveChangesAsync(cancellationToken);
                     dto.ProfilePhotoId = photo.Id;
+                    dto.ProfilePhoto = Mapper.Map<ImageDto>(photo);
+
                 }
+                await UnitOfWork.SaveChangesAsync(cancellationToken);
             }
             Mapper.Map(dto, user);
             user.IsVerified = true;
@@ -140,7 +130,7 @@ namespace HappyPaws.Application.Services
 
             var favourites = Mapper.Map<PagedList<UserFavouriteDto>>(await UnitOfWork.UserFavouritesRepository.GetPagedAsync(new UserFavouriteSearchObject() { PageSize = 999999 }, cancellationToken));
             var recommendedProducts = _recommenderSystemService.RecommendProducts(userId, 5, favourites.Items);
-            var products = await UnitOfWork.ProductsRepository.GetPagedAsync(new ProductSearchObject() { PageSize = 5, TakePhotos = 1, RecommendedProductIds = recommendedProducts }, cancellationToken);
+            var products = await UnitOfWork.ProductsRepository.GetPagedAsync(new ProductSearchObject() { PageSize = 5, RecommendedProductIds = recommendedProducts }, cancellationToken);
             return Mapper.Map<List<ProductDto>>(products.Items);
         }
     }

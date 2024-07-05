@@ -11,7 +11,16 @@ class AuthGuard extends AutoRouteGuard {
       if (user['Role'] == "Admin") {
         resolver.next(true);
       } else if (user['Role'] == "Employee") {
-        resolver.redirect(const OrdersRoute());
+        if (user['EmployeePosition'] == 'Veterinarian' ||
+            user['EmployeePosition'] == 'VeterinarianTechnician' ||
+            user['EmployeePosition'] == 'VeterinarianAssistant' ||
+            user['EmployeePosition'] == 'Groomer') {
+          resolver.redirect(const AppointmentsRoute());
+        } else if (user['EmployeePosition'] == 'PharmacyStaff') {
+          resolver.redirect(const OrdersRoute());
+        } else if (user['EmployeePosition'] == 'RetailStaff') {
+          resolver.redirect(const InventoryRoute());
+        }
       }
     } else {
       resolver.redirect(const LoginDesktopRoute());

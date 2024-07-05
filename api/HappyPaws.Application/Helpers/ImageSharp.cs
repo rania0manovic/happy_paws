@@ -27,7 +27,7 @@ namespace HappyPaws.Application.Helpers
             }));
 
             IImageEncoder encoder;
-            if (format.Name == "PNG")
+            if (format?.Name == "PNG")
             {
                 encoder = new PngEncoder
                 {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:happypaws/common/services/ProductReviewsService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
@@ -61,7 +60,7 @@ class _LeaveReviewMenuState extends State<LeaveReviewMenu> {
         children: [
           Text(
             widget.data['name'],
-            style: TextStyle(fontWeight: FontWeight.w500),
+            style: const TextStyle(fontWeight: FontWeight.w500),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -116,7 +115,7 @@ class _LeaveReviewMenuState extends State<LeaveReviewMenu> {
                     ),
                     borderRadius: BorderRadius.circular(10))),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           PrimaryButton(

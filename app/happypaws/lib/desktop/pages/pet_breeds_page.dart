@@ -54,7 +54,7 @@ class _PetBreedsPageState extends State<PetBreedsPage> {
 
   Future<void> fetchBreeds() async {
     var response = await PetBreedsService()
-        .getPaged("", currentPage, 10, searchObject: params);
+        .getPaged("", currentPage, 15, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         currentPage++;

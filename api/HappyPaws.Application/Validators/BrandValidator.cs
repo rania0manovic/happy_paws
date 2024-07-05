@@ -12,7 +12,7 @@ namespace HappyPaws.Application.Validators
     {
         public BrandValidator()
         {
-
+            RuleFor(x => x.Name).NotEmpty().NotNull();
         }
     }
 }

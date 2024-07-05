@@ -12,7 +12,8 @@ namespace HappyPaws.Application.Validators
     {
         public ImageValidator()
         {
-            
+            RuleFor(x => x.DownloadURL).NotEmpty().NotNull();
+
         }
     }
 }

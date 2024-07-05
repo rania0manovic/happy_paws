@@ -13,7 +13,7 @@ class GenderDropdownMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _GenderDropdownMenuState createState() => _GenderDropdownMenuState();
+  State<GenderDropdownMenu> createState() => _GenderDropdownMenuState();
 }
 
 class _GenderDropdownMenuState extends State<GenderDropdownMenu> {
@@ -42,13 +42,12 @@ class _GenderDropdownMenuState extends State<GenderDropdownMenu> {
         ),
         Container(
            width: double.infinity,
-        height: 40,
           decoration: BoxDecoration(
             color: AppColors.fill,
             borderRadius: BorderRadius.circular(10),
           ),
           child: DropdownButton<String>(
-            padding: EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             isExpanded: true,
             value: selectedGender,
             underline: Container(),

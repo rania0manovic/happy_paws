@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -155,7 +154,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "\$ ${product!['price']}",
+                  "\$ ${product!['price'].toStringAsFixed(2)}",
                   style: const TextStyle(
                       fontWeight: FontWeight.w700, fontSize: 24),
                 ),
@@ -272,9 +271,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       children: [
         Padding(
             padding: const EdgeInsets.only(top: 30, bottom: 30),
-            child: Image.memory(
-                base64.decode(product!['productImages'][selectedImageId]
-                    ['image']['data']),
+            child: Image.network(
+               product!['productImages'][selectedImageId]
+                    ['image']['downloadURL'],
                 height: 250)),
         Padding(
           padding:
@@ -305,9 +304,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               width: 3,
                             ),
                           ),
-                          child: Image.memory(
-                            base64.decode(
-                                product!['productImages'][i]['image']['data']),
+                          child: Image.network(
+                            
+                                product!['productImages'][i]['image']['downloadURL'],
                             height: 47,
                             width: 47,
                           ),
@@ -328,7 +327,7 @@ class Description extends StatefulWidget {
 
   const Description({super.key, required this.title, required this.content});
   @override
-  _DescriptionState createState() => _DescriptionState();
+  State<Description> createState() => _DescriptionState();
 }
 
 class _DescriptionState extends State<Description> {

@@ -1,10 +1,12 @@
 ﻿using HappyPaws.Common.Services.EnumsService;
 using HappyPaws.Infrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
+    [AllowAnonymous]
     public class EnumsController : BaseController
     {
         private readonly IEnumsService _enumsService;
@@ -22,7 +24,21 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when signing up user");
+                Logger.LogError(e, "Problem when fetching enum EmployeePositions");
+                return BadRequest(e.Message);
+            }
+        }
+        [HttpGet("GetNewsletterTopics")]
+        public async Task<IActionResult> GetNewsletterTopics(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var response = await _enumsService.GetNewsletterTopics(cancellationToken);
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when fetching enum NewsletterTopics");
                 return BadRequest(e.Message);
             }
         }
@@ -36,7 +52,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when signing up user");
+                Logger.LogError(e, "Problem when fetching enum OrderStatuses");
                 return BadRequest(e.Message);
             }
         }

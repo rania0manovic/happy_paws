@@ -3,6 +3,7 @@ using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.ProductCategorySubcategory;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -10,7 +11,7 @@ using Microsoft.OpenApi.Validations.Rules;
 
 namespace HappyPaws.Api.Controllers
 {
-
+    [Authorize(Policy = "AllVerified")]
     public class ProductCategorySubcategoriesController : BaseCrudController<ProductCategorySubcategoryDto, IProductCategorySubcategoriesService, ProductCategorySubcategorySearchObject>
     {
         private readonly IMemoryCache _memoryCache;
@@ -18,6 +19,25 @@ namespace HappyPaws.Api.Controllers
         {
             _memoryCache = memoryCache;
         }
+
+        [Authorize]
+        public override Task<IActionResult> Post([FromBody] ProductCategorySubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Post(upsertDto, cancellationToken);
+        }
+
+        [Authorize]
+        public override Task<IActionResult> Put([FromBody] ProductCategorySubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Put(upsertDto, cancellationToken);
+        }
+
+        [Authorize]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
+        }
+
         [HttpGet("GetSubcategoryIdsForCategory")]
         public async Task<IActionResult> GetSubcategoryIdsForCategory(int categoryId, CancellationToken cancellationToken = default)
         {
@@ -32,6 +52,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+
         [HttpGet("GetSubcategoriesForCategory")]
         public async Task<IActionResult> GetSubcategoriesForCategory(int categoryId, bool includePhotos = false, CancellationToken cancellationToken = default)
         {

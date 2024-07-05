@@ -12,6 +12,9 @@ namespace HappyPaws.Application.Validators
     {
         public PetAllergyValidator()
         {
+            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.AllergySeverity).NotNull();
+            RuleFor(x => x.PetId).NotNull();
 
         }
     }

@@ -10,5 +10,10 @@ namespace HappyPaws.Application.Validators
 {
     public class DonationValidator : AbstractValidator<DonationDto>
     {
+        public DonationValidator()
+        {
+            RuleFor(x => x.Amount).NotNull();
+            RuleFor(x => x.UserId).NotNull();
+        }
     }
 }

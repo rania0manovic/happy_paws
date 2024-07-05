@@ -14,7 +14,7 @@ namespace HappyPaws.Core.Entities
         public DateTime? EndDateTime { get; set; }
         public bool IsCancelled { get; set; }
 
-        public required Pet Pet { get; set; }
+        public Pet Pet { get; set; } = null!;
         public int PetId { get; set; }
 
         public User? Employee { get; set; }

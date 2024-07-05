@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -14,7 +15,8 @@ class ChangePasswordMenu extends StatefulWidget {
       {super.key,
       required this.onClosed,
       this.data,
-      required StateSetter setState, required this.onCanceled});
+      required StateSetter setState,
+      required this.onCanceled});
 
   @override
   State<ChangePasswordMenu> createState() => _ChangePasswordMenuState();
@@ -30,6 +32,12 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
 
   Future<void> changePassword() async {
     try {
+      var user = await AuthService().getCurrentUser();
+      if (user == null) {
+        AuthService().logOut();
+      } else {
+        data['email'] = user['Email'];
+      }
       var response = await AuthService().updatePassword(data);
       if (response.statusCode == 200) {
         await AuthService().logOut();
@@ -44,8 +52,10 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
-      rethrow;
+    } on DioException catch ( e) {
+      if(e.response?.statusCode==403) {
+        ToastHelper.showToastError(context, "Incorrect current password. Please try again!");
+      }
     }
   }
 
@@ -88,14 +98,7 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
                 child: Column(
                   children: [
                     InputField(
-                      label: "Email:",
-                      value: '',
-                      onChanged: (value) => setState(() {
-                        data['email'] = value;
-                      }),
-                    ),
-                    InputField(
-                      label: "Old password:",
+                      label: "Current password:",
                       value: '',
                       onChanged: (value) => setState(() {
                         data['oldPassword'] = value;
@@ -111,7 +114,7 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
                       isObscure: !isObscure,
                       customValidation: () {
                         RegExp passwordRegex = RegExp(
-                            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                            r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~.]).{8,}$');
                         return passwordRegex.hasMatch(data['newPassword']);
                       },
                       customMessage:
@@ -121,7 +124,7 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
                       label: "Confirm new password:",
                       value: '',
                       onChanged: (value) => setState(() {
-                        data['newPasswordConfirm']=value;
+                        data['newPasswordConfirm'] = value;
                       }),
                       customValidation: () {
                         return data['newPassword'] ==

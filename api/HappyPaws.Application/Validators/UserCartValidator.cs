@@ -12,6 +12,9 @@ namespace HappyPaws.Application.Validators
     {
         public UserCartValidator()
         {
+            RuleFor(x => x.Quantity).NotNull();
+            RuleFor(x => x.UserId).NotNull();
+            RuleFor(x => x.ProductId).NotNull();
 
         }
     }

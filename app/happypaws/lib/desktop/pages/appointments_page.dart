@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
@@ -403,7 +402,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                     ],
                                   ),
                                 )
-                              : SizedBox()
+                              : const SizedBox()
                               );
                             },
                           )

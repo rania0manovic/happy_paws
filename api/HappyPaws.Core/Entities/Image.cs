@@ -8,8 +8,7 @@ namespace HappyPaws.Core.Entities
 {
     public class Image : BaseEntity
     {
-        public required byte[] Data { get; set; }
-        public required string ContentType { get; set; }
+        public required string DownloadURL { get; set; }
 
         public ICollection<User> Employees { get; set; } = null!;
         public  ICollection<User> Users { get; set; } = null!;

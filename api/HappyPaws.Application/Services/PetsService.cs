@@ -20,15 +20,11 @@ namespace HappyPaws.Application.Services
         }
         public override async Task<PetDto> AddAsync(PetDto dto, CancellationToken cancellationToken = default)
         {
-            if (dto.PhotoFile != null)
+            if (dto.DownloadURL != null)
             {
-                var memoryStream = new MemoryStream();
-                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                memoryStream = ImageSharp.OptimizeImage(memoryStream);
                 var photo = new Image()
                 {
-                    ContentType = dto.PhotoFile.ContentType,
-                    Data = memoryStream.ToArray(),
+                    DownloadURL = dto.DownloadURL,
                 };
                 await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -36,26 +32,7 @@ namespace HappyPaws.Application.Services
             }
             return await base.AddAsync(dto, cancellationToken);
         }
-        public override async Task<PagedList<PetDto>> GetPagedAsync(PetSearchObject searchObject, CancellationToken cancellationToken = default)
-        {
-            var result = await base.GetPagedAsync(searchObject, cancellationToken);
-            if (searchObject.FormatPhotos)
-            {
-                foreach (var item in result.Items)
-                {
-                    if (item.Photo != null)
-                    {
-                        var inputStream = new MemoryStream(item.Photo.Data)
-                        {
-                            Position = 0
-                        };
-                        inputStream = ImageSharp.OptimizeImage(inputStream, width: 64, height: 64, quality:100);
-                        item.Photo.Data = inputStream.ToArray();
-                    }
-                }
-            }
-            return result;
-        }
+
         public async Task<int> GetCountAsync(CancellationToken cancellationToken = default)
         {
             return await CurrentRepository.GetCountAsync(cancellationToken);
@@ -77,31 +54,25 @@ namespace HappyPaws.Application.Services
         {
             var pet = await CurrentRepository.GetByIdAsync(dto.Id, cancellationToken) ?? throw new Exception("Pet not found");
             Mapper.Map(dto, pet);
-            if (dto.PhotoFile != null)
+            if (dto.DownloadURL != null)
             {
-                var memoryStream = new MemoryStream();
-                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                memoryStream = ImageSharp.OptimizeImage(memoryStream);
+                dynamic photo;
                 if (dto.PhotoId != null)
                 {
-                    var photo = await UnitOfWork.ImagesRepository.GetByIdAsync((int)dto.PhotoId, cancellationToken);
-                    photo!.ContentType = dto.PhotoFile.ContentType;
-                    photo.Data = memoryStream.ToArray();
-                    UnitOfWork.ImagesRepository.Update(photo);
-                    await UnitOfWork.SaveChangesAsync(cancellationToken);
+                    pet.Photo.DownloadURL = dto.DownloadURL;
                 }
                 else
                 {
-                    var photo = new Image()
+                    photo = new Image()
                     {
-                        ContentType = dto.PhotoFile.ContentType,
-                        Data = memoryStream.ToArray(),
+                        DownloadURL = dto.DownloadURL,
                     };
                     await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
                     await UnitOfWork.SaveChangesAsync(cancellationToken);
                     pet.PhotoId = photo.Id;
-                }
+                    pet.Photo = photo;
 
+                }
             }
             CurrentRepository.Update(pet);
             await UnitOfWork.SaveChangesAsync(cancellationToken);

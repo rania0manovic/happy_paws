@@ -1,19 +1,17 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/dialogs/change_password_dialog.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/mobile/components/input_field.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 @RoutePage()
@@ -29,10 +27,10 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
   String selectedValue = 'Unknown';
   late dynamic user = Null;
   late dynamic formatedCardNumber = Null;
-  final ImagePicker _imagePicker = ImagePicker();
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
   final _formKey = GlobalKey<FormState>();
+  bool isDisabeledButton = false;
 
   @override
   void initState() {
@@ -49,7 +47,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
           await ImagesService().get("/${fetchedUser['ProfilePhotoId']}");
       if (image.statusCode == 200) {
         setState(() {
-          profilePhoto = json.decode(image.body);
+          profilePhoto = image.data;
         });
       }
     }
@@ -61,12 +59,30 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
 
   Future<void> updateUser() async {
     try {
+      setState(() {
+        isDisabeledButton = true;
+      });
+      dynamic imageUrl;
+      if (_selectedImage != null) {
+        if (profilePhoto != null) {
+          imageUrl = await FirebaseStorageHelper.updateImage(
+              _selectedImage!, profilePhoto!['downloadURL']);
+        } else {
+          imageUrl = await FirebaseStorageHelper.addImage(_selectedImage!);
+        }
+        if (imageUrl != null) {
+          setState(() {
+            user!['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
       var response = await UsersService().put('', user);
       if (response.statusCode == 200) {
-        String responseBody = await response.stream.bytesToString();
-        Map<String, dynamic> jsonResponse = json.decode(responseBody);
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('token', jsonResponse['token'].toString());
+        prefs.setString('token', response.data['token'].toString());
+        setState(() {
+          isDisabeledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Sucessfully updated user information!");
@@ -74,45 +90,22 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
         throw Exception();
       }
     } catch (e) {
+      setState(() {
+          isDisabeledButton = false;
+        });
       ToastHelper.showToastError(
           context, "An error has occured! Please try again later.");
       rethrow;
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    // if (selectedImage != null) {
-    //   setState(() {
-    //     _selectedImage = File(selectedImage.path);
-    //     user["photoFile"] = selectedImage.path;
-    //   });
-    // }
-     if (selectedImage != null) {
-    File imageFile = File(selectedImage.path);
-    try {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child("images/$fileName");
-      UploadTask uploadTask = ref.putFile(imageFile);
-
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-
+  Future<dynamic> _pickImage() async {
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImage = imageFile;
-        user["photoFile"] = downloadURL; // Store the download URL instead of the file path
+        _selectedImage = result['selectedImage'];
       });
-
-      print("Image uploaded successfully. URL: $downloadURL");
-    } catch (e) {
-      print("Failed to upload image: $e");
     }
-     }
   }
 
   @override
@@ -148,22 +141,28 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                                         width: 128,
                                         child: Stack(
                                           children: [
-                                            ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                                child: _selectedImage != null
-                                                    ? Image.file(
-                                                        _selectedImage!)
-                                                    : profilePhoto != null
-                                                        ? Image.memory(
-                                                            base64.decode(
-                                                                profilePhoto![
-                                                                        'data']
-                                                                    .toString()),
-                                                          )
-                                                        : const Image(
-                                                            image: AssetImage(
-                                                                "assets/images/user.png"))),
+                                            SizedBox(
+                                              height: 128,
+                                              width: 128,
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100),
+                                                  child: _selectedImage != null
+                                                      ? Image.file(
+                                                          _selectedImage!,
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                      : profilePhoto != null
+                                                          ? Image.network(
+                                                              profilePhoto![
+                                                                  'downloadURL'],
+                                                              fit: BoxFit.cover,
+                                                            )
+                                                          : const Image(
+                                                              image: AssetImage(
+                                                                  "assets/images/user.png"))),
+                                            ),
                                             Positioned(
                                                 bottom: 5,
                                                 right: 5,
@@ -195,12 +194,10 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                               },
                               initialValue: user["LastName"],
                             ),
-                             InputField(
+                            InputField(
                               label: 'Email:',
                               enabled: false,
-                              onChanged: (value) {
-                                
-                              },
+                              onChanged: (value) {},
                               initialValue: user["Email"],
                             ),
                             dropdownMenu("Gender"),
@@ -244,6 +241,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                               height: 20,
                             ),
                             PrimaryButton(
+                              isDisabled: isDisabeledButton,
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   updateUser();
@@ -316,6 +314,4 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
       ],
     );
   }
-
- 
 }

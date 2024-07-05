@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/EnumsService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -98,25 +96,36 @@ class _OrdersPageState extends State<OrdersPage> {
               .indexWhere((x) => x['id'] == selectedOrder['id'])]['status'] =
           newValue;
     });
-    var response = await OrdersService().put(
-        "/${selectedOrder['id']}/$newValue/${selectedOrder['userId']}", null);
-    if (response.statusCode == 200) {
-      setState(() {
-        selectedStatus = newValue;
-      });
-      ToastHelper.showToastSuccess(
-          context, "You have succesfully updated order status!");
-    } else {
-      ToastHelper.showToastError(
-          context, "An error occured! Please try again.");
+    try {
+      var response = await OrdersService().put(
+          "/${selectedOrder['id']}/$newValue/${selectedOrder['userId']}", null);
+      if (response.statusCode == 200) {
+        setState(() {
+          selectedStatus = newValue;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have succesfully updated order status!");
+      } else {
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "An error occured! Please try again.");
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
     }
   }
- onSearchChanged(String query) {
+
+  onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       fetchOrders();
     });
   }
+
   @override
   Widget build(BuildContext context) {
     if (orders == null) {
@@ -127,355 +136,354 @@ class _OrdersPageState extends State<OrdersPage> {
         child: Row(
           children: [
             Expanded(
-                child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
+                child: Card(
+              clipBehavior: Clip.antiAlias,
+              color: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              child: Column(
+                children: [
+                  Expanded(
                     child: SingleChildScrollView(
-                      child: Card(
-                        clipBehavior: Clip.antiAlias,
-                        color: Colors.white,
-                        surfaceTintColor: Colors.transparent,
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              width: double.infinity,
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Orders history",
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700),
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              var params = {};
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            width: double.infinity,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Orders history",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700),
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            var params = {};
 
-                                              return AlertDialog(
-                                                content: SizedBox(
-                                                  height: 300,
-                                                  width: 300,
-                                                  child: Column(
-                                                    children: [
-                                                      SizedBox(
-                                                        height: 250,
-                                                        child:
-                                                            SfDateRangePicker(
-                                                          enablePastDates: true,
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                          selectionMode:
-                                                              DateRangePickerSelectionMode
-                                                                  .range,
-                                                          showNavigationArrow:
-                                                              true,
-                                                          selectionColor:
-                                                              AppColors.primary,
-                                                          headerStyle: const DateRangePickerHeaderStyle(
-                                                              backgroundColor:
-                                                                  AppColors
-                                                                      .dimWhite,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              textStyle: TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700)),
-                                                          todayHighlightColor:
-                                                              AppColors.primary,
-                                                          onSelectionChanged:
-                                                              (DateRangePickerSelectionChangedArgs
-                                                                  args) {
-                                                            PickerDateRange
-                                                                range =
-                                                                args.value
-                                                                    as PickerDateRange;
-                                                            setState(() {
-                                                              params['startDate'] =
-                                                                  range
-                                                                      .startDate!;
-                                                              if (range
-                                                                      .endDate !=
-                                                                  null) {
-                                                                params['endDate'] =
-                                                                    range
-                                                                        .endDate;
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-                                                      ),
-                                                      const Spacer(),
-                                                      PrimaryButton(
-                                                        onPressed: () {
+                                            return AlertDialog(
+                                              content: SizedBox(
+                                                height: 300,
+                                                width: 300,
+                                                child: Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 250,
+                                                      child: SfDateRangePicker(
+                                                        enablePastDates: true,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        selectionMode:
+                                                            DateRangePickerSelectionMode
+                                                                .range,
+                                                        showNavigationArrow:
+                                                            true,
+                                                        selectionColor:
+                                                            AppColors.primary,
+                                                        headerStyle: const DateRangePickerHeaderStyle(
+                                                            backgroundColor:
+                                                                AppColors
+                                                                    .dimWhite,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            textStyle: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
+                                                        todayHighlightColor:
+                                                            AppColors.primary,
+                                                        onSelectionChanged:
+                                                            (DateRangePickerSelectionChangedArgs
+                                                                args) {
+                                                          PickerDateRange
+                                                              range = args.value
+                                                                  as PickerDateRange;
                                                           setState(() {
-                                                            this.params[
-                                                                    'startDateTime'] =
-                                                                params[
-                                                                    'startDate'];
-                                                            this.params[
-                                                                    'endDateTime'] =
-                                                                params[
-                                                                    'endDate'];
+                                                            params['startDate'] =
+                                                                range
+                                                                    .startDate!;
+                                                            if (range.endDate !=
+                                                                null) {
+                                                              params['endDate'] =
+                                                                  range.endDate;
+                                                            }
                                                           });
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          fetchData();
                                                         },
-                                                        label:
-                                                            'Confirm selection',
-                                                        width: double.infinity,
-                                                      )
-                                                    ],
-                                                  ),
+                                                      ),
+                                                    ),
+                                                    const Spacer(),
+                                                    PrimaryButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          this.params[
+                                                                  'startDateTime'] =
+                                                              params[
+                                                                  'startDate'];
+                                                          this.params[
+                                                                  'endDateTime'] =
+                                                              params['endDate'];
+                                                        });
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        fetchData();
+                                                      },
+                                                      label:
+                                                          'Confirm selection',
+                                                      width: double.infinity,
+                                                    )
+                                                  ],
                                                 ),
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              (params['startDateTime'] !=
-                                                          null ||
-                                                      params['endDateTime'] !=
-                                                          null
-                                                  ? (formatter
-                                                          .format(params[
-                                                              'startDateTime'])
-                                                          .toString() +
-                                                      (params['endDateTime'] !=
-                                                              null
-                                                          ? ' - ${formatter.format(params['endDateTime'])}'
-                                                          : ''))
-                                                  : 'Pick date'),
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  color: params['startDateTime'] !=
-                                                              null ||
-                                                          params['endDateTime'] !=
-                                                              null
-                                                      ? AppColors.primary
-                                                      : Colors.black,
-                                                  fontSize: 14),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            const Icon(
-                                              Icons.date_range_rounded,
-                                              size: 16,
-                                              color: AppColors.gray,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            newFirst = !newFirst;
-                                          });
-                                          sortData();
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              newFirst
-                                                  ? 'Oldest first'
-                                                  : 'Newest first',
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 14),
-                                            ),
-                                            const SizedBox(
-                                              width: 5,
-                                            ),
-                                            Icon(
-                                              newFirst
-                                                  ? Icons.arrow_upward_outlined
-                                                  : Icons
-                                                      .arrow_downward_outlined,
-                                              size: 16,
-                                              color: AppColors.gray,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Row(
                                         children: [
-                                          const Text(
-                                            "Show new only",
+                                          Text(
+                                            (params['startDateTime'] != null ||
+                                                    params['endDateTime'] !=
+                                                        null
+                                                ? (formatter
+                                                        .format(params[
+                                                            'startDateTime'])
+                                                        .toString() +
+                                                    (params['endDateTime'] !=
+                                                            null
+                                                        ? ' - ${formatter.format(params['endDateTime'])}'
+                                                        : ''))
+                                                : 'Pick date'),
                                             style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
+                                                fontWeight: FontWeight.w500,
+                                                color: params['startDateTime'] !=
+                                                            null ||
+                                                        params['endDateTime'] !=
+                                                            null
+                                                    ? AppColors.primary
+                                                    : Colors.black,
+                                                fontSize: 14),
                                           ),
-                                          Transform.scale(
-                                            scale: 0.8,
-                                            child: Checkbox(
-                                              activeColor: AppColors.primary,
-                                              value: showNewOnly,
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              onChanged: (bool? value) {
-                                                setState(() {
-                                                  showNewOnly = value!;
-                                                });
-                                              },
-                                            ),
+                                          const SizedBox(
+                                            width: 5,
                                           ),
+                                          const Icon(
+                                            Icons.date_range_rounded,
+                                            size: 16,
+                                            color: AppColors.gray,
+                                          )
                                         ],
                                       ),
-                                      SizedBox(
-                                        width: 200,
-                                        height: 50,
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            setState(() {
-                                              params['id'] = value;
-                                            });
-                                            onSearchChanged(value);
-                                          },
-                                          decoration: InputDecoration(
-                                              labelText:
-                                                  "Search by order id",
-                                              labelStyle: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey.shade400,
-                                                  fontWeight: FontWeight.w500),
-                                              suffixIcon: const Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Icon(
-                                                    Icons.search,
-                                                    size: 25,
-                                                    color: AppColors.primary,
-                                                  ))),
-                                        ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          newFirst = !newFirst;
+                                        });
+                                        sortData();
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            newFirst
+                                                ? 'Oldest first'
+                                                : 'Newest first',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14),
+                                          ),
+                                          const SizedBox(
+                                            width: 5,
+                                          ),
+                                          Icon(
+                                            newFirst
+                                                ? Icons.arrow_upward_outlined
+                                                : Icons.arrow_downward_outlined,
+                                            size: 16,
+                                            color: AppColors.gray,
+                                          )
+                                        ],
                                       ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: orders!['totalCount'],
-                              itemBuilder: (context, index) {
-                                var order = orders!['items'][index];
-                                return !showNewOnly ||
-                                        (showNewOnly &&
-                                            order['status'] == 'Pending')
-                                    ? Container(
-                                        decoration: BoxDecoration(
-                                          color: order['status'] == "Pending"
-                                              ? AppColors.dimWhite
-                                              : Colors.transparent,
-                                          border: Border(
-                                            top: BorderSide(
-                                                color: Colors.grey.shade300),
-                                            bottom: BorderSide(
-                                                color: Colors.grey.shade300),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Show new only",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14,
                                           ),
                                         ),
-                                        padding: const EdgeInsets.all(10),
-                                        width: double.infinity,
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  order['user']['fullName'],
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  DateFormat('dd/MM/yyyy HH:mm')
-                                                      .format(
-                                                    DateTime.parse(
-                                                        order['createdAt']),
-                                                  ),
-                                                  style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                                ),
-                                                Text(
-                                                    order['status'][0] +
-                                                        order['status']
-                                                            .split(RegExp(
-                                                                r'(?=[A-Z])'))
-                                                            .join(' ')
-                                                            .toLowerCase()
-                                                            .substring(1),
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color: (order['status'] ==
-                                                                  'Pending' ||
-                                                              order['status'] ==
-                                                                  'Processing' ||
-                                                              order['status'] ==
-                                                                  'OnHold')
-                                                          ? AppColors.info
-                                                          : (order['status'] ==
-                                                                      'ReadyToPickUp' ||
-                                                                  order['status'] ==
-                                                                      'Dispatched' ||
-                                                                  order['status'] ==
-                                                                      'Confirmed' ||
-                                                                  order['status'] ==
-                                                                      'Delivered')
-                                                              ? AppColors
-                                                                  .success
-                                                              : AppColors.error,
-                                                    )),
-                                              ],
-                                            ),
-                                            const Spacer(),
-                                            PrimaryButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  selectedStatus =
-                                                      order['status'];
-                                                  fetchOrder(order['id']);
-                                                });
-                                              },
-                                              label: "View details",
-                                              width: 140,
-                                            )
-                                          ],
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Checkbox(
+                                            activeColor: AppColors.primary,
+                                            value: showNewOnly,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                showNewOnly = value!;
+                                              });
+                                            },
+                                          ),
                                         ),
-                                      )
-                                    : const SizedBox();
-                              },
-                            )
-                          ],
-                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 200,
+                                      height: 50,
+                                      child: TextField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            params['id'] = value;
+                                          });
+                                          onSearchChanged(value);
+                                        },
+                                        decoration: InputDecoration(
+                                            labelText: "Search by order id",
+                                            labelStyle: TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey.shade400,
+                                                fontWeight: FontWeight.w500),
+                                            suffixIcon: const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.search,
+                                                  size: 25,
+                                                  color: AppColors.primary,
+                                                ))),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                          if (orders!['items'].length == 0)
+                            const Padding(
+                              padding: EdgeInsets.all(100),
+                              child: Text(
+                                'No orders yet.',
+                                style: TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: orders!['totalCount'],
+                            itemBuilder: (context, index) {
+                              var order = orders!['items'][index];
+                              return !showNewOnly ||
+                                      (showNewOnly &&
+                                          order['status'] == 'Pending')
+                                  ? Container(
+                                      decoration: BoxDecoration(
+                                        color: order['status'] == "Pending"
+                                            ? AppColors.dimWhite
+                                            : Colors.transparent,
+                                        border: Border(
+                                          top: BorderSide(
+                                              color: Colors.grey.shade300),
+                                          bottom: BorderSide(
+                                              color: Colors.grey.shade300),
+                                        ),
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      width: double.infinity,
+                                      child: Row(
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                order['user']['fullName'],
+                                                style: const TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              Text(
+                                                DateFormat('dd/MM/yyyy HH:mm')
+                                                    .format(
+                                                  DateTime.parse(
+                                                      order['createdAt']),
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                  order['status'][0] +
+                                                      order['status']
+                                                          .split(RegExp(
+                                                              r'(?=[A-Z])'))
+                                                          .join(' ')
+                                                          .toLowerCase()
+                                                          .substring(1),
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: (order['status'] ==
+                                                                'Pending' ||
+                                                            order['status'] ==
+                                                                'Processing' ||
+                                                            order['status'] ==
+                                                                'OnHold')
+                                                        ? AppColors.info
+                                                        : (order['status'] ==
+                                                                    'ReadyToPickUp' ||
+                                                                order['status'] ==
+                                                                    'Dispatched' ||
+                                                                order['status'] ==
+                                                                    'Confirmed' ||
+                                                                order['status'] ==
+                                                                    'Delivered')
+                                                            ? AppColors.success
+                                                            : AppColors.error,
+                                                  )),
+                                            ],
+                                          ),
+                                          const Spacer(),
+                                          PrimaryButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                selectedStatus =
+                                                    order['status'];
+                                                fetchOrder(order['id']);
+                                              });
+                                            },
+                                            label: "View details",
+                                            width: 140,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  : const SizedBox();
+                            },
+                          )
+                        ],
                       ),
-                    ))),
+                    ),
+                  ),
+                ],
+              ),
+            )),
             const SizedBox(
               width: 20,
             ),
@@ -483,6 +491,7 @@ class _OrdersPageState extends State<OrdersPage> {
                 child: SizedBox(
                     height: MediaQuery.of(context).size.height,
                     child: Card(
+                      clipBehavior: Clip.antiAlias,
                       color: Colors.white,
                       surfaceTintColor: Colors.transparent,
                       child: SingleChildScrollView(
@@ -490,10 +499,10 @@ class _OrdersPageState extends State<OrdersPage> {
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             children: [
-                              Container(
+                              const SizedBox(
                                 width: double.infinity,
                                 height: 50,
-                                child: const Align(
+                                child: Align(
                                   alignment: Alignment.topLeft,
                                   child: Text(
                                     "Order details",
@@ -611,9 +620,7 @@ class _OrdersPageState extends State<OrdersPage> {
                                                   ),
                                                   direction: DismissDirection
                                                       .endToStart,
-                                                  onDismissed: (direction) {
-                                                    // removeProductFromCart(item['id'], index);
-                                                  },
+                                                  onDismissed: (direction) {},
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
@@ -638,11 +645,12 @@ class _OrdersPageState extends State<OrdersPage> {
                                                                     widthFactor:
                                                                         0.3,
                                                                     child: Image
-                                                                        .memory(
-                                                                      base64.decode(item['product']['productImages'][0]['image']
+                                                                        .network(
+                                                                      item['product']['productImages'][0]
                                                                               [
-                                                                              'data']
-                                                                          .toString()),
+                                                                              'image']
+                                                                          [
+                                                                          'downloadURL'],
                                                                       height:
                                                                           100,
                                                                     )),

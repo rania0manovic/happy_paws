@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
+import 'package:dio/dio.dart';
 import 'package:happypaws/common/services/PetsService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
@@ -46,8 +46,9 @@ class _PatientsPageState extends State<PatientsPage> {
   }
 
   Future<void> fetchData() async {
-    var response =
-        await PetsService().getPaged("", currentPage, 10, searchObject: params);
+   try {
+      var response =
+        await PetsService().getPaged("", currentPage, 15, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         currentPage++;
@@ -58,6 +59,13 @@ class _PatientsPageState extends State<PatientsPage> {
         }
       });
     }
+   } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        if(!mounted)return;
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
+   }
   }
 
   onSearchChanged(String query) {
@@ -111,7 +119,12 @@ class _PatientsPageState extends State<PatientsPage> {
         ToastHelper.showToastSuccess(
             context, "You have successfully removed the selected patient!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -271,7 +284,7 @@ class _PatientsPageState extends State<PatientsPage> {
                         ),
                       ),
                     )
-                  : TableDataPhoto(data: patient['photo']['data']),
+                  : TableDataPhoto(data: patient['photo']['downloadURL']),
               TableData(data: patient['name']),
               TableData(data: patient['petBreed']['name']),
               tableActions(patient)
@@ -291,7 +304,7 @@ class _PatientsPageState extends State<PatientsPage> {
               onPressed: () {
                 showAddEditPatientMenu(context, data: data);
               },
-              icon: Icons.edit_outlined,
+              icon:  Icons.edit_outlined,
               iconColor: AppColors.gray,
             ),
             ActionButton(

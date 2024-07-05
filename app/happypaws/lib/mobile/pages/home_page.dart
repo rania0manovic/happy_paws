@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/NotificationsService.dart';
+import 'package:happypaws/common/services/UsersService.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/message_notifier.dart';
+import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:provider/provider.dart';
@@ -72,6 +74,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future subscribe() async {
+   try {
+      var response = await UsersService().subscribeToNewsletter();
+    if (response.statusCode == 200) {
+      if (!mounted) return;
+     ToastHelper.showToastSuccess(context, "You have successfully subscribed to our newsletter! :)");
+      
+    }
+   } catch (e) {
+     rethrow;
+   }
+  }
+
   Future startConnection() async {
     var token = await AuthService().getToken();
     String? apiUrl = dotenv.env['API_URL'];
@@ -134,45 +149,62 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       _cheritySection(context),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: Image(
-                                width: MediaQuery.of(context).size.width,
-                                image: const AssetImage(
-                                    "assets/images/question_section.jpg"),
-                                fit: BoxFit.contain),
+                      qAndA(context),
+                      Container(
+                        color: AppColors.fill,
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            children: [
+                              const Text(
+                                "JOIN OUR COMMUNITY",
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                "Join our newsletter to get offers about new arrivals in the shop and more!",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width / 2,
+                                child: TextButton(
+                                  style: IconButton.styleFrom(
+                                      backgroundColor:
+                                          AppColors.primaryMediumLight),
+                                  onPressed: () {
+                                    subscribe();
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Text(
+                                        "Subscribe",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.dimWhite),
+                                      ),
+                                      Spacer(),
+                                      Icon(
+                                        Icons
+                                            .keyboard_double_arrow_right_rounded,
+                                        color: AppColors.dimWhite,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                          const QuestionSectionItem(
-                            title: "Why Happy Paws?",
-                            content:
-                                "At our establishment, we pride ourselves on offering an unparalleled array of pet essentials, ensuring that every need of your beloved companion is met with utmost care and dedication. Our esteemed shop proudly showcases an exquisite selection of top-quality nourishment, surpassing what ordinary stores can provide. Moreover, our exceptional team comprises meticulously handpicked doctors who possess extensive expertise and years of invaluable experience in the realm of animal care.",
-                          ),
-                          const QuestionSectionItem(
-                              title: "Can I book an appointment online?",
-                              content:
-                                  "Absolutely! Booking an appointment online is not just convenient, it's a leap forward in efficiency and accessibility. With just a few clicks or taps, you can secure your spot without the hassle of waiting in queues or making multiple phone calls."),
-                          const QuestionSectionItem(
-                              title: "Can I order products online?",
-                              content:
-                                  "Of course! Ordering products online brings a world of possibilities right to your fingertips. It's an incredibly convenient way to shop, allowing you to explore a vast array of products without ever leaving your home."),
-                          const QuestionSectionItem(
-                              title:
-                                  "What if the date of the appointment isn’t convenient for me?",
-                              content:
-                                  " Before making the appointment, you can always leave a note in the 'Notes' field specifying what time would be more suitable for you. This way, the scheduling team can take your preferences into consideration when arranging your appointment.However, if you've already received the appointment date and it still isn't convenient for you, there's no need to stress. You can simply cancel the appointment and try to book it again for another day.Remember, your comfort and convenience are important, and scheduling should be a stress-free process. So feel free to communicate your preferences and make changes as needed to ensure your appointment fits seamlessly into your busy life."),
-                          const QuestionSectionItem(
-                              title:
-                                  "What if my pet needs assistance urgently?",
-                              content:
-                                  "In our clinic section, we have an emergency call button readily available. With just a tap, you can connect directly with our clinic, ensuring swift and immediate assistance for your little friend. Our dedicated team is always prepared to provide prompt and compassionate care, ensuring the well-being of your furry friend is our top priority."),
-                          const QuestionSectionItem(
-                              title: "What is MyPaw card used for?",
-                              content:
-                                  "Essentially functioning as an ID card for every pet parent, it helps our team identify you more easily, streamlining the process and ensuring a smooth experience for both you and your furry companion.")
-                        ],
-                      ),
+                        ),
+                      )
                     ],
                   )
                 ]),
@@ -261,6 +293,46 @@ class _HomePageState extends State<HomePage> {
               )),
         ],
       ),
+    );
+  }
+
+  Column qAndA(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Image(
+              width: MediaQuery.of(context).size.width,
+              image: const AssetImage("assets/images/question_section.jpg"),
+              fit: BoxFit.contain),
+        ),
+        const QuestionSectionItem(
+          title: "Why Happy Paws?",
+          content:
+              "At our establishment, we pride ourselves on offering an unparalleled array of pet essentials, ensuring that every need of your beloved companion is met with utmost care and dedication. Our esteemed shop proudly showcases an exquisite selection of top-quality nourishment, surpassing what ordinary stores can provide. Moreover, our exceptional team comprises meticulously handpicked doctors who possess extensive expertise and years of invaluable experience in the realm of animal care.",
+        ),
+        const QuestionSectionItem(
+            title: "Can I book an appointment online?",
+            content:
+                "Absolutely! Booking an appointment online is not just convenient, it's a leap forward in efficiency and accessibility. With just a few clicks or taps, you can secure your spot without the hassle of waiting in queues or making multiple phone calls."),
+        const QuestionSectionItem(
+            title: "Can I order products online?",
+            content:
+                "Of course! Ordering products online brings a world of possibilities right to your fingertips. It's an incredibly convenient way to shop, allowing you to explore a vast array of products without ever leaving your home."),
+        const QuestionSectionItem(
+            title:
+                "What if the date of the appointment isn’t convenient for me?",
+            content:
+                " Before making the appointment, you can always leave a note in the 'Notes' field specifying what time would be more suitable for you. This way, the scheduling team can take your preferences into consideration when arranging your appointment.However, if you've already received the appointment date and it still isn't convenient for you, there's no need to stress. You can simply cancel the appointment and try to book it again for another day.Remember, your comfort and convenience are important, and scheduling should be a stress-free process. So feel free to communicate your preferences and make changes as needed to ensure your appointment fits seamlessly into your busy life."),
+        const QuestionSectionItem(
+            title: "What if my pet needs assistance urgently?",
+            content:
+                "In our clinic section, we have an emergency call button readily available. With just a tap, you can connect directly with our clinic, ensuring swift and immediate assistance for your little friend. Our dedicated team is always prepared to provide prompt and compassionate care, ensuring the well-being of your furry friend is our top priority."),
+        const QuestionSectionItem(
+            title: "What is MyPaw card used for?",
+            content:
+                "Essentially functioning as an ID card for every pet parent, it helps our team identify you more easily, streamlining the process and ensuring a smooth experience for both you and your furry companion.")
+      ],
     );
   }
 }
@@ -391,7 +463,7 @@ class QuestionSectionItem extends StatefulWidget {
   const QuestionSectionItem(
       {super.key, required this.title, required this.content});
   @override
-  _QuestionSectionItemState createState() => _QuestionSectionItemState();
+  State<QuestionSectionItem> createState() => _QuestionSectionItemState();
 }
 
 class _QuestionSectionItemState extends State<QuestionSectionItem> {
@@ -446,10 +518,10 @@ class _QuestionSectionItemState extends State<QuestionSectionItem> {
 class CentralPhoto extends StatefulWidget {
   final String photoUrl;
 
-  CentralPhoto({required this.photoUrl});
+  const CentralPhoto({super.key, required this.photoUrl});
 
   @override
-  _CentralPhotoState createState() => _CentralPhotoState();
+  State<CentralPhoto> createState() => _CentralPhotoState();
 }
 
 class _CentralPhotoState extends State<CentralPhoto> {

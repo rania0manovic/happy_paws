@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -53,7 +54,8 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
         setState(() {
           appointments!['items'][appointments!['items']
               .indexWhere((x) => x['id'] == data['id'])]['isCancelled'] = true;
-              ToastHelper.showToastSuccess(context, "You have successfully cancelled the appointment.");
+          ToastHelper.showToastSuccess(
+              context, "You have successfully cancelled the appointment.");
         });
       }
     } catch (e) {
@@ -159,6 +161,41 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                                         ),
                                   ],
                                 ),
+                      if (activeTab == 0 &&
+                          appointments!['items']
+                                  .where((e) =>
+                                      e['isCancelled'] == false &&
+                                      (e['startDateTime'] == null ||
+                                          DateTime.parse(e['startDateTime'])
+                                              .isAfter(DateTime.now())))
+                                  .length ==
+                              0)
+                        const Center(
+                          child: LightText(
+                              label: "You have no upcoming appointments!"),
+                        ),
+                      if (activeTab == 1 &&
+                          appointments!['items']
+                                  .where((e) =>
+                                      e['isCancelled'] == false &&
+                                      (e['startDateTime'] != null &&
+                                          DateTime.parse(e['startDateTime'])
+                                              .isBefore(DateTime.now())))
+                                  .length ==
+                              0)
+                        const Center(
+                          child: LightText(
+                              label: "You have no completed appointments!"),
+                        ),
+                      if (activeTab == 2 &&
+                          appointments!['items']
+                                  .where((e) => e['isCancelled'] == true)
+                                  .length ==
+                              0)
+                        const Center(
+                          child: LightText(
+                              label: "You have no cancelled appointments!"),
+                        ),
                     ])),
           );
   }
@@ -220,7 +257,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
             width: 104,
             decoration: BoxDecoration(
                 color: activeTab == 2
-                    ?AppColors.primary
+                    ? AppColors.primary
                     : const Color(0xffD9D9D9),
                 borderRadius: BorderRadius.circular(10)),
             child: Center(
@@ -275,7 +312,7 @@ class _UserAppointmentsPageState extends State<UserAppointmentsPage> {
                         fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    "Pet name:" + data['pet']['name'],
+                    "Pet name:${data['pet']['name']}",
                     textAlign: TextAlign.left,
                     style: const TextStyle(
                         color: Colors.white,

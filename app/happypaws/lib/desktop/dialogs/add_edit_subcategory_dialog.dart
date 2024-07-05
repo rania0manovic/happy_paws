@@ -1,14 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/action_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AddEditSubcategoryMenu extends StatefulWidget {
   final VoidCallback onClose;
@@ -25,12 +24,11 @@ class AddEditSubcategoryMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditSubcategoryMenuState createState() => _AddEditSubcategoryMenuState();
+  State<AddEditSubcategoryMenu> createState() => _AddEditSubcategoryMenuState();
 }
 
 class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
-  final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
+  File? selectedImage;
   final _formKey = GlobalKey<FormState>();
   bool disabledButton = false;
 
@@ -42,14 +40,11 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (selectedImage != null) {
+  Future<dynamic> _pickImage() async {
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImage = File(selectedImage.path);
-        data["photoFile"] = selectedImage.path;
+        selectedImage = result['selectedImage'];
       });
     }
   }
@@ -59,6 +54,15 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
       setState(() {
         disabledButton = true;
       });
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
       final response = await ProductSubcategoriesService().post("", data);
       if (response.statusCode == 200) {
         setState(() {
@@ -68,7 +72,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
         widget.fetchData();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
-            "You have succesfully added a new subcategory. Keep in mind that it may take up to 24 hours for changes to take place.");
+            "You have succesfully added a new subcategory!");
       } else {
         setState(() {
           disabledButton = false;
@@ -87,6 +91,20 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
       setState(() {
         disabledButton = true;
       });
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        if (widget.data != null && widget.data!['photo'] != null) {
+          imageUrl = await FirebaseStorageHelper.updateImage(
+              selectedImage!, widget.data!['photo']['downloadURL']);
+        } else {
+          imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+        }
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
       final response = await ProductSubcategoriesService().put("", data);
       if (response.statusCode == 200) {
         setState(() {
@@ -96,7 +114,7 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
         widget.fetchData();
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
-            "You have succesfully updated subcategory information. Keep in mind that it may take up to 24 hours for changes to take place.");
+            "You have succesfully updated subcategory information!");
       } else {
         setState(() {
           disabledButton = false;
@@ -161,8 +179,9 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                           children: [
                             InputField(
                               label: "Name:",
-                              value:
-                                  widget.data != null ? widget.data!['name'] : '',
+                              value: widget.data != null
+                                  ? widget.data!['name']
+                                  : '',
                               onChanged: (value) => setState(() {
                                 data['name'] = value;
                               }),
@@ -171,8 +190,9 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                                   bool hasSameName = widget
                                           .allSubcategories!['items']
                                           .any((category) =>
-                                              data['photoFile'] == null &&
-                                              category['name'] == data['name']) ??
+                                              selectedImage == null &&
+                                              category['name'] ==
+                                                  data['name']) ??
                                       false;
                                   if (hasSameName) {
                                     return false;
@@ -206,13 +226,12 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
-                                    child: _selectedImage != null
-                                        ? Image.file(_selectedImage!)
+                                    child: selectedImage != null
+                                        ? Image.file(selectedImage!)
                                         : widget.data != null
-                                            ? Image.memory(
-                                                base64.decode(widget
-                                                    .data!['photo']['data']
-                                                    .toString()),
+                                            ? Image.network(
+                                                widget.data!['photo']
+                                                    ['downloadURL'],
                                                 height: 25,
                                               )
                                             : const Image(
@@ -235,11 +254,11 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
                               height: 16,
                             ),
                             PrimaryButton(
-                              isDisabled: disabledButton,
+                                isDisabled: disabledButton,
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     if (widget.data == null &&
-                                        data["photoFile"] == null) {
+                                        selectedImage == null) {
                                       ToastHelper.showToastError(context,
                                           "Image is a required field!");
                                       return;

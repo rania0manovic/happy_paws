@@ -13,7 +13,6 @@ namespace HappyPaws.Core.Dtos.Order
 {
     public class OrderDto : BaseDto
     {
-        public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public string? PayId { get; set; }

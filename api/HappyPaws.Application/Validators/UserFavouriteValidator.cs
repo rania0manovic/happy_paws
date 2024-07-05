@@ -12,6 +12,8 @@ namespace HappyPaws.Application.Validators
     {
         public UserFavouriteValidator()
         {
+            RuleFor(x => x.ProductId).NotNull();
+            RuleFor(x => x.UserId).NotNull();
 
         }
     }

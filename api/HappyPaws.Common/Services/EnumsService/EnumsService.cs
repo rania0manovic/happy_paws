@@ -14,6 +14,11 @@ namespace HappyPaws.Common.Services.EnumsService
             return Task.FromResult(GetValues<EmployeePosition>());
         }
 
+        public Task<IEnumerable<KeyValuePair<int, string>>> GetNewsletterTopics(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(GetValues<NewsletterTopics>());
+        }
+
         public Task<IEnumerable<KeyValuePair<int, string>>> GetOrderStatusesAsync(CancellationToken cancellationToken = default)
         {
             return Task.FromResult(GetValues<OrderStatus>());

@@ -62,7 +62,8 @@ class ActionButton extends StatefulWidget {
   final IconData icon;
   final Color iconColor;
 
-  const ActionButton({super.key, 
+  const ActionButton({
+    super.key,
     required this.onPressed,
     required this.icon,
     required this.iconColor,
@@ -89,7 +90,8 @@ class ConfirmationDialog extends StatelessWidget {
   final VoidCallback onYesPressed;
   final VoidCallback onNoPressed;
 
-  const ConfirmationDialog({super.key, 
+  const ConfirmationDialog({
+    super.key,
     required this.title,
     required this.content,
     required this.onYesPressed,
@@ -104,11 +106,11 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onNoPressed,
-          child: Text('No'),
+          child: const Text('No'),
         ),
         TextButton(
           onPressed: onYesPressed,
-          child: Text('Yes'),
+          child: const Text('Yes'),
         ),
       ],
     );

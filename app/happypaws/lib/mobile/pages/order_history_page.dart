@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -128,7 +127,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                               ),
                               Text(
                                 DateFormat('dd.MM.yyyy')
-                                    .format(DateTime.parse(order['orderDate'])),
+                                    .format(DateTime.parse(order['createdAt'])),
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,

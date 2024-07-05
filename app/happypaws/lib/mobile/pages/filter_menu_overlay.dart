@@ -18,7 +18,7 @@ class FilterMenuOverlay extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FilterMenuOverlayState createState() => _FilterMenuOverlayState();
+  State<FilterMenuOverlay> createState() => _FilterMenuOverlayState();
 }
 
 class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
@@ -84,7 +84,7 @@ class _FilterMenuOverlayState extends State<FilterMenuOverlay> {
                     ),
                   ),
                   reviewFilters(),
-                  Spacer(),
+                  const Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Center(

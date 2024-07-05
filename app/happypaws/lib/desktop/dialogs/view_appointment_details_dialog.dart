@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
@@ -57,7 +57,12 @@ class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
           data['appointmentId'] = widget.appointment['id'].toString();
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -78,10 +83,15 @@ class _ViewAppointmentDetailsState extends State<ViewAppointmentDetails> {
             context, "The appointment has been succesfully booked!");
         await widget.onClose.call();
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         isDisabledButton = false;
       });
+      if (e.response != null && e.response!.statusCode == 403) {
+        if (!mounted) return;
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }

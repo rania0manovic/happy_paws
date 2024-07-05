@@ -59,17 +59,20 @@ class _CheckoutPageState extends State<CheckoutPage> {
       setState(() {
         isLoading = true;
       });
-      data['orderDate'] = DateTime.now().toIso8601String();
+      data['createdAt'] = DateTime.now().toIso8601String();
       data['paymentMethod'] = "InStore";
       data['total'] = widget.total;
       data['shippingAddressId'] = null;
       var response = await OrdersService().post('', data);
       if (response.statusCode == 200) {
+      if (!context.mounted) return;
         setState(() {
           isLoading = false;
           ToastHelper.showToastSuccess(
               context, "Your order has been successfully created!");
         });
+        if (!mounted) return;
+        context.router.push(const OrderHistoryRoute());
       }
     } catch (e) {
       rethrow;
@@ -81,7 +84,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       setState(() {
         isLoading = true;
       });
-      data['orderDate'] = DateTime.now().toIso8601String();
+      data['createdAt'] = DateTime.now().toIso8601String();
       data['paymentMethod'] = "Paypal";
       data['total'] = widget.total;
       data['payId'] = payId;
@@ -127,6 +130,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 403) {
+        if (!mounted) return;
         ToastHelper.showToastError(context,
             "Only fields marked as optional are not required! Please fill out all required fields.");
       }
@@ -468,56 +472,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       }),
                                 ),
                               );
-                              // Navigator.of(context).push(MaterialPageRoute(
-                              //   builder: (BuildContext context) =>
-                              //       PaypalCheckoutView(
-                              //     sandboxMode: true,
-                              //     clientId:
-                              //         "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r",
-                              //     secretKey:
-                              //         "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW",
-                              //     transactions: [
-                              //       {
-                              //         "amount": {
-                              //           "total": widget.total,
-                              //           "currency": "USD",
-                              //           "details": {
-                              //             "subtotal": widget.total,
-                              //             "shipping": '0',
-                              //             "shipping_discount": 0
-                              //           }
-                              //         },
-                              //         "description": "",
-                              //         "item_list": {
-                              //           "items": [
-                              //             for (var item
-                              //                 in widget.products['items'])
-                              //               {
-                              //                 "name": item['product']['name'],
-                              //                 "quantity": item['quantity'],
-                              //                 "price": item['product']['price'],
-                              //                 "currency": "USD"
-                              //               },
-                              //           ],
-                              //         }
-                              //       }
-                              //     ],
-                              //     note:
-                              //         "Contact us for any questions on your order.",
-                              //     onSuccess: (Map params) async {
-                              //       log(params.toString());
-                              //       Navigator.pop(context);
-                              //       placePaypalOrder(params['data']['id']);
-                              //     },
-                              //     onError: (error) {
-                              //       log("onError: $error");
-                              //       Navigator.pop(context);
-                              //     },
-                              //     onCancel: () {
-                              //       Navigator.pop(context);
-                              //     },
-                              //   ),
-                              // ));
                             },
                             child: Container(
                               width: double.infinity,

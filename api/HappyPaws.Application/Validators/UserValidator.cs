@@ -12,7 +12,13 @@ namespace HappyPaws.Application.Validators
     {
         public UserValidator()
         {
-
+            RuleFor(x => x.FirstName).NotNull().NotEmpty();
+            RuleFor(x => x.LastName).NotNull().NotEmpty();
+            RuleFor(x => x.Email).NotNull().NotEmpty();
+            RuleFor(x => x.Gender).NotNull();
+            RuleFor(x => x.Role).NotNull();
+            RuleFor(x => x.IsVerified).NotNull();
+            RuleFor(x => x.IsSubscribed).NotNull();
         }
     }
 }

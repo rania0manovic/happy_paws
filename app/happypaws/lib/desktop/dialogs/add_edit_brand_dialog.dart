@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
@@ -21,7 +22,7 @@ class AddEditBrandMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditBrandMenuState createState() => _AddEditBrandMenuState();
+  State<AddEditBrandMenu> createState() => _AddEditBrandMenuState();
 }
 
 class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
@@ -59,7 +60,11 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
         ToastHelper.showToastSuccess(context,
             "You have successfully added a new allergy for the selected pet!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -87,7 +92,11 @@ class _AddEditBrandMenuState extends State<AddEditBrandMenu> {
         ToastHelper.showToastSuccess(context,
             "You have successfully added a new allergy for the selected pet!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }

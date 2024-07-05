@@ -12,6 +12,7 @@ namespace HappyPaws.Application.Validators
     {
         public SystemConfigValidator()
         {
+            RuleFor(x => x.DonationsGoal).NotNull();
 
         }
     }

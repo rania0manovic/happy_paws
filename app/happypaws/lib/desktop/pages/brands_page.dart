@@ -55,7 +55,7 @@ class _ProductsPageState extends State<BrandsPage> {
 
   Future<void> fetchData() async {
     var response = await BrandsService()
-        .getPaged("", currentPage, 10, searchObject: params);
+        .getPaged("", currentPage, 15, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         currentPage++;
@@ -88,6 +88,7 @@ class _ProductsPageState extends State<BrandsPage> {
       {Map<String, dynamic>? data}) async {
     var allBrands = await BrandsService().getPaged('endpoint', 1, 99999);
     if (allBrands.statusCode == 200) {
+      if (!context.mounted) return;
       showDialog(
           context: context,
           builder: (context) {

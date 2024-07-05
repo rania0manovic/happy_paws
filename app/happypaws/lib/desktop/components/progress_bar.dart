@@ -7,10 +7,10 @@ import 'package:happypaws/common/utilities/colors.dart';
 class CustomProgressIndicator extends StatefulWidget {
   final double targetProgress;
 
-  CustomProgressIndicator({required this.targetProgress});
+  const CustomProgressIndicator({super.key, required this.targetProgress});
 
   @override
-  _CustomProgressIndicatorState createState() =>
+  State<CustomProgressIndicator> createState() =>
       _CustomProgressIndicatorState();
 }
 
@@ -24,7 +24,7 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600), 
+      duration: const Duration(milliseconds: 600),
     );
     _animation = Tween<double>(
       begin: 0.0,
@@ -79,7 +79,7 @@ class _CustomProgressIndicatorState extends State<CustomProgressIndicator>
                 child: Center(
                   child: Text(
                     "${(_animation.value * 100).toStringAsFixed(0)}%",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w800,
                       color: AppColors.primary,
@@ -102,7 +102,7 @@ class ProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final double strokeWidth = 20;
+    const double strokeWidth = 20;
     final double radius = (size.shortestSide - strokeWidth) / 2;
     final double center = size.shortestSide / 2;
 

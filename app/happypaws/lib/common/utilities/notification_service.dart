@@ -31,12 +31,12 @@ class NotificationService {
             priority: Priority.high,
             ticker: 'ticker');
 
-    int notification_id = 1;
+    int notificationId = 1;
     const NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);
 
     await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, notificationDetails, payload: 'Not present');
+        .show(notificationId, title, value, notificationDetails, payload: 'Not present');
   }
 
 
@@ -53,12 +53,12 @@ void showNotificationIos(String title, String value) async {
         // threadIdentifier: String? (only from iOS 10 onwards)
    );
 
-    int notification_id = 1;
+    int notificationId = 1;
       
   const NotificationDetails platformChannelSpecifics = 
       NotificationDetails(iOS: iOSPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin
-        .show(notification_id, title, value, platformChannelSpecifics, payload: 'Not present');
+        .show(notificationId, title, value, platformChannelSpecifics, payload: 'Not present');
   }
 }

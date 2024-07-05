@@ -21,16 +21,31 @@ namespace HappyPaws.Infrastructure.Repositories
         }
         public override async Task<PagedList<Product>> GetPagedAsync(ProductSearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
+            var result = DbSet.Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductCategory)
                 .Include(x => x.ProductCategorySubcategory).ThenInclude(x => x.ProductSubcategory)
                 .Include(x => x.ProductReviews)
-                .Include(x => x.ProductImages.Take(searchObject.TakePhotos)).ThenInclude(x => x.Image)
+                .Include(x => x.ProductImages).ThenInclude(x => x.Image)
                 .Where(x => (searchObject.SubcategoryId == null || x.ProductCategorySubcategory.ProductSubcategoryId == searchObject.SubcategoryId)
                 && (searchObject.CategoryId == null || x.ProductCategorySubcategory.ProductCategoryId == searchObject.CategoryId)
                 && (searchObject.SearchParams == null || x.UPC.StartsWith(searchObject.SearchParams) || x.Name.Contains(searchObject.SearchParams) || x.Brand.Name.Contains(searchObject.SearchParams))
                 && (searchObject.OnlyActive == false || x.IsActive == true)
                 && (searchObject.RecommendedProductIds == null || searchObject.RecommendedProductIds.Contains(x.Id))
-                ).ToPagedListAsync(searchObject, cancellationToken);
+                && (searchObject.MinReview == null || x.ProductReviews.Average(x=>x.Review)>=searchObject.MinReview)
+                ).AsQueryable();
+            if (searchObject.LowestPriceFirst != null)
+            {
+                if (searchObject.LowestPriceFirst == true)
+                {
+                    result = result.OrderBy(x => x.Price);
+                }
+                else
+                    result = result.OrderByDescending(x => x.Price);
+            }
+            if (searchObject.OrderByDate != null)
+            {
+                result = result.OrderByDescending(x => x.CreatedAt);
+            }
+            return await result.ToPagedListAsync(searchObject, cancellationToken);
         }
         public override async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
@@ -55,7 +70,7 @@ namespace HappyPaws.Infrastructure.Repositories
         public async Task<List<Product>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default)
         {
             return await DbSet
-                .Include(x => x.ProductImages.Take(1)).ThenInclude(x => x.Image)
+                .Include(x => x.ProductImages).ThenInclude(x => x.Image)
              .OrderByDescending(p => p.OrderDetails.Sum(od => od.Quantity))
              .Take(size)
              .ToListAsync(cancellationToken: cancellationToken);

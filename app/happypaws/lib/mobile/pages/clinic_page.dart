@@ -36,7 +36,7 @@ class _ClinicPageState extends State<ClinicPage> {
             '', 1, 2, searchObject: {
           'userId': user['Id'],
           'minDateTime': DateTime.now(),
-          'isCancelled' : false
+          'isCancelled': false
         });
         var medicationsResponse = await PetMedicationsService().getPaged(
             'endpoint', 1, 999, searchObject: {
@@ -115,7 +115,7 @@ class _ClinicPageState extends State<ClinicPage> {
                           children: [
                             LightText(
                                 label: "You have no upcoming appointments!"),
-                            const SizedBox(
+                            SizedBox(
                               height: 20,
                             )
                           ],
@@ -128,13 +128,13 @@ class _ClinicPageState extends State<ClinicPage> {
                       const SizedBox(
                         height: 8,
                       ),
-                       if (medicationReminders!['items'].isEmpty)
+                      if (medicationReminders!['items'].isEmpty)
                         const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             LightText(
                                 label: "You have no medication reminders!"),
-                            const SizedBox(
+                            SizedBox(
                               height: 20,
                             )
                           ],
@@ -152,12 +152,6 @@ class _ClinicPageState extends State<ClinicPage> {
                             ),
                           ],
                         ),
-
-                      // medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
-                      //     "After Breakfast"),
-
-                      // medicationContainer("Vetmedin 5mg", "10:00 AM", "Donna",
-                      //     "After Breakfast"),
                     ],
                   ),
                 ),
@@ -177,8 +171,9 @@ class _ClinicPageState extends State<ClinicPage> {
             height: 54,
             width: 54,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: AppColors.primary,),
+              borderRadius: BorderRadius.circular(100),
+              color: AppColors.primary,
+            ),
             child: Padding(
               padding: const EdgeInsets.all(14.0),
               child: SvgPicture.asset(
@@ -262,8 +257,7 @@ class _ClinicPageState extends State<ClinicPage> {
       height: 180,
       width: double.infinity,
       decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20)),
+          color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(

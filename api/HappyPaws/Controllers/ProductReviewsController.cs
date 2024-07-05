@@ -2,6 +2,7 @@
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductReview;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
@@ -13,6 +14,8 @@ namespace HappyPaws.Api.Controllers
         {
             this.user = user;
         }
+
+        [Authorize(Roles ="User")]
         public override Task<IActionResult> Post([FromBody] ProductReviewDto upsertDto, CancellationToken cancellationToken = default)
         {
             if (user.Id.HasValue)

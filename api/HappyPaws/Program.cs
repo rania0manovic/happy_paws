@@ -1,5 +1,6 @@
 using HappyPaws.Api;
 using HappyPaws.Api.Config;
+using HappyPaws.Api.HostedServices.Kafka;
 using HappyPaws.Api.Hubs.MessageHub;
 using HappyPaws.Application;
 using HappyPaws.Infrastructure;
@@ -26,9 +27,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
+builder.Services.AddHostedService<KafkaProducerHostedService>();
+builder.Services.AddScoped<KafkaProducerHostedService>();
 
 var app = builder.Build();
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -37,16 +39,15 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
+//app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.MapHub<MessageHub>("/messageHub");
 using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    dataContext.Database.EnsureCreated();
-    //dataContext.Database.Migrate();
+    dataContext.Database.Migrate();
 }
 
 app.Run();

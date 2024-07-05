@@ -14,6 +14,8 @@ namespace HappyPaws.Core.Dtos.User
         public bool IsVerified { get; set; }
         public string? ConnectionId { get; set; }
         public EmployeePosition? EmployeePosition { get; set; }
+        public string? DownloadURL { get; set; }
+        public bool IsSubscribed { get; set; }
 
         public IFormFile? PhotoFile { get; set; }
 

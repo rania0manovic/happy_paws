@@ -12,7 +12,11 @@ namespace HappyPaws.Application.Validators
     {
         public PetValidator()
         {
-
+            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.OwnerId).NotNull();
+            RuleFor(x => x.Weight).NotNull();
+            RuleFor(x => x.Gender).NotNull();
+            RuleFor(x => x.PetBreedId).NotNull();
         }
     }
 }

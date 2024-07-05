@@ -19,8 +19,9 @@ class LoginDesktopPage extends StatefulWidget {
 
 class _LoginDesktopPageState extends State<LoginDesktopPage> {
   bool error = false;
-  Map<String, dynamic> data = {};
+  Map<String, dynamic> data = {'adminPanel':true};
   bool isLoading = true;
+  bool isDisabledButton = false;
 
   @override
   void initState() {
@@ -43,7 +44,7 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
   Future<void> login() async {
     try {
       setState(() {
-        isLoading=true;
+        isDisabledButton=true;
       });
       final response = await AuthService().signIn(data);
       if (response.statusCode == 200) {
@@ -53,22 +54,22 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('token', response.data['token'].toString());
             setState(() {
-        isLoading=false;
+        isDisabledButton=false;
       });
           if (mounted) {
             context.router.push(const AdminLayout());
           }
         }
       } else  {
-        setState(() {
+         setState(() {
           error = true;
-          isLoading=false;
+          isDisabledButton=false;
         });
       }
     } catch (e) {
        setState(() {
           error = true;
-          isLoading=false;
+          isDisabledButton=false;
         });
     }
   }
@@ -79,7 +80,7 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: isLoading
-          ? Spinner()
+          ? const Spinner()
           : SafeArea(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -153,7 +154,7 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
                                 height: 40,
                               ),
                               PrimaryButton(
-                                isDisabled: isLoading,
+                                isDisabled: isDisabledButton,
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     login();

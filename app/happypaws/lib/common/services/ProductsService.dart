@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:happypaws/common/services/BaseService.dart';
 
 class ProductsService extends BaseService {
@@ -14,6 +13,11 @@ class ProductsService extends BaseService {
     return response;
   }
 
+  Future<dynamic> sendNewsLetterForNewArrivalls(data) async {
+    var response = await post('/SendNewsLetterForNewArrivalls', data);
+    return response;
+  }
+
   Future<dynamic> hasAnyWithSubcategoryId(int subcategoryId) async {
     var response = await get('/HasAnyWithSubcategoryId/$subcategoryId');
     return response;
@@ -24,96 +28,14 @@ class ProductsService extends BaseService {
     return response;
   }
 
-  @override
-  Future<dynamic> post(String endpoint, data) async {
-    FormData formData = FormData();
-    if (data['imageFiles'] != null) {
-      for (var file in data['imageFiles']) {
-        formData.files.add(
-          MapEntry(
-            'ImageFiles',
-            await MultipartFile.fromFile(
-              file.path,
-              filename: file.path.split('/').last,
-            ),
-          ),
-        );
-      }
-    }
-    data.forEach((key, value) {
-      if (value != null) {
-        if (key == 'price') {
-          if (value is double) {
-            value = value.toString().replaceAll('.', ',');
-          } else {
-            value = value.replaceAll('.', ',');
-          }
-        }
-        formData.fields.add(MapEntry(key, value.toString()));
-      }
-    });
-
-    try {
-      var response = await super.post('', formData);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
   Future<dynamic> getRecommendedProductsForUser({int size = 5}) async {
-    try {
-      var response = await get("/RecommendedProductsForUser",
-          searchObject: {"size": size});
-      return response;
-    } catch (e) {
-      rethrow;
-    }
+    var response =
+        await get("/RecommendedProductsForUser", searchObject: {"size": size});
+    return response;
   }
 
   Future<dynamic> getBestsellers({int size = 4}) async {
-    try {
-      var response = await get("/Bestsellers", searchObject: {"size": size});
-      return response;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
-  Future<dynamic> put(String endpoint, data) async {
-    FormData formData = FormData();
-    if (data['imageFiles'] != null) {
-      for (var file in data['imageFiles']) {
-        formData.files.add(
-          MapEntry(
-            'ImageFiles',
-            await MultipartFile.fromFile(
-              file.path,
-              filename: file.path.split('/').last,
-            ),
-          ),
-        );
-      }
-    }
-    data.forEach((key, value) {
-      if (value != null) {
-        if (key == 'price') {
-          if (value is double) {
-            value = value.toString().replaceAll('.', ',');
-          } else {
-            value = value.replaceAll('.', ',');
-          }
-        }
-        formData.fields.add(MapEntry(key, value.toString()));
-      }
-    });
-
-    try {
-      var response = await super.put('', formData);
-      return response;
-    } catch (e) {
-      rethrow;
-    }
+    var response = await get("/Bestsellers", searchObject: {"size": size});
+    return response;
   }
 }

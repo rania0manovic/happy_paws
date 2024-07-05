@@ -1,22 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
+import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_icon_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
+import 'package:happypaws/desktop/components/gender_dropdown_menu.dart';
+import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/desktop/dialogs/add_edit_allergy_dialog.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -39,12 +40,11 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
   String? selectedPetBreed;
   Map<String, dynamic>? petTypes;
   List<dynamic>? petBreeds;
-  Map<String, dynamic> data = {};
-  final ImagePicker _imagePicker = ImagePicker();
+  Map<String, dynamic>? data;
   File? _selectedImage;
-  Map<String, dynamic>? profilePhoto;
   final _formKey = GlobalKey<FormState>();
   Map<String, bool> errorStates = {};
+  bool isDisabledButton = false;
 
   @override
   void initState() {
@@ -68,7 +68,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             data = responsePetData.data;
             selectedDate = formatter
                 .format(DateTime.parse(responsePetData.data['birthDate']));
-            profilePhoto = responsePetData.data['photo'];
             selectedGender = responsePetData.data['gender'];
             selectedPetType =
                 responsePetData.data['petBreed']['petType']['id'].toString();
@@ -77,19 +76,35 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           });
         }
       } else {
-        data['OwnerId'] = widget.userId;
+        setState(() {
+          data = {'ownerId': widget.userId};
+        });
       }
     }
   }
 
   Future<void> addPet() async {
     try {
-      if (data['weight'] is double || data['weight'] is String) {
-        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      setState(() {
+        isDisabledButton = true;
+      });
+      if (_selectedImage != null) {
+        var imageUrl = await FirebaseStorageHelper.addImage(_selectedImage!);
+        if (imageUrl != null) {
+          setState(() {
+            data!['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
       }
-      final response = await PetsService().postMultiPartRequest("", data);
+      if (data!['weight'] is double || data!['weight'] is String) {
+        data!['weight'] = data!['weight'].toString().replaceAll('.', ',');
+      }
+      final response = await PetsService().post("", data!);
       if (response.statusCode == 200) {
         await widget.onChangedData!.call();
+        setState(() {
+          isDisabledButton = false;
+        });
         if (!mounted) return;
         context.router.pop();
         ToastHelper.showToastSuccess(
@@ -98,6 +113,9 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         throw Exception('Error occured');
       }
     } catch (e) {
+      setState(() {
+        isDisabledButton = false;
+      });
       ToastHelper.showToastError(
           context, "An error occured! Please try again later.");
       rethrow;
@@ -106,13 +124,32 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
 
   Future<void> editPet() async {
     try {
-      if (data['weight'] is double || data['weight'] is String) {
-        data['weight'] = data['weight'].toString().replaceAll('.', ',');
+      setState(() {
+        isDisabledButton = true;
+      });
+      dynamic imageUrl;
+      if (_selectedImage != null) {
+        if (widget.petId != null && data!['photo'] != null) {
+          imageUrl = await FirebaseStorageHelper.updateImage(
+              _selectedImage!, data!['photo']['downloadURL']);
+        } else {
+          imageUrl = await FirebaseStorageHelper.addImage(_selectedImage!);
+        }
+        if (imageUrl != null) {
+          setState(() {
+            data!['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
       }
-      final response = await PetsService().putMultiPartRequest("", data);
+      if (data!['weight'] is double || data!['weight'] is String) {
+        data!['weight'] = data!['weight'].toString().replaceAll('.', ',');
+      }
+      final response = await PetsService().put("", data!);
       if (response.statusCode == 200) {
+        setState(() {
+          isDisabledButton = false;
+        });
         await widget.onChangedData!.call();
-
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully edited the selected pet!");
@@ -120,6 +157,9 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
         throw Exception('Error occured');
       }
     } catch (e) {
+      setState(() {
+        isDisabledButton = false;
+      });
       ToastHelper.showToastError(
           context, "An error occured! Please try again later.");
       rethrow;
@@ -155,22 +195,18 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (selectedImage != null) {
+  Future<dynamic> _pickImage() async {
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImage = File(selectedImage.path);
-        data["photoFile"] = selectedImage.path;
+        _selectedImage = result['selectedImage'];
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return petTypes == null ||
-            (widget.petId != null && selectedPetBreed == null)
+    return petTypes == null || data == null
         ? const Spinner()
         : SingleChildScrollView(
             child: Padding(
@@ -218,13 +254,12 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                                               _selectedImage!,
                                                               fit: BoxFit.cover,
                                                             )
-                                                          : profilePhoto != null
-                                                              ? Image.memory(
-                                                                  base64.decode(
-                                                                    profilePhoto![
-                                                                            'data']
-                                                                        .toString(),
-                                                                  ),
+                                                          : data!['photo'] !=
+                                                                  null
+                                                              ? Image.network(
+                                                                  data!['photo']
+                                                                      [
+                                                                      'downloadURL'],
                                                                   fit: BoxFit
                                                                       .cover,
                                                                 )
@@ -248,43 +283,61 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                             ))
                                       ],
                                     )),
-                                inputField(
-                                    'Name:',
-                                    widget.petId != null ? data['name'] : null,
-                                    "name"),
-                                inputField(
-                                    'Weight (in kg):',
-                                    widget.petId != null
-                                        ? '${data['weight']}'
-                                        : null,
-                                    "weight"),
-                                apiDropdownMenu(petTypes!['items'], "Pet type:",
-                                    (String? newValue) async {
-                                  setState(() {
-                                    selectedPetBreed = null;
-                                    selectedPetType = null;
-                                  });
-                                  await fetchPetBreeds(newValue);
-                                  setState(() {
-                                    selectedPetType = newValue;
-                                  });
-                                }, selectedPetType),
-                                apiDropdownMenu(
-                                    petBreeds == null
-                                        ? List.empty()
-                                        : petBreeds!,
-                                    "Pet breed:",
-                                    (String? newValue) => setState(() {
-                                          selectedPetBreed = newValue;
-                                          data['petBreedId'] = newValue;
-                                        }),
-                                    selectedPetBreed,
-                                    isDisabeled:
-                                        selectedPetType == null ? true : false),
-                                dropdownMenu("Gender:", "gender"),
+                                InputField(
+                                  label: 'Name:',
+                                  value: data!['name'],
+                                  onChanged: (value) {
+                                    data!['name'] = value;
+                                  },
+                                ),
+                                InputField(
+                                  label: 'Weight (in kg):',
+                                  value: widget.petId != null
+                                      ? '${data!['weight']}'
+                                      : '',
+                                  isNumber: true,
+                                  onChanged: (value) {
+                                    data!['weight'] = value;
+                                  },
+                                ),
+                                ApiDataDropdownMenu(
+                                    items: petTypes!['items'],
+                                    label: "Pet type:",
+                                    onChanged: (String? newValue) async {
+                                      setState(() {
+                                        selectedPetBreed = null;
+                                        selectedPetType = null;
+                                      });
+                                      await fetchPetBreeds(newValue);
+                                      setState(() {
+                                        selectedPetType = newValue;
+                                      });
+                                    },
+                                    selectedOption: selectedPetType),
+                                ApiDataDropdownMenu(
+                                  items: petBreeds == null
+                                      ? List.empty()
+                                      : petBreeds!,
+                                  label: "Pet breed:",
+                                  onChanged: (String? newValue) => setState(() {
+                                    selectedPetBreed = newValue;
+                                    data!['petBreedId'] = newValue;
+                                  }),
+                                  selectedOption: selectedPetBreed,
+                                  isDisabled:
+                                      selectedPetType == null ? true : false,
+                                ),
+                                GenderDropdownMenu(
+                                  selectedGender: selectedGender,
+                                  onChanged: (newValue) => setState(() {
+                                    selectedGender = newValue!;
+                                    data!['gender'] = newValue;
+                                  }),
+                                ),
                                 birthDateInput(context),
                                 if (widget.petId != null)
-                                  if (!data['petAllergies'].isEmpty)
+                                  if (data!['petAllergies'] != null &&
+                                      !data!['petAllergies'].isEmpty)
                                     allergiesSection()
                                   else
                                     GestureDetector(
@@ -302,12 +355,14 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                                           ),
                                         )),
                                 if (widget.petId != null)
-                                  if (!data['petMedications'].isEmpty)
+                                  if (data!['petMedications'] != null &&
+                                      !data!['petMedications'].isEmpty)
                                     medicationSection(),
                                 const SizedBox(
                                   height: 20,
                                 ),
                                 PrimaryButton(
+                                  isDisabled: isDisabledButton,
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       widget.petId == null
@@ -399,6 +454,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             height: 300,
             width: MediaQuery.of(context).size.width,
             child: SfDateRangePicker(
+              backgroundColor: Colors.transparent,
               maxDate: DateTime.now(),
               selectionMode: DateRangePickerSelectionMode.single,
               showNavigationArrow: true,
@@ -407,7 +463,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 final value = formatter.format(args.value!);
                 setState(() {
                   selectedDate = value;
-                  data['birthDate'] = value;
+                  data!['birthDate'] = value;
                 });
                 Navigator.of(context).pop();
               },
@@ -438,7 +494,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
             spacing: 18.0,
             runSpacing: 8.0,
             children: [
-              for (var item in data['petMedications'])
+              for (var item in data!['petMedications'])
                 listItem(item['medicationName'])
             ],
           ),
@@ -470,7 +526,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                   spacing: 18.0,
                   runSpacing: 8.0,
                   children: [
-                    for (var item in data['petAllergies'])
+                    for (var item in data!['petAllergies'])
                       GestureDetector(
                           onTap: () => showAddAllergyMenu(context, data: item),
                           child: listItem(item['name'],
@@ -518,23 +574,23 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           content: AddAllergyMenu(
             onAdd: (value) {
               setState(() {
-                this.data['petAllergies'].add(value);
+                this.data!['petAllergies'].add(value);
               });
             },
             onEdit: (value) {
               setState(() {
-                this.data['petAllergies'][this
-                    .data['petAllergies']
+                this.data!['petAllergies'][this
+                    .data!['petAllergies']
                     .indexWhere((x) => x['id'] == value['id'])] = value;
               });
             },
             onRemove: (value) {
               setState(() {
-                this.data['petAllergies'].removeWhere((x) => x['id'] == value);
+                this.data!['petAllergies'].removeWhere((x) => x['id'] == value);
               });
             },
             data: data,
-            petId: this.data['id'],
+            petId: this.data!['id'],
             onClosed: () {
               Navigator.of(context).pop();
             },
@@ -564,187 +620,6 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
           allergy,
           style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
         ),
-      ],
-    );
-  }
-
-  Column apiDropdownMenu(dynamic items, String label,
-      void Function(String? newValue) onChanged, String? selectedOption,
-      {bool isDisabeled = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 16,
-        ),
-        LightText(
-          label: label,
-          fontSize: 18,
-        ),
-        Container(
-            padding: const EdgeInsets.only(top: 10),
-            width: double.infinity,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  errorStyle: TextStyle(color: AppColors.error, fontSize: 14),
-                  fillColor: Color(0xffF2F2F2),
-                  filled: true,
-                  border: UnderlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    setState(() {
-                      errorStates[label] = true;
-                    });
-                    return "This field is required";
-                  }
-                  setState(() {
-                    errorStates[label] = false;
-                  });
-                  return null;
-                },
-                isExpanded: true,
-                value: selectedOption,
-                hint: const Text('Select'),
-                borderRadius: BorderRadius.circular(10),
-                icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                onChanged: isDisabeled ? null : onChanged,
-                disabledHint: selectedPetType != null
-                    ? const Text("No breed found...")
-                    : const Text("Select the type first..."),
-                items: [
-                  for (var item in items)
-                    DropdownMenuItem<String>(
-                      value: item['id'].toString(),
-                      child: Text(item['name']),
-                    ),
-                ],
-              ),
-            )),
-      ],
-    );
-  }
-
-  Column dropdownMenu(String label, String key) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-            width: double.infinity,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xffF2F2F2),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8),
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedGender,
-                  underline: Container(),
-                  borderRadius: BorderRadius.circular(10),
-                  icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedGender = newValue!;
-                      data[key] = newValue;
-                    });
-                  },
-                  items: <String>[
-                    'Unknown',
-                    'Female',
-                    'Male',
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w500)),
-                    );
-                  }).toList(),
-                ),
-              ),
-            )),
-      ],
-    );
-  }
-
-  Column inputField(String label, String? initialValue, String key) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(
-          height: 10,
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        SizedBox(
-          height: errorStates[key] ?? false ? 75 : 50,
-          child: TextFormField(
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                setState(() {
-                  errorStates[key] = true;
-                });
-                return "This field is required";
-              } else if (key == "weight") {
-                if (double.tryParse(value) == null) {
-                  setState(() {
-                    errorStates[key] = true;
-                  });
-                  return "Input must be numerical value (e.g. 5.5)";
-                }
-              }
-              setState(() {
-                errorStates[key] = false;
-              });
-              return null;
-            },
-            onChanged: (value) {
-              setState(() {
-                data[key] = value;
-              });
-            },
-            initialValue: initialValue,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            decoration: InputDecoration(
-                errorStyle:
-                    const TextStyle(color: AppColors.error, fontSize: 14),
-                filled: true,
-                fillColor: const Color(0xfff2f2f2),
-                border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10)),
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: AppColors.primary,
-                      width: 5.0,
-                    ),
-                    borderRadius: BorderRadius.circular(10))),
-          ),
-        )
       ],
     );
   }

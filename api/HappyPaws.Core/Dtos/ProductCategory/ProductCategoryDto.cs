@@ -13,13 +13,13 @@ namespace HappyPaws.Core.Dtos.ProductCategory
         public required string Name { get; set; }
 
         public ImageDto? Photo { get; set; } 
-        public int PhotoId { get; set; }
+        public int? PhotoId { get; set; }
 
-        public IFormFile? PhotoFile { get; set; }
         public String? AddedIds { get; set; }
         public String? RemovedIds { get; set; }
         public List<int>? AddedSubcategoryIds { get; set; }
         public List<int>? RemovedSubcategoryIds { get; set; }
+        public string? DownloadURL { get; set; }
 
     }
 }

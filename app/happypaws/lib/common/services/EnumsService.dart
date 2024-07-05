@@ -9,4 +9,7 @@ class EnumsService extends BaseService {
    Future<dynamic> getOrderStatuses() async {
     return await get("/GetOrderStatuses");
   }
+  Future<dynamic> getNewsletterTopics() async {
+    return await get("/GetNewsletterTopics");
+  }
 }

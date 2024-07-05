@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -70,7 +68,7 @@ class _ShopCategorySubcategoriesPageState
           ),
           Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
             ClipOval(
-              child: Image.memory(base64.decode(widget.categoryPhoto.toString()),
+              child: Image.network(widget.categoryPhoto,
                   height: 55, fit: BoxFit.cover,),
             ),
             Padding(
@@ -109,10 +107,10 @@ class _ShopCategorySubcategoriesPageState
                       height: 150,
                       width: 150,
                       child: ClipOval(
-                        child: Image.memory(
-                          base64.decode(subcategory['productSubcategory']
-                                  ['photo']['data']
-                              .toString()),
+                        child: Image.network(
+                         subcategory['productSubcategory']
+                                  ['photo']['downloadURL'],
+                              
                           height: 128,
                           fit: BoxFit.cover,
                         ),

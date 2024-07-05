@@ -34,8 +34,6 @@ namespace HappyPaws.Application.Services
                 {
                     var orderDetail = new OrderDetail()
                     {
-                        Order = null,
-                        Product = null,
                         OrderId = order.Id,
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,

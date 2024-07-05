@@ -22,6 +22,7 @@ namespace HappyPaws.Core.Entities
         public string? MyPawNumber { get; set; }
         public string? ConnectionId { get; set; }
         public bool IsVerified { get; set; }
+        public bool IsSubscribed { get; set; }
         public EmployeePosition? EmployeePosition { get; set; }
 
 

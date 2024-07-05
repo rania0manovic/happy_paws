@@ -1,6 +1,7 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Pet;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,31 +12,13 @@ namespace HappyPaws.Api.Controllers
         public PetsController(IPetsService service, ILogger<BaseController> logger) : base(service, logger)
         {
         }
-        public override async Task<IActionResult> Post([FromForm] PetDto upsertDto, CancellationToken cancellationToken = default)
+        [Authorize(Policy = "ClinicPolicy")]
+        public override Task<IActionResult> Post([FromBody] PetDto upsertDto, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var dto = await Service.AddAsync(upsertDto, cancellationToken);
-                if (dto != null)
-                {
-                    dto = await Service.GetByIdAsync(dto.Id, cancellationToken);
-                }
-                else throw new Exception();
-                return Ok(dto);
-            }
-            catch (ValidationException e)
-            {
-                Logger.LogError(e, "Validation error has occurred while posting resource");
-                return BadRequest();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Problem when posting resource");
-                return BadRequest();
-            }
+            return base.Post(upsertDto, cancellationToken);
         }
-
-        public override async Task<IActionResult> Put([FromForm] PetDto upsertDto, CancellationToken cancellationToken = default)
+        [Authorize(Policy = "ClinicPolicy")]
+        public override async Task<IActionResult> Put([FromBody] PetDto upsertDto, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -62,7 +45,25 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+        [Authorize(Policy ="AllVerified")]
+        public override Task<IActionResult> GetPaged([FromQuery] PetSearchObject searchObject, CancellationToken cancellationToken = default)
+        {
+            return base.GetPaged(searchObject, cancellationToken);
+        }
 
+        [Authorize(Policy = "AllVerified")]
+        public override Task<IActionResult> Get(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Get(id, cancellationToken);
+        }
+
+        [Authorize(Policy = "ClinicPolicy")]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("HasAnyWithPetBreedId/{breedId}")]
         public async Task<IActionResult> HasAnyWithPetBreedId(int breedId, CancellationToken cancellationToken = default)
         {
@@ -78,6 +79,7 @@ namespace HappyPaws.Api.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("HasAnyWithPetTypeId/{petTypeId}")]
         public async Task<IActionResult> HasAnyWithPetTypeId(int petTypeId, CancellationToken cancellationToken = default)
         {

@@ -9,6 +9,7 @@ using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Enums;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -33,6 +34,7 @@ namespace HappyPaws.Api.Controllers
             _hubContext = hubContext;
             _memoryCache = memoryCache;
         }
+        [Authorize(Roles = "User")]
         public override async Task<IActionResult> Post([FromBody] OrderDto upsertDto, CancellationToken cancellationToken = default)
         {
             var userId = _currentUser.Id;
@@ -44,6 +46,7 @@ namespace HappyPaws.Api.Controllers
 
         }
         //TODO: temporary approach, make sure query checks at database whether there's reviews left by user (now it fetches all reviews from db and checks on api layer which slows down server)
+        [Authorize(Policy = "AllVerified")]
         public override async Task<IActionResult> Get(int id, CancellationToken cancellationToken = default)
         {
             try
@@ -71,7 +74,17 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Policy = "PharmacyStaffOnly")]
+        public override Task<IActionResult> Put([FromBody] OrderDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Put(upsertDto, cancellationToken);
+        }
+        [Authorize]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
+        }
+        [Authorize(Roles = "Employee")]
         [HttpPut("{id}/{status}/{userId}")]
         public async Task<IActionResult> Put(int id, OrderStatus status, int userId, CancellationToken cancellationToken = default)
         {
@@ -102,13 +115,13 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetTopBuyers")]
-        public async Task<IActionResult> GetTopBuyers(int size, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetTopBuyers(int size, bool refresh = false, CancellationToken cancellationToken = default)
         {
             try
             {
-                if (_memoryCache.TryGetValue<List<TopUserDto>>("topBuyers", out var topBuyers))
+                if (!refresh && _memoryCache.TryGetValue<List<TopUserDto>>("topBuyers", out var topBuyers))
                 {
                     return Ok(topBuyers);
                 }
@@ -122,7 +135,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize(Roles="Admin")]
         [HttpGet("HasAnyByProductId/{productId}")]
         public async Task<IActionResult> HasAnyByProductId(int productId, CancellationToken cancellationToken = default)
         {

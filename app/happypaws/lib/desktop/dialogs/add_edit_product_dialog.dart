@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:happypaws/common/services/ProductCategoriesService.dart';
 import 'package:happypaws/common/services/ProductCategorySubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/constants.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
@@ -17,7 +17,6 @@ import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AddEditProductMenu extends StatefulWidget {
   final VoidCallback onClose;
@@ -28,11 +27,13 @@ class AddEditProductMenu extends StatefulWidget {
   const AddEditProductMenu({
     Key? key,
     required this.onClose,
-    this.data, required this.onEdit, required this.onAdd,
+    this.data,
+    required this.onEdit,
+    required this.onAdd,
   }) : super(key: key);
 
   @override
-  _AddEditProductMenuState createState() => _AddEditProductMenuState();
+  State<AddEditProductMenu> createState() => _AddEditProductMenuState();
 }
 
 class _AddEditProductMenuState extends State<AddEditProductMenu> {
@@ -42,7 +43,6 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   Map<String, dynamic>? productCategories;
   List<dynamic>? productSubcategories;
   Map<String, dynamic>? productBrands;
-  final ImagePicker _imagePicker = ImagePicker();
   final List<File> _selectedImages = [];
   List<Map<String, dynamic>> productImages = [];
   int activeImageId = 0;
@@ -100,18 +100,14 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
     }
   }
 
-  Future<void> _pickImage() async {
+  Future<dynamic> _pickImage() async {
     if (productImages.length >= 6) return;
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (selectedImage != null) {
-      List<int> bytes = await File(selectedImage.path).readAsBytes();
-      String base64Image = base64Encode(bytes);
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImages.add(File(selectedImage.path));
+        _selectedImages.add(result['selectedImage']);
         dynamic photo = {
-          'image': {'data': base64Image}
+          'image': {'file': result['selectedImage']}
         };
         productImages.add(photo);
       });
@@ -123,7 +119,18 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       setState(() {
         disabledButton = true;
       });
-      data["imageFiles"] = _selectedImages;
+      if (_selectedImages.isNotEmpty) {
+        var downloadURLs = [];
+        for (var item in _selectedImages) {
+          var imageUrl = await FirebaseStorageHelper.addImage(item);
+          if (imageUrl != null) {
+            setState(() {
+              downloadURLs.add(imageUrl['downloadUrl']);
+            });
+          }
+          data['downloadURLs'] = downloadURLs;
+        }
+      }
       var response = await ProductsService().post('', data);
       if (response.statusCode == 200) {
         setState(() {
@@ -133,7 +140,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         widget.onAdd(response.data);
         if (!mounted) return;
         ToastHelper.showToastSuccess(
-            context, "You have successfully added a new product!");
+            context, "You have successfully added a new product! Make sure to activate it once it's ready for selling!");
       } else {
         setState(() {
           disabledButton = false;
@@ -144,8 +151,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       }
     } catch (e) {
       setState(() {
-          disabledButton = false;
-        });
+        disabledButton = false;
+      });
       rethrow;
     }
   }
@@ -155,8 +162,19 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       setState(() {
         disabledButton = true;
       });
-      data["imageFiles"] = _selectedImages;
-      var response = await ProductsService().put('', widget.data);
+      if (_selectedImages.isNotEmpty) {
+        var downloadURLs = [];
+        for (var item in _selectedImages) {
+          var imageUrl = await FirebaseStorageHelper.addImage(item);
+          if (imageUrl != null) {
+            setState(() {
+              downloadURLs.add(imageUrl['downloadUrl']);
+            });
+          }
+          data['downloadURLs'] = downloadURLs;
+        }
+      }
+      var response = await ProductsService().put('', data);
       if (response.statusCode == 200) {
         setState(() {
           disabledButton = false;
@@ -176,8 +194,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
       }
     } catch (e) {
       setState(() {
-          disabledButton = false;
-        });
+        disabledButton = false;
+      });
       rethrow;
     }
   }
@@ -185,6 +203,9 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
   Future<void> deleteImage() async {
     try {
       if (activeImageId != 0) {
+        var downloadUrl =
+            productImages.elementAt(activeImageIndex)['image']['downloadURL'];
+        await FirebaseStorageHelper.removeImage(downloadUrl);
         var response = await ImagesService().delete('/$activeImageId');
         if (response.statusCode == 200) {
           if (!mounted) return;
@@ -193,6 +214,8 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         }
       }
       setState(() {
+        var element = productImages.elementAt(activeImageIndex);
+        _selectedImages.removeWhere((x) => x == element['image']['file']);
         productImages.removeAt(activeImageIndex);
       });
     } catch (e) {
@@ -267,6 +290,7 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                     value: widget.data != null
                                         ? widget.data!['price'].toString()
                                         : '',
+                                    isNumber: true,
                                     onChanged: (value) => setState(() {
                                       data['price'] = value;
                                     }),
@@ -351,17 +375,26 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                               Swiper(
                                                 itemBuilder: (context, index) {
                                                   return Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            32.0),
-                                                    child: Image.memory(
-                                                      base64.decode(
-                                                          productImages[index]
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              32.0),
+                                                      child: productImages[
+                                                                          index]
                                                                       ['image']
-                                                                  ['data']
-                                                              .toString()),
-                                                    ),
-                                                  );
+                                                                  ['file'] !=
+                                                              null
+                                                          ? Image.file(
+                                                              productImages[
+                                                                          index]
+                                                                      ['image']
+                                                                  ['file'],
+                                                            )
+                                                          : Image.network(
+                                                              productImages[
+                                                                          index]
+                                                                      ['image'][
+                                                                  'downloadURL'],
+                                                            ));
                                                 },
                                                 onIndexChanged: (value) =>
                                                     setState(() {
@@ -404,6 +437,14 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                                   right: 20,
                                                   child: ActionButton(
                                                     onPressed: () {
+                                                      if (productImages
+                                                              .length ==
+                                                          1) {
+                                                        ToastHelper.showToastError(
+                                                            context,
+                                                            "Product must have at least one photo saved! Please add new photo and save changes before deleting the current one.");
+                                                        return;
+                                                      }
                                                       showDialog(
                                                         context: context,
                                                         builder: (BuildContext
@@ -448,6 +489,12 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
                                     isDisabled: disabledButton,
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
+                                        if (_selectedImages.isEmpty &&
+                                            productImages.isEmpty) {
+                                          ToastHelper.showToastError(context,
+                                              "You must add at least one image for product!");
+                                          return;
+                                        }
                                         widget.data != null
                                             ? editProduct()
                                             : addProduct();
@@ -554,9 +601,10 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
             maxLines: 10,
             style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             decoration: InputDecoration(
-                errorStyle: const TextStyle(color: AppColors.error, fontSize: 14),
+                errorStyle:
+                    const TextStyle(color: AppColors.error, fontSize: 14),
                 filled: true,
-                fillColor: Colors.white38,
+                fillColor: AppColors.fill,
                 border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10)),

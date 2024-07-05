@@ -11,7 +11,7 @@ class SearchableDropdown extends StatefulWidget {
   const SearchableDropdown({super.key, this.data, required this.onChanged});
 
   @override
-  _SearchableDropdownState createState() => _SearchableDropdownState();
+  State<SearchableDropdown> createState() => _SearchableDropdownState();
 }
 
 class _SearchableDropdownState extends State<SearchableDropdown> {
@@ -48,7 +48,6 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
     }
   }
 
-//TODO: make it reusable
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -63,7 +62,6 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
       isLoading
           ? const Spinner()
           : SizedBox(
-              height: isError ? 65 : 40,
               width: double.infinity,
               child: DropdownButtonFormField<String>(
                 validator: (value) {
@@ -80,7 +78,7 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                 },
                 decoration: const InputDecoration(
                   errorStyle: TextStyle(color: AppColors.error, fontSize: 14),
-                  fillColor: Colors.white38,
+                  fillColor: AppColors.fill,
                   filled: true,
                   border: UnderlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10))),

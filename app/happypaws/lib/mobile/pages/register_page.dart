@@ -36,6 +36,7 @@ class _RegisterPageState extends State<RegisterPage> {
          setState(() {
           isDisabledButton = false;
         });
+        if(!mounted)return;
         ToastHelper.showToastError(context, "User with the same email already exists!");
     }
   }
@@ -151,11 +152,6 @@ class _RegisterPageState extends State<RegisterPage> {
           height: 10,
         ),
         SizedBox(
-          height: errorStates[key] ?? false
-              ? key == 'password'
-                  ? 95
-                  : 75
-              : 50,
           child: TextFormField(
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -188,7 +184,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
             decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xfff2f2f2),
+                fillColor: AppColors.fill,
                 errorStyle:
                     const TextStyle(color: AppColors.error, fontSize: 16),
                 errorMaxLines: 3,

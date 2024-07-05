@@ -21,7 +21,7 @@ class AddEditPetTypeMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditPetTypeMenuState createState() => _AddEditPetTypeMenuState();
+  State<AddEditPetTypeMenu> createState() => _AddEditPetTypeMenuState();
 }
 
 class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {

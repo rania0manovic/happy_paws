@@ -1,6 +1,48 @@
 version: '3'
 services:
-#mssql docker
+  broker:
+    image: confluentinc/cp-kafka:7.6.1
+    hostname: broker
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+    networks:
+        - happypawsnet
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    depends_on:
+        - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+        "
+        kafka-topics --bootstrap-server broker:29092 --list
+        echo -e 'Creating kafka topics'
+        kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic promote-new-products --replication-factor 1 --partitions 3
+        echo -e 'Successfully created the following topics:'
+        kafka-topics --bootstrap-server broker:29092 --list
+        "
+    networks:
+      - happypawsnet
+
   happypaws-sql:
     image: mcr.microsoft.com/mssql/server:2017-latest-ubuntu
     restart: unless-stopped
@@ -16,21 +58,45 @@ services:
       - happypawsnet
 
   happypaws-api:
+    image: happypaws
     restart: unless-stopped
     build:
       context: .
+      dockerfile: HappyPaws/Dockerfile
     environment:
-      - ConnectionStrings:Main=Server=happypaws-sql, 4444;Database=happypaws-docker;User=rania;Password=IDKdks9119!;ConnectRetryCount=0; TrustServerCertificate=True
+      - ConnectionStrings:Main=Server=happypaws-sql,1433;Database=IB200075;User=sa;Password=IDKdks9119!;ConnectRetryCount=0; TrustServerCertificate=True
       - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5118
+      - KAFKA_BROKER_URL=broker:29092
     ports:
-      - 8080:8080
+      - 5118:5118
     networks:
       - happypawsnet
     links:
       - happypaws-sql
     depends_on:
       - happypaws-sql
-      
+      - broker
+
+  kafka-consumer-api:
+    image: kafka
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: HappyPaws.Consumer/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - KAFKA_BROKER_URL=broker:29092
+      - ASPNETCORE_URLS=http://+:5137
+    ports:
+      - 5137:5137
+    networks:
+      - happypawsnet
+    depends_on:
+      - broker
+
+
+
 networks:
   happypawsnet:
     driver: bridge      

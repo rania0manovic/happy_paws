@@ -12,7 +12,9 @@ namespace HappyPaws.Application.Validators
     {
         public NotificationValidator()
         {
-
+            RuleFor(x => x.Title).NotEmpty().NotNull();
+            RuleFor(x => x.Message).NotEmpty().NotNull();
+            RuleFor(x => x.UserId).NotNull();
         }
     }
 }

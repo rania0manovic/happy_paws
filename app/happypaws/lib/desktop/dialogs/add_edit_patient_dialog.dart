@@ -1,12 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
@@ -18,10 +18,8 @@ import 'package:happypaws/desktop/components/gender_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/desktop/dialogs/add_edit_medication_dialog.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
 import 'add_edit_allergy_dialog.dart';
 
 class AddEditPatientMenu extends StatefulWidget {
@@ -39,7 +37,7 @@ class AddEditPatientMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditPatientMenuState createState() => _AddEditPatientMenuState();
+  State<AddEditPatientMenu> createState() => _AddEditPatientMenuState();
 }
 
 class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
@@ -49,13 +47,11 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
   String? selectedPetType;
   final _formKey = GlobalKey<FormState>();
   bool disabledButton = false;
-
   String? selectedPetBreed;
   Map<String, dynamic>? petTypes;
   List<dynamic>? petBreeds;
   String selectedRole = '';
-  final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
+  File? selectedImage;
   Map<String, dynamic>? profilePhoto;
   List<dynamic>? employeePositions;
 
@@ -112,48 +108,13 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
     }
   }
 
-  Future<String> uploadImage(File imageFile) async {
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference storageReference =
-        FirebaseStorage.instance.ref().child('images/$fileName');
-    UploadTask uploadTask = storageReference.putFile(imageFile);
-    TaskSnapshot taskSnapshot = await uploadTask;
-    String downloadURL = await taskSnapshot.ref.getDownloadURL();
-    return downloadURL;
-  }
-
-  Future<void> _pickImage() async {
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    // if (selectedImage != null) {
-    //   setState(() {
-    //     _selectedImage = File(selectedImage.path);
-    //     user["photoFile"] = selectedImage.path;
-    //   });
-    // }
-     if (selectedImage != null) {
-    File imageFile = File(selectedImage.path);
-    try {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child("images/$fileName");
-      UploadTask uploadTask = ref.putFile(imageFile);
-
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
-
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-
+  Future<dynamic> _pickImage() async {
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImage = imageFile;
+        selectedImage = result['selectedImage'];
       });
-
-      print("Image uploaded successfully. URL: $downloadURL");
-    } catch (e) {
-      print("Failed to upload image: $e");
     }
-     }
   }
 
   Future<void> addPatient() async {
@@ -161,12 +122,21 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
       setState(() {
         disabledButton = true;
       });
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
       if (data['weight'] is double) {
         data['weight'] = data['weight'].toString().replaceAll('.', ',');
       } else {
         data['weight'] = data['weight'].replaceAll('.', ',');
       }
-      var response = await PetsService().postMultiPartRequest('', data);
+      var response = await PetsService().post('', data);
       if (response.statusCode == 200) {
         setState(() {
           disabledButton = false;
@@ -182,7 +152,14 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
         });
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
+       setState(() {
+          disabledButton = false;
+        });
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -192,10 +169,25 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
       setState(() {
         disabledButton = true;
       });
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        if (widget.data != null && widget.data!['photo'] != null) {
+          imageUrl = await FirebaseStorageHelper.updateImage(
+              selectedImage!, widget.data!['photo']['downloadURL']);
+        } else {
+          imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+          
+        }
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
       if (data['weight'] is double || data['weight'] is String) {
         data['weight'] = data['weight'].toString().replaceAll('.', ',');
       }
-      var response = await PetsService().putMultiPartRequest('', data);
+      var response = await PetsService().put('', data);
       if (response.statusCode == 200) {
         setState(() {
           disabledButton = false;
@@ -211,7 +203,14 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
         });
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
+       setState(() {
+          disabledButton = false;
+        });
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -257,7 +256,6 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          insetPadding: const EdgeInsets.symmetric(vertical: 60, horizontal: 0),
           contentPadding: const EdgeInsets.all(8),
           content: AddMedicationMenu(
             onAdd: (value) {
@@ -306,7 +304,6 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
                         onPressed: null,
                         color: AppColors.gray,
                       ),
-                      //  Image.network("https://firebasestorage.googleapis.com/v0/b/happy-paws-fb.appspot.com/o/images%2F1718234082914?alt=media&token=6e302f75-090a-4aa2-a9a5-be23da488e12"),
                       Text(
                         widget.data != null
                             ? "Edit patient info"
@@ -342,19 +339,17 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
                                       child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(100),
-                                          child: _selectedImage != null
+                                          child: selectedImage != null
                                               ? Image.file(
-                                                  _selectedImage!,
+                                                  selectedImage!,
                                                   fit: BoxFit.cover,
                                                 )
                                               : (widget.data != null &&
                                                       widget.data!['photo'] !=
                                                           null)
-                                                  ? Image.memory(
-                                                      base64.decode(widget
-                                                          .data!['photo']
-                                                              ['data']
-                                                          .toString()),
+                                                  ? Image.network(
+                                                      widget.data!['photo']
+                                                          ['downloadURL'],
                                                       fit: BoxFit.cover)
                                                   : const Image(
                                                       image: AssetImage(
@@ -630,7 +625,7 @@ class _AddEditPatientMenuState extends State<AddEditPatientMenu> {
           children: [
             Expanded(
               child: SecondaryButton(
-                height: 40,
+                height: 48,
                 icon: Icons.date_range_rounded,
                 label: selectedDate,
                 width: double.infinity,

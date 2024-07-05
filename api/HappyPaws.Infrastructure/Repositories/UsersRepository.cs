@@ -25,7 +25,8 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Include(x => x.ProfilePhoto)
                 .Where(x => searchObject.Role == x.Role && (searchObject.FullName == null
             || x.FirstName.ToLower().StartsWith(searchObject.FullName.ToLower())
-            || x.LastName.ToLower().StartsWith(searchObject.FullName.ToLower())))
+            || x.LastName.ToLower().StartsWith(searchObject.FullName.ToLower()))
+            && (searchObject.OnlySubscribers == false || x.IsSubscribed == true))
                 .ToPagedListAsync(searchObject, cancellationToken);
         }
         public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
@@ -41,6 +42,10 @@ namespace HappyPaws.Infrastructure.Repositories
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        public override Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return DbSet.Include(x => x.ProfilePhoto).FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        }
         public async Task<int> GetCountByRoleAsync(Role role, CancellationToken cancellationToken = default)
         {
             return await DbSet.CountAsync(x => x.Role == role, cancellationToken);
@@ -53,7 +58,11 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Select(a => a.EmployeeId)
                 .Distinct();
 
-            return await DbSet.Where(e => e.Role==Role.Employee && !busyEmployees.Contains(e.Id)).ToPagedListAsync(searchObject, cancellationToken);
+            return await DbSet.Where(e => (e.EmployeePosition == EmployeePosition.Veterinarian ||
+                            e.EmployeePosition == EmployeePosition.VeterinarianTechnician ||
+                            e.EmployeePosition == EmployeePosition.VeterinarianAssistant ||
+                            e.EmployeePosition == EmployeePosition.Groomer) &&
+                            !busyEmployees.Contains(e.Id)).ToPagedListAsync(searchObject, cancellationToken);
 
         }
     }

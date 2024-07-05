@@ -2,10 +2,12 @@
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.UserCart;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
+    [Authorize(Roles = "User")]
     public class UserCartsController : BaseCrudController<UserCartDto, IUserCartsService, UserCartSearchObject>
     {
         private readonly CurrentUser _currentUser;

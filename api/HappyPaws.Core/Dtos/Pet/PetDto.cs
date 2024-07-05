@@ -31,7 +31,7 @@ namespace HappyPaws.Core.Dtos.Pet
 
         public ICollection<PetAllergyDto>? PetAllergies { get; set; }
         public ICollection<PetMedicationDto>? PetMedications { get; set; }
-        public IFormFile? PhotoFile { get; set; }
+        public string? DownloadURL { get; set; }
 
     }
 }

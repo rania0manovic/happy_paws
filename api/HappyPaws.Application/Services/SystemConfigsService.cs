@@ -20,16 +20,5 @@ namespace HappyPaws.Application.Services
         public SystemConfigsService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<SystemConfigDto> validator) : base(mapper, unitOfWork, validator)
         {
         }
-        public override async Task<SystemConfigDto> UpdateAsync(SystemConfigDto dto, CancellationToken cancellationToken = default)
-        {
-            var data = await GetByIdAsync(1, cancellationToken);
-            if (data != null)
-            {
-                data.DonationsGoal = dto.DonationsGoal;
-                return await base.UpdateAsync(data, cancellationToken);
-
-            }
-            else throw new EntryNotFoundException();
-        }
     }
 }

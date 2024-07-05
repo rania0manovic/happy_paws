@@ -232,7 +232,7 @@ onSearchChanged(String query) {
                         width: 30,
                       ),
                     )
-                  : TableDataPhoto(data: employee['profilePhoto']['data']),
+                  : TableDataPhoto(data: employee['profilePhoto']['downloadURL']),
               TableData(data: employee['fullName']),
               TableData(data: employee['email']),
               TableData(

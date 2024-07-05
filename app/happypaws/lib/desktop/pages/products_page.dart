@@ -48,7 +48,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
   Future<void> fetchProducts() async {
     var responseProducts = await ProductsService()
-        .getPaged("", currentPage, 10, searchObject: params);
+        .getPaged("", currentPage, 15, searchObject: params);
     if (responseProducts.statusCode == 200) {
       setState(() {
         currentPage++;
@@ -344,7 +344,7 @@ class _ProductsPageState extends State<ProductsPage> {
               TableDataPhoto(
                   borderRadius: 0,
                   size: 30,
-                  data: product['productImages'][0]['image']['data']),
+                  data: product['productImages'][0]['image']['downloadURL']),
               TableData(
                 data: product['name'],
               ),

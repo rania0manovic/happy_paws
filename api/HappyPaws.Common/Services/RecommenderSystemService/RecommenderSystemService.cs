@@ -27,12 +27,12 @@ namespace HappyPaws.Common.Services.RecommenderSystemService
 
             var targetUserProducts = userFavourites[userId];
 
-            foreach (var kvp in userFavourites)
+            foreach (var userFavourite in userFavourites)
             {
-                int otherUserId = kvp.Key;
+                int otherUserId = userFavourite.Key;
                 if (otherUserId == userId) continue;
 
-                var otherUserProducts = kvp.Value;
+                var otherUserProducts = userFavourite.Value;
 
                 var commonProducts = targetUserProducts.Intersect(otherUserProducts).Count();
                 var totalProducts = targetUserProducts.Union(otherUserProducts).Count();

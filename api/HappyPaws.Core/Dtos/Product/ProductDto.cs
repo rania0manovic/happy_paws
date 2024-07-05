@@ -26,7 +26,7 @@ namespace HappyPaws.Core.Dtos.Product
         public string Description { get; set; } = null!;
         public int InStock { get; set; }
         public int NewStockValue { get; set; }
-        public bool IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
         public bool IsFavourite { get; set; }
         public bool HasReview { get; set; }
@@ -36,10 +36,10 @@ namespace HappyPaws.Core.Dtos.Product
         public BrandDto? Brand { get; set; }
         public int BrandId { get; set; }
 
-        public ProductCategorySubcategoryDto? ProductCategorySubcategory { get; set; } 
+        public ProductCategorySubcategoryDto? ProductCategorySubcategory { get; set; }
         public int ProductCategorySubcategoryId { get; set; }
 
-        public List<IFormFile>? ImageFiles { get; set; }
+        public List<string>? DownloadURLs { get; set; }
         public ICollection<ProductImageDto>? ProductImages { get; set; }
         public ICollection<ProductReviewDto>? ProductReviews { get; set; }
         public ICollection<UserCartDto>? UserCartItems { get; set; }

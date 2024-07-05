@@ -12,6 +12,8 @@ namespace HappyPaws.Application.Validators
     {
         public EmailVerificationRequestValidator()
         {
+            RuleFor(x => x.Code).NotNull();
+            RuleFor(x => x.Email).NotEmpty().NotNull();
 
         }
     }

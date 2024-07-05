@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
@@ -23,6 +25,8 @@ class SubcategoriesPage extends StatefulWidget {
 
 class _ProductsPageState extends State<SubcategoriesPage> {
   Map<String, dynamic>? productSubcategories;
+  Map<String, dynamic> params = {};
+  Timer? _debounce;
   @override
   void initState() {
     super.initState();
@@ -30,7 +34,7 @@ class _ProductsPageState extends State<SubcategoriesPage> {
   }
 
   Future<void> fetchData() async {
-    var response = await ProductSubcategoriesService().getPaged("", 1, 999);
+    var response = await ProductSubcategoriesService().getPaged("", 1, 999, searchObject: params);
     if (response.statusCode == 200) {
       setState(() {
         productSubcategories = response.data;
@@ -76,6 +80,16 @@ class _ProductsPageState extends State<SubcategoriesPage> {
         });
   }
 
+  onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        productSubcategories = null;
+      });
+      fetchData();
+    });
+  }
+
   void showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -118,6 +132,35 @@ class _ProductsPageState extends State<SubcategoriesPage> {
                       'Product subcategories settings',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 250,
+                      height: 50,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['name'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by subcategory name...",
+                            labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
@@ -175,7 +218,7 @@ class _ProductsPageState extends State<SubcategoriesPage> {
                 alignmentGeometry: Alignment.centerLeft,
                 paddingHorizontal: 25,
               ),
-              TableDataPhoto(data: subcategory['photo']['data']),
+              TableDataPhoto(data: subcategory['photo']['downloadURL']),
               tableActions(subcategory)
             ],
           ),

@@ -1,11 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:happypaws/common/utilities/platform_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+PlatformInfo platformInfo = PlatformInfo();
 
 class BaseService {
   late Dio _dio;
   late String baseUrl;
-  String? apiUrl = dotenv.env['API_URL'];
+
+  String? apiUrl = platformInfo.isDesktopOS()
+      ? dotenv.env['API_URL_DESKTOP']
+      : dotenv.env['API_URL_MOBILE'];
   BaseService(String controllerName) {
     baseUrl = apiUrl != null ? "$apiUrl/$controllerName" : '';
 
@@ -24,7 +30,7 @@ class BaseService {
         return handler.next(options);
       },
       onError: (error, handler) {
-        return handler.next(error);
+          return handler.next(error);
       },
     ));
   }
@@ -69,7 +75,7 @@ class BaseService {
     return response;
   }
 
-   Future<dynamic> patch(String endpoint, dynamic data) async {
+  Future<dynamic> patch(String endpoint, dynamic data) async {
     final response = await _dio.patch(
       '$baseUrl$endpoint',
       data: data,
@@ -95,33 +101,5 @@ class BaseService {
     );
     return response;
   }
-
-  Future<dynamic> postMultiPartRequest(String endpoint, dynamic data) async {
-    final formData = FormData.fromMap({
-      ...data,
-      'photoFile': data['photoFile'] != null
-          ? await MultipartFile.fromFile(data['photoFile'])
-          : null,
-    });
-    final response = await _dio.post(
-      '$baseUrl$endpoint',
-      data: formData,
-    );
-    return response;
-  }
-
-  Future<dynamic> putMultiPartRequest(String endpoint, dynamic data) async {
-    print(data);
-    final formData = FormData.fromMap({
-      ...data,
-      'photoFile': data['photoFile'] != null
-          ? await MultipartFile.fromFile(data['photoFile'])
-          : null,
-    });
-    final response = await _dio.put(
-      '$baseUrl$endpoint',
-      data: formData,
-    );
-    return response;
-  }
+ 
 }

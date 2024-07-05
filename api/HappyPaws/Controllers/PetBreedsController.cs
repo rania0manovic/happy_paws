@@ -1,12 +1,13 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.PetBreed;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
-    [ApiController]
+    [Authorize(Policy = "AllVerified")]
     public class PetBreedsController : BaseCrudController<PetBreedDto, IPetBreedsService, PetBreedSearchObject>
     {
         public PetBreedsController(IPetBreedsService service, ILogger<BaseController> logger) : base(service, logger)
@@ -22,9 +23,26 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with categoryID {0}", petTypeId);
+                Logger.LogError(e, "Problem when getting resource with pet type ID {PetTypeId}", petTypeId);
                 return BadRequest();
             }
         }
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Post([FromBody] PetBreedDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Post(upsertDto, cancellationToken);
+        }
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Put([FromBody] PetBreedDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Put(upsertDto, cancellationToken);
+        }
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
+
+        }
+
     }
 }

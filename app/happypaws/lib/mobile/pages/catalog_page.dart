@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/services/UserCartsService.dart';
@@ -44,7 +42,6 @@ class _CatalogPageState extends State<CatalogPage> {
   late String selectedValuePrice = "none";
   late String selectedValueReview = "0";
   Map<String, dynamic>? products;
-  List<dynamic>? copyOfProducts;
   Map<String, dynamic> params = {};
   late ScrollController _scrollController;
   late ScrollController _scrollControllerGrid;
@@ -55,13 +52,14 @@ class _CatalogPageState extends State<CatalogPage> {
     _scrollController = ScrollController();
     _scrollControllerGrid = ScrollController();
     _scrollController.addListener(_scrollListener);
-    setState(() {
-      params['categoryId'] = widget.categoryId?.toString();
-      params['subcategoryId'] = widget.subcategoryId?.toString();
-      params['takePhotos'] = "1";
-      params['onlyActive'] = true;
-      params['searchParams'] = widget.searchInput;
-    });
+    if (widget.isShowingFavourites == null) {
+      setState(() {
+        params['categoryId'] = widget.categoryId?.toString();
+        params['subcategoryId'] = widget.subcategoryId?.toString();
+        params['onlyActive'] = true;
+        params['searchParams'] = widget.searchInput;
+      });
+    }
     fetchData();
   }
 
@@ -87,8 +85,14 @@ class _CatalogPageState extends State<CatalogPage> {
     dynamic response;
     if (widget.isShowingFavourites != null && widget.isShowingFavourites!) {
       var fetchedUser = await AuthService().getCurrentUser();
-      response =
-          await UserFavouritesService().getPagedProducts(fetchedUser?['Id']);
+      if (fetchedUser != null) {
+        setState(() {
+          params['userId'] = fetchedUser["Id"];
+          params['pageNumber'] = currentPage;
+          params['pageSize'] = 10;
+        });
+      }
+      response = await UserFavouritesService().getPagedProducts(params);
     } else {
       response = await ProductsService()
           .getPaged('', currentPage, 10, searchObject: params);
@@ -106,33 +110,37 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   void sortData() {
-    var parsedValue = int.parse(selectedValueReview);
-    setState(() {
-      copyOfProducts = List.from(products!['items']);
-      if (selectedValuePrice == 'highest') {
-        products!['items'].sort(
-            (a, b) => (b['price'] as double).compareTo(a['price'] as double));
-      } else if (selectedValuePrice == 'lowest') {
-        products!['items'].sort(
-            (a, b) => (a['price'] as double).compareTo(b['price'] as double));
-      }
-      if (selectedValueReview != "0") {
-        products!['items']
-            .removeWhere((item) => item['review'] < parsedValue as bool);
-      }
-    });
+    if (selectedValuePrice != "none" || selectedValueReview != '0') {
+      setState(() {
+        currentPage = 1;
+        params['lowestPriceFirst'] = selectedValuePrice == 'lowest'
+            ? true
+            : selectedValuePrice == 'highest'
+                ? false
+                : null;
+        params['minReview'] =
+            selectedValueReview != '0' ? selectedValueReview : null;
+        products = null;
+        fetchData();
+      });
+    }
   }
 
   void resetFilters() {
     setState(() {
-      products!['items'] = List.from(copyOfProducts!);
+      products = null;
       selectedValuePrice = 'none';
       selectedValueReview = '0';
+      params['lowestPriceFirst'] = null;
+      params['minReview'] = null;
+      currentPage = 1;
+      fetchData();
     });
   }
- Future<void> addProductToCart(int id) async {
-    var productAlreadyInCart = await UserCartsService()
-        .get("/ProductAlreadyInCart?productId=$id");
+
+  Future<void> addProductToCart(int id) async {
+    var productAlreadyInCart =
+        await UserCartsService().get("/ProductAlreadyInCart?productId=$id");
     if (productAlreadyInCart.statusCode != 200) {
       throw Exception();
     }
@@ -145,7 +153,7 @@ class _CatalogPageState extends State<CatalogPage> {
 
     var fetchedUser = await AuthService().getCurrentUser();
     var userId = fetchedUser?['Id'];
-    var data = {'userId': userId, 'productId':id};
+    var data = {'userId': userId, 'productId': id};
     try {
       var response = await UserCartsService().post('', data);
       if (response.statusCode == 200) {
@@ -164,6 +172,7 @@ class _CatalogPageState extends State<CatalogPage> {
       rethrow;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     if (products == null) {
@@ -209,16 +218,22 @@ class _CatalogPageState extends State<CatalogPage> {
                   if (products!['items'].isNotEmpty)
                     productsSection()
                   else
-                    const Center(
+                    Center(
                       child: Padding(
-                        padding: EdgeInsets.only(top: 100.0),
+                        padding: const EdgeInsets.only(top: 100.0),
                         child: Text(
-                          "We found no active products ˙◠˙",
+                          widget.isShowingFavourites != null
+                              ? "You don't have any favourites ˙◠˙"
+                              : "We found no active products ˙◠˙",
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                          style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                       ),
-                    )
+                    ),
+                if (products!['items'].length <= 4)
+                  const SizedBox(
+                    height: 100,
+                  )
               ]),
         ),
       );
@@ -273,10 +288,8 @@ class _CatalogPageState extends State<CatalogPage> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Image.memory(
-                        base64.decode(
-                          item['productImages'][0]['image']['data'],
-                        ),
+                      Image.network(
+                        item['productImages'][0]['image']['downloadURL'],
                         height: 110,
                       ),
                       Text(
@@ -291,7 +304,7 @@ class _CatalogPageState extends State<CatalogPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
-                            '\$ ${item['price']}',
+                            '\$ ${item['price'].toStringAsFixed(2)}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.w700, fontSize: 16),
                           ),
@@ -357,8 +370,8 @@ class _CatalogPageState extends State<CatalogPage> {
   Row header(BuildContext context) {
     return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
       ClipOval(
-          child: Image.memory(
-        base64.decode(widget.categoryPhoto.toString()),
+          child: Image.network(
+        widget.categoryPhoto!,
         height: 55,
         fit: BoxFit.cover,
       )),

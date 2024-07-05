@@ -23,7 +23,7 @@ class InputField extends StatefulWidget {
       : super(key: key);
 
   @override
-  _InputFieldState createState() => _InputFieldState();
+  State<InputField> createState() => _InputFieldState();
 }
 
 class _InputFieldState extends State<InputField> {

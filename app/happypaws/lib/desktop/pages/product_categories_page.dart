@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
@@ -26,6 +28,8 @@ class CategoriesPage extends StatefulWidget {
 class _ProductsPageState extends State<CategoriesPage> {
   Map<String, dynamic>? productCategories;
   Map<String, dynamic>? productSubcategories;
+  Map<String, dynamic> params = {};
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -34,8 +38,8 @@ class _ProductsPageState extends State<CategoriesPage> {
   }
 
   Future<void> fetchData() async {
-    var responseCategories =
-        await ProductCategoriesService().getPaged("", 1, 999);
+    var responseCategories = await ProductCategoriesService()
+        .getPaged("", 1, 999, searchObject: params);
     if (responseCategories.statusCode == 200) {
       setState(() {
         productCategories = responseCategories.data;
@@ -87,7 +91,7 @@ class _ProductsPageState extends State<CategoriesPage> {
         listIds = result;
       });
     }
-    if (!mounted) return;
+    if (!context.mounted) return;
     showDialog(
       context: context,
       builder: (context) {
@@ -106,6 +110,16 @@ class _ProductsPageState extends State<CategoriesPage> {
         );
       },
     );
+  }
+
+  onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        productCategories = null;
+      });
+      fetchData();
+    });
   }
 
   @override
@@ -127,6 +141,35 @@ class _ProductsPageState extends State<CategoriesPage> {
                       'Categories settings',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w600),
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      width: 250,
+                      height: 50,
+                      child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            params['name'] = value;
+                          });
+                          onSearchChanged(value);
+                        },
+                        decoration: InputDecoration(
+                            labelText: "Search by category name...",
+                            labelStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade400,
+                                fontWeight: FontWeight.w500),
+                            suffixIcon: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.search,
+                                  size: 25,
+                                  color: AppColors.primary,
+                                ))),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
                     ),
                     PrimaryIconButton(
                         onPressed: () => showAddEditMenu(context),
@@ -183,7 +226,7 @@ class _ProductsPageState extends State<CategoriesPage> {
                 alignmentGeometry: Alignment.centerLeft,
                 paddingHorizontal: 25,
               ),
-              TableDataPhoto(data: category['photo']['data']),
+              TableDataPhoto(data: category['photo']['downloadURL']),
               tableActions(category)
             ],
           ),

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
@@ -62,10 +61,11 @@ class _ShopPageState extends State<ShopPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 14.0, top: 8),
+                    padding: const EdgeInsets.only(right: 14.0, top: 8),
                     child: GestureDetector(
-                        onTap: () => context.router.push(OrderHistoryRoute()),
-                        child: Text(
+                        onTap: () =>
+                            context.router.push(const OrderHistoryRoute()),
+                        child: const Text(
                           'Order history',
                           style: TextStyle(
                               fontWeight: FontWeight.w500,
@@ -143,10 +143,8 @@ class _ShopPageState extends State<ShopPage> {
                     child: GestureDetector(
                       onTap: () => context.router
                           .push(ProductDetailsRoute(productId: product['id'])),
-                      child: Image.memory(
-                        base64.decode(product!['productImages'][0]['image']
-                                ['data']
-                            .toString()),
+                      child: Image.network(
+                        product!['productImages'][0]['image']['downloadURL'],
                         height: 100,
                         width: 100,
                       ),
@@ -174,10 +172,9 @@ class _ShopPageState extends State<ShopPage> {
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Image.memory(
-                            base64.decode(product!['productImages'][0]['image']
-                                    ['data']
-                                .toString()),
+                        Image.network(
+                            product!['productImages'][0]['image']
+                                ['downloadURL'],
                             height: 140),
                         Text(
                           product['name'].length > 50
@@ -189,7 +186,7 @@ class _ShopPageState extends State<ShopPage> {
                           ),
                         ),
                         Text(
-                          "\$ ${product['price']}",
+                          "\$ ${product['price'].toStringAsFixed(2)}",
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -205,7 +202,7 @@ class _ShopPageState extends State<ShopPage> {
   Container categoriesSection(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 10, bottom: 10, left: 14, right: 14),
-      color: Color.fromARGB(255, 255, 255, 255),
+      color: const Color.fromARGB(255, 255, 255, 255),
       child: Scrollbar(
           thickness: 12,
           radius: const Radius.circular(10),
@@ -222,15 +219,14 @@ class _ShopPageState extends State<ShopPage> {
                         context.router.push(ShopCategorySubcategoriesRoute(
                             categoryId: category['id'],
                             categoryName: category['name'],
-                            categoryPhoto: category['photo']['data']))
+                            categoryPhoto: category['photo']['downloadURL']))
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ClipOval(
-                            child: Image.memory(
-                              base64
-                                  .decode(category['photo']['data'].toString()),
+                            child: Image.network(
+                              category['photo']['downloadURL'],
                               height: 120,
                               fit: BoxFit.cover,
                             ),

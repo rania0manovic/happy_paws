@@ -40,7 +40,7 @@ class PrimaryButton extends StatelessWidget {
             label,
             style: TextStyle(
                 fontSize: fontSize,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: Colors.white),
           ),
           if (isDisabled)

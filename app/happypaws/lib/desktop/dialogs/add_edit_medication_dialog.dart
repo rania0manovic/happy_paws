@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/PetMedicationsService.dart';
@@ -16,12 +17,18 @@ class AddMedicationMenu extends StatefulWidget {
   final MyVoidCallback onEdit;
   final MyVoidCallback onRemove;
 
-
   final int petId;
   final Map<String, dynamic>? data;
 
-  const AddMedicationMenu(
-      {super.key, required this.onClosed, required this.petId, this.data, required this.onRemove, required this.onAdd, required this.onEdit, });
+  const AddMedicationMenu({
+    super.key,
+    required this.onClosed,
+    required this.petId,
+    this.data,
+    required this.onRemove,
+    required this.onAdd,
+    required this.onEdit,
+  });
 
   @override
   State<AddMedicationMenu> createState() => _AddMedicationMenuState();
@@ -55,7 +62,11 @@ class _AddMedicationMenuState extends State<AddMedicationMenu> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -67,12 +78,16 @@ class _AddMedicationMenuState extends State<AddMedicationMenu> {
         widget.onEdit(response.data);
         widget.onClosed();
         if (!mounted) return;
-        ToastHelper.showToastSuccess(
-            context, "You have successfully edited the medication information!");
+        ToastHelper.showToastSuccess(context,
+            "You have successfully edited the medication information!");
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -91,120 +106,133 @@ class _AddMedicationMenuState extends State<AddMedicationMenu> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Column(
-        children: [
-          Row(
+    return SingleChildScrollView(
+      child: SizedBox(
+        width: 300,
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
-              const IconButton(
-                icon: Icon(Icons.inventory_2_outlined),
-                onPressed: null,
-                color: AppColors.gray,
+              Row(
+                children: [
+                  const IconButton(
+                    icon: Icon(Icons.inventory_2_outlined),
+                    onPressed: null,
+                    color: AppColors.gray,
+                  ),
+                  const Text(
+                    "Add new medication",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: widget.onClosed,
+                    icon: const Icon(Icons.close),
+                    color: Colors.grey,
+                  ),
+                ],
               ),
-              const Text(
-                "Add new medication",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
+              InputField(
+                label: "Medication name:",
+                value: widget.data != null ? widget.data!['medicationName'] : '',
+                onChanged: (value) => setState(() {
+                  data['medicationName'] = value;
+                }),
               ),
-              const Spacer(),
-              IconButton(
-                onPressed: widget.onClosed,
-                icon: const Icon(Icons.close),
-                color: Colors.grey,
+              InputField(
+                label: "Dosage (mg):",
+                value:
+                    widget.data != null ? widget.data!['dosage'].toString() : '',
+                onChanged: (value) => setState(() {
+                  data['dosage'] = value;
+                }),
               ),
+              InputField(
+                label: "Dosage frequency (every N hours):",
+                value: widget.data != null
+                    ? widget.data!['dosageFrequency'].toString()
+                    : '',
+                onChanged: (value) => setState(() {
+                  data['dosageFrequency'] = value;
+                }),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  const LightText(
+                    label: 'Until:',
+                    fontSize: 14,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SecondaryButton(
+                          height: 40,
+                          icon: Icons.date_range_rounded,
+                          label: selectedDate,
+                          width: double.infinity,
+                          onPressed: () {
+                            _showDatePicker(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  // const Expanded(child: SizedBox()),
+                  PrimaryButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        widget.data == null
+                            ? addMedicationForPatient()
+                            : editMedicationForPatient();
+                      }
+                    },
+                    label: widget.data == null ? "Add" : 'Edit',
+                    width: double.infinity,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Visibility(
+                      visible: widget.data != null,
+                      child: PrimaryButton(
+                        onPressed: () {
+                          deleteMedicationForPatient();
+                        },
+                        label: "Delete",
+                        backgroundColor: AppColors.error,
+                        width: double.infinity,
+                      )),
+                ],
+              )
             ],
           ),
-          InputField(
-            label: "Medication name:",
-            value: widget.data != null ? widget.data!['medicationName'] : '',
-            onChanged: (value) => setState(() {
-              data['medicationName'] = value;
-            }),
-          ),
-          InputField(
-            label: "Dosage (mg):",
-            value: widget.data != null ? widget.data!['dosage'].toString() : '',
-            onChanged: (value) => setState(() {
-              data['dosage'] = value;
-            }),
-          ),
-          InputField(
-            label: "Dosage frequency (every N hours):",
-            value: widget.data != null
-                ? widget.data!['dosageFrequency'].toString()
-                : '',
-            onChanged: (value) => setState(() {
-              data['dosageFrequency'] = value;
-            }),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 16,
-                ),
-                const LightText(
-                  label: 'Until:',
-                  fontSize: 14,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SecondaryButton(
-                        height: 40,
-                        icon: Icons.date_range_rounded,
-                        label: selectedDate,
-                        width: double.infinity,
-                        onPressed: () {
-                          _showDatePicker(context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                const Expanded(child: SizedBox()),
-                PrimaryButton(
-                  onPressed: () {
-                    widget.data == null
-                        ? addMedicationForPatient()
-                        : editMedicationForPatient();
-                  },
-                  label: widget.data == null ? "Add" : 'Edit',
-                  width: double.infinity,
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Visibility(
-                    visible: widget.data != null,
-                    child: PrimaryButton(
-                      onPressed: () {
-                        deleteMedicationForPatient();
-                      },
-                      label: "Delete",
-                      backgroundColor: AppColors.error,
-                      width: double.infinity,
-                    )),
-              ],
-            ),
-          )
-        ],
+        ),
       ),
     );
   }
@@ -218,6 +246,7 @@ class _AddMedicationMenuState extends State<AddMedicationMenu> {
             height: 300,
             width: MediaQuery.of(context).size.width / 3,
             child: SfDateRangePicker(
+              backgroundColor: Colors.transparent,
               minDate: DateTime.now(),
               selectionMode: DateRangePickerSelectionMode.single,
               showNavigationArrow: true,

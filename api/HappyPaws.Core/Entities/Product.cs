@@ -21,10 +21,10 @@ namespace HappyPaws.Core.Entities
         public ProductCategorySubcategory ProductCategorySubcategory { get; set; } = null!;
         public int ProductCategorySubcategoryId { get; set; }
 
-        public ICollection<ProductImage>? ProductImages { get; set; }
-        public ICollection<OrderDetail>? OrderDetails { get; set; }
-        public ICollection<ProductReview>? ProductReviews { get; set; }
-        public ICollection<UserCart>? UserCartItems { get; set; }
-        public ICollection<UserFavourite>? UserFavouriteItems { get; set; }
+        public ICollection<ProductImage> ProductImages { get; set; } = null!;
+        public ICollection<OrderDetail> OrderDetails { get; set; } = null!;
+        public ICollection<ProductReview> ProductReviews { get; set; } = null!;
+        public ICollection<UserCart> UserCartItems { get; set; } = null!;
+        public ICollection<UserFavourite> UserFavouriteItems { get; set; } = null!;
     }
 }

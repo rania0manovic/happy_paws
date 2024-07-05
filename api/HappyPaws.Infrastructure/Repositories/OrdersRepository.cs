@@ -64,7 +64,7 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Where(x => (searchObject.UserId == null || x.UserId == searchObject.UserId) &&
                  (searchObject.Id == null || x.Id.ToString().StartsWith(searchObject.Id)) &&
                  (searchObject.StartDateTime == null || x.CreatedAt >= searchObject.StartDateTime) &&
-                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime)
+                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime.Value.AddDays(1).AddMicroseconds(-1))
                )
                 .OrderBy(x => (int)(x.Status))
              .ToPagedListAsync(searchObject, cancellationToken);

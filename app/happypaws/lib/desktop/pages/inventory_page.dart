@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/services/BaseService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -36,7 +34,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Future<void> fetchProducts() async {
     var responseProducts = await ProductsService()
-        .getPaged("", currentPage, 10, searchObject: params);
+        .getPaged("", currentPage, 15, searchObject: params);
     if (responseProducts.statusCode == 200) {
       setState(() {
         currentPage++;
@@ -51,7 +49,7 @@ class _InventoryPageState extends State<InventoryPage> {
 
   Future<void> updateStock(int id, int newStockValue) async {
     var response =
-        await BaseService("Products").put('/$id/$newStockValue', null);
+        await ProductsService().put('/$id/$newStockValue', null);
     if (response.statusCode == 200) {
       setState(() {
         final item = products!['items'].firstWhere((x) => x['id'] == id);
@@ -293,15 +291,6 @@ class _InventoryPageState extends State<InventoryPage> {
     );
   }
 
-  TableCell tableCellPhoto(String data) {
-    return TableCell(
-        child: Padding(
-            padding: const EdgeInsets.only(top: 0, bottom: 0.0),
-            child: Image.memory(
-              base64.decode(data.toString()),
-              height: 30,
-            )));
-  }
 
   TableCell tableActions(Map<String, dynamic> data) {
     return TableCell(

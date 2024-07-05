@@ -28,7 +28,6 @@ class AuthService extends BaseService {
   Future<Map<String, dynamic>?> getCurrentUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString("token");
-
     if (token != null) {
       try {
         final Map<String, dynamic> decoded = Jwt.parseJwt(token);

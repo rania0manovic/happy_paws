@@ -4,12 +4,14 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Appointment;
 using HappyPaws.Core.Dtos.Notification;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
 namespace HappyPaws.Api.Controllers
 {
+
     public class AppointmentsController : BaseCrudController<AppointmentDto, IAppointmentsService, AppointmentSearchObject>
     {
         private readonly IHubContext<MessageHub> _hubContext;
@@ -21,7 +23,27 @@ namespace HappyPaws.Api.Controllers
             _usersService = usersService;
             _notificationsService = notificationsService;
         }
-
+        [Authorize(Roles = "User")]
+        public override Task<IActionResult> Post([FromBody] AppointmentDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Post(upsertDto, cancellationToken);
+        }
+        [Authorize(Policy = "VetsOnly")]
+        public override Task<IActionResult> Put([FromBody] AppointmentDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Put(upsertDto, cancellationToken);
+        }
+        [Authorize(Policy = "ClinicPolicy")]
+        public override Task<IActionResult> GetPaged([FromQuery] AppointmentSearchObject searchObject, CancellationToken cancellationToken = default)
+        {
+            return base.GetPaged(searchObject, cancellationToken);
+        }
+        [Authorize(Policy = "ClinicPolicy")]
+        public override Task<IActionResult> Get(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Get(id, cancellationToken);
+        }
+        [Authorize(Roles = "User")]
         [HttpGet("BookAppointment")]
         public virtual async Task<IActionResult> BookAppointment([FromQuery] AppointmentSearchObject searchObject, CancellationToken cancellationToken = default)
         {

@@ -24,7 +24,7 @@ namespace HappyPaws.Infrastructure.Repositories
                 .Where(x => (searchObject.UserId == null || x.Pet.OwnerId == searchObject.UserId) &&
                 (searchObject.MinDateTime == null || x.StartDateTime > searchObject.MinDateTime) &&
                 (searchObject.StartDateTime == null || x.CreatedAt >= searchObject.StartDateTime) &&
-                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime) &&
+                (searchObject.EndDateTime == null || x.CreatedAt <= searchObject.EndDateTime.Value.AddDays(1).AddMicroseconds(-1)) &&
                 (searchObject.IsCancelled == null || x.IsCancelled == searchObject.IsCancelled) &&
                 (searchObject.Date == null || x.StartDateTime.Value.Date == searchObject.Date.Value.Date))
                 .OrderByDescending(x => x.CreatedAt)

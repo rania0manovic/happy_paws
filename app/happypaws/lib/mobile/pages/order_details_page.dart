@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/mobile/dialogs/leave_review_dialog.dart';
@@ -49,10 +47,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         children: [
                           FractionallySizedBox(
                               widthFactor: 0.4,
-                              child: Image.memory(
-                                base64.decode(item['product']['productImages']
-                                        [0]['image']['data']
-                                    .toString()),
+                              child: Image.network(
+                                item['product']['productImages']
+                                        [0]['image']['downloadURL']
+                                    ,
                                 height: 100,
                               )),
                           FractionallySizedBox(
@@ -101,7 +99,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       if (item['product']['hasReview'])
-                                        Text(
+                                        const Text(
                                           'Already left a review',
                                           style:
                                               TextStyle(color: AppColors.gray),
@@ -122,7 +120,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                               },
                                             );
                                           },
-                                          child: Text(
+                                          child: const Text(
                                             'Leave a review',
                                             style: TextStyle(
                                                 color: AppColors.primary),
@@ -179,7 +177,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     const Spacer(),
                     Text(
                       DateFormat('dd.MM.yyyy, HH:mm')
-                          .format(DateTime.parse(widget.data['orderDate'])),
+                          .format(DateTime.parse(widget.data['createdAt'])),
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.w600),
                     ),

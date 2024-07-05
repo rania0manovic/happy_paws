@@ -14,7 +14,9 @@ namespace HappyPaws.Infrastructure.Repositories
         }
         public override async Task<PagedList<ProductCategory>> GetPagedAsync(ProductCategorySearchObject searchObject, CancellationToken cancellationToken = default)
         {
-            return await DbSet.Include(x=>x.Photo).Where(x=>!x.IsDeleted).ToPagedListAsync(searchObject, cancellationToken);
+            return await DbSet.Include(x => x.Photo)
+                .Where(x => searchObject.Name == null || x.Name.Contains(searchObject.Name))
+                .ToPagedListAsync(searchObject, cancellationToken);
         }
     }
 }

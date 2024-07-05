@@ -11,5 +11,6 @@ namespace HappyPaws.Core.SearchObjects
     {
         public string? FullName { get; set; }
         public Role Role { get; set; }
+        public bool OnlySubscribers { get; set; } = false;
     }
 }

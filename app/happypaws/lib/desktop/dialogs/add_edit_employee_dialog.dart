@@ -1,9 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/EnumsService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
+import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/common/utilities/constants.dart';
@@ -11,7 +12,6 @@ import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/gender_dropdown_menu.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AddEditEmployeeMenu extends StatefulWidget {
   final VoidCallback onClose;
@@ -28,15 +28,14 @@ class AddEditEmployeeMenu extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AddEditEmployeeMenuState createState() => _AddEditEmployeeMenuState();
+  State<AddEditEmployeeMenu> createState() => _AddEditEmployeeMenuState();
 }
 
 class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
   Map<String, dynamic> data = {};
   String selectedGender = "Unknown";
   String selectedRole = '';
-  final ImagePicker _imagePicker = ImagePicker();
-  File? _selectedImage;
+  File? selectedImage;
   Map<String, dynamic>? profilePhoto;
   List<dynamic>? employeePositions;
   bool disabledButton = false;
@@ -66,14 +65,11 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final XFile? selectedImage =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-
-    if (selectedImage != null) {
+  Future<dynamic> _pickImage() async {
+    var result = await FirebaseStorageHelper.pickImage();
+    if (result != null) {
       setState(() {
-        _selectedImage = File(selectedImage.path);
-        data["photoFile"] = selectedImage.path;
+        selectedImage = result['selectedImage'];
       });
     }
   }
@@ -83,7 +79,16 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
       setState(() {
         disabledButton = true;
       });
-      var response = await UsersService().postMultiPartRequest('', data);
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
+      var response = await UsersService().post('', data);
       if (response.statusCode == 200) {
         widget.onAdd(response.data);
         widget.onClose();
@@ -101,23 +106,41 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
         ToastHelper.showToastError(
             context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
 
   Future<void> editEmployee() async {
     try {
-         setState(() {
+      setState(() {
         disabledButton = true;
       });
-      var response = await UsersService().putMultiPartRequest('', widget.data);
+      dynamic imageUrl;
+      if (selectedImage != null) {
+        if (widget.data != null && widget.data!['image'] != null) {
+          imageUrl = await FirebaseStorageHelper.updateImage(
+              selectedImage!, widget.data!['image']['downloadURL']);
+        } else {
+          imageUrl = await FirebaseStorageHelper.addImage(selectedImage!);
+        }
+        if (imageUrl != null) {
+          setState(() {
+            data['downloadUrl'] = imageUrl['downloadUrl'];
+          });
+        }
+      }
+      var response = await UsersService().put('', widget.data);
       if (response.statusCode == 200) {
         widget.onEdit(response.data);
         widget.onClose();
-           setState(() {
-        disabledButton = false;
-      });
+        setState(() {
+          disabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have successfully edited selected employee information!");
@@ -129,7 +152,11 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
         ToastHelper.showToastError(
             context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -139,7 +166,6 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
     return SingleChildScrollView(
       child: SizedBox(
         width: MediaQuery.of(context).size.width / 2,
-        height: MediaQuery.of(context).size.height,
         child: employeePositions == null
             ? const Spinner()
             : Column(
@@ -185,21 +211,18 @@ class _AddEditEmployeeMenuState extends State<AddEditEmployeeMenu> {
                                     child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(100),
-                                        child: _selectedImage != null
+                                        child: selectedImage != null
                                             ? Image.file(
-                                                _selectedImage!,
+                                                selectedImage!,
                                                 fit: BoxFit.cover,
                                               )
                                             : (widget.data != null &&
-                                                    widget.data![
-                                                            'profilePhoto'] !=
-                                                        null)
-                                                ? Image.memory(
-                                                    base64.decode(widget
-                                                        .data!['profilePhoto']
-                                                            ['data']
-                                                        .toString()),
-                                                    fit: BoxFit.cover)
+                                                      widget.data!['profilePhoto'] !=
+                                                          null)
+                                                  ? Image.network(
+                                                      widget.data!['profilePhoto']
+                                                          ['downloadURL'],
+                                                      fit: BoxFit.cover)
                                                 : const Image(
                                                     image: AssetImage(
                                                         "assets/images/user.png"),

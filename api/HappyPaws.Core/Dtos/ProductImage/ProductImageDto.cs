@@ -10,10 +10,10 @@ namespace HappyPaws.Core.Dtos.ProductImage
 {
     public class ProductImageDto : BaseDto
     {
-        public ProductDto Product { get; set; } = null!;
+        public ProductDto? Product { get; set; }
         public int ProductId { get; set; }
 
-        public ImageDto Image { get; set; } = null!;
+        public ImageDto? Image { get; set; }
         public int ImageId { get; set; }
     }
 }

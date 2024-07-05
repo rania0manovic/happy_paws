@@ -5,6 +5,7 @@ using HappyPaws.Core.Dtos.EmailVerificationRequest;
 using HappyPaws.Core.Entities;
 using HappyPaws.Core.Exceptions;
 using HappyPaws.Infrastructure.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,7 @@ namespace HappyPaws.Api.Controllers
             _usersService = usersService;
             _currentUser = currentUser;
         }
-
+        [AllowAnonymous]
         [HttpPost("SignIn")]
         public async Task<IActionResult> SignIn([FromBody] SignInModel model, CancellationToken cancellationToken = default)
         {
@@ -37,6 +38,7 @@ namespace HappyPaws.Api.Controllers
                 return StatusCode(403);
             }
         }
+        [AllowAnonymous]
         [HttpPost("SendEmailVerification")]
         public async Task<IActionResult> SendEmailVerification([FromBody] SignUpModel model, CancellationToken cancellationToken = default)
         {
@@ -63,6 +65,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest(e.Message);
             }
         }
+        [AllowAnonymous]
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model, CancellationToken cancellationToken = default)
         {
@@ -84,7 +87,7 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest(e.Message);
             }
         }
-
+        [Authorize(Policy = "AllVerified")]
         [HttpPut("UpdatePassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] ChangePasswordModel model, CancellationToken cancellationToken = default)
         {

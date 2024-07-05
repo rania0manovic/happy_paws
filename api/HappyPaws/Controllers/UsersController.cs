@@ -4,7 +4,9 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Common.Services.AuthService;
 using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.User;
+using HappyPaws.Core.Exceptions;
 using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -21,11 +23,15 @@ namespace HappyPaws.Api.Controllers
             _currentUser = currentUser;
             _memoryCache = memoryCache;
         }
-        public override async Task<IActionResult> Post([FromForm] UserDto upsertDto, CancellationToken cancellationToken = default)
+
+        [Authorize(Roles = "Admin")]
+        public override async Task<IActionResult> Post([FromBody] UserDto upsertDto, CancellationToken cancellationToken = default)
         {
             return await base.Post(upsertDto, cancellationToken);
         }
-        public override async Task<IActionResult> Put([FromForm] UserDto upsertDto, CancellationToken cancellationToken = default)
+
+        [Authorize(Roles = "User,Admin")]
+        public override async Task<IActionResult> Put([FromBody] UserDto upsertDto, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -43,6 +49,14 @@ namespace HappyPaws.Api.Controllers
                 return StatusCode(403);
             }
         }
+
+        [Authorize(Roles = "Admin, Employee")]
+        public override Task<IActionResult> GetPaged([FromQuery] UserSearchObject searchObject, CancellationToken cancellationToken = default)
+        {
+            return base.GetPaged(searchObject, cancellationToken);
+        }
+
+        [Authorize(Policy = "ClinicPolicy")]
         [HttpGet("FreeEmployees")]
         public virtual async Task<IActionResult> FreeEmployees([FromQuery] EmployeeSearchObject searchObject, CancellationToken cancellationToken = default)
         {
@@ -64,6 +78,8 @@ namespace HappyPaws.Api.Controllers
                 return BadRequest();
             }
         }
+
+        [Authorize(Roles = "User")]
         [HttpGet("RecommendedProducts")]
         public virtual async Task<IActionResult> RecommendedProducts(CancellationToken cancellationToken = default)
         {
@@ -71,19 +87,34 @@ namespace HappyPaws.Api.Controllers
             {
                 var userId = _currentUser.Id;
                 if (!userId.HasValue) return StatusCode(403);
-                string cacheKey = $"RecommendedProducts_{userId.Value}";
-                if (_memoryCache.TryGetValue<List<ProductDto>>(cacheKey, out var recommendedProducts))
-                {
-                    return Ok(recommendedProducts);
-                }
                 var result = await Service.GetRecommendedProductsForUser((int)userId, cancellationToken);
-                _memoryCache.Set(cacheKey, result, TimeSpan.FromHours(1));
                 return Ok(result);
 
             }
             catch (Exception e)
             {
                 Logger.LogError(e, "Problem when getting resources!");
+                return BadRequest();
+            }
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPatch("SubscribeToNewsletter")]
+        public virtual async Task<IActionResult> SubscribeToNewsletter(CancellationToken cancellationToken = default)
+        {
+            var userId = _currentUser.Id;
+            try
+            {
+                if (!userId.HasValue) return StatusCode(403);
+                var result = await Service.GetByIdAsync((int)userId, cancellationToken) ?? throw new EntryNotFoundException();
+                result.IsSubscribed = true;
+                await Service.UpdateAsync(result, cancellationToken);
+                return Ok();
+
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resources with {userId}!", userId);
                 return BadRequest();
             }
         }

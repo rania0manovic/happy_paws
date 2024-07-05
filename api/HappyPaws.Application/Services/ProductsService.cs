@@ -30,24 +30,23 @@ namespace HappyPaws.Application.Services
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
                 var response = await base.AddAsync(dto, cancellationToken);
-                foreach (var file in dto.ImageFiles)
+                if (dto.DownloadURLs != null)
                 {
-                    var memoryStream = new MemoryStream();
-                    await file!.CopyToAsync(memoryStream, cancellationToken);
-                    var optimizedImage = ImageSharp.OptimizeImage(memoryStream);
-                    var image = new Image()
+                    foreach (var url in dto.DownloadURLs)
                     {
-                        ContentType = file.ContentType,
-                        Data = memoryStream.ToArray(),
-                    };
-                    await UnitOfWork.ImagesRepository.AddAsync(image, cancellationToken);
-                    await UnitOfWork.SaveChangesAsync(cancellationToken);
-                    var productImage = new ProductImage()
-                    {
-                        ProductId = response.Id,
-                        ImageId = image.Id,
-                    };
-                    await UnitOfWork.ProductImagesRepository.AddAsync(productImage, cancellationToken);
+                        var image = new Image()
+                        {
+                            DownloadURL = url
+                        };
+                        await UnitOfWork.ImagesRepository.AddAsync(image, cancellationToken);
+                        await UnitOfWork.SaveChangesAsync(cancellationToken);
+                        var productImage = new ProductImage()
+                        {
+                            ProductId = response.Id,
+                            ImageId = image.Id,
+                        };
+                        await UnitOfWork.ProductImagesRepository.AddAsync(productImage, cancellationToken);
+                    }
                 }
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
                 await UnitOfWork.CommitTransactionAsync(cancellationToken);
@@ -65,17 +64,13 @@ namespace HappyPaws.Application.Services
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
                 var response = await base.UpdateAsync(dto, cancellationToken);
-                if (dto.ImageFiles != null)
+                if (dto.DownloadURLs != null)
                 {
-                    foreach (var file in dto.ImageFiles)
+                    foreach (var url in dto.DownloadURLs)
                     {
-                        var memoryStream = new MemoryStream();
-                        await file!.CopyToAsync(memoryStream, cancellationToken);
-                        var optimizedImage = ImageSharp.OptimizeImage(memoryStream);
                         var image = new Image()
                         {
-                            ContentType = file.ContentType,
-                            Data = memoryStream.ToArray(),
+                            DownloadURL = url
                         };
                         await UnitOfWork.ImagesRepository.AddAsync(image, cancellationToken);
                         await UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -109,6 +104,7 @@ namespace HappyPaws.Application.Services
                         item.Review = (int)item.ProductReviews.Average(x => x.Review);
                     }
                 }
+              
             }
             return response;
         }
@@ -129,7 +125,7 @@ namespace HappyPaws.Application.Services
             return result;
         }
 
-       
+
 
         public async Task<List<ProductDto>> GetBestsellersAsync(int size, CancellationToken cancellationToken = default)
         {

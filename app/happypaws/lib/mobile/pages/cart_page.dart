@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -40,6 +39,7 @@ class _CartPageState extends State<CartPage> {
             setState(() {
               unableToOrder = true;
             });
+            if (!mounted) return;
             ToastHelper.showToastError(context,
                 "One or more products are out of stock or not being sold anymore. You won't be able to complete your order unless you remove them from cart or wait until they're back in stock.");
           }
@@ -174,11 +174,11 @@ class _CartPageState extends State<CartPage> {
                                             widthFactor: 0.3,
                                             child: Padding(
                                               padding: const EdgeInsets.all(8.0),
-                                              child: Image.memory(
-                                                base64.decode(item['product']
+                                              child: Image.network(
+                                                item['product']
                                                             ['productImages'][0]
-                                                        ['image']['data']
-                                                    .toString()),
+                                                        ['image']['downloadURL']
+                                                   ,
                                                 height: 100,
                                               ),
                                             )),
@@ -217,7 +217,7 @@ class _CartPageState extends State<CartPage> {
                                                 CrossAxisAlignment.end,
                                             children: [
                                               Text(
-                                                "\$ ${item['product']['price']}",
+                                                "\$ ${item['product']['price'].toStringAsFixed(2)}",
                                                 style: const TextStyle(
                                                     fontSize: 18,
                                                     fontWeight:
@@ -343,7 +343,6 @@ class _CartPageState extends State<CartPage> {
                               'Total',
                               style: TextStyle(fontSize: 20),
                             ),
-                            // ignore: prefer_interpolation_to_compose_strings
                             Text(
                                 "\$ ${products!['items'].isNotEmpty ? total : "0.00"}",
                                 style: const TextStyle(

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -89,9 +88,8 @@ class _MyPetsPageState extends State<MyPetsPage> {
                                       child: ClipRRect(
                                         borderRadius:
                                             BorderRadius.circular(1000),
-                                        child: pet['photo']!=null ? Image.memory(
-                                          base64.decode(
-                                              pet['photo']['data'].toString()),
+                                        child: pet['photo']!=null ? Image.network(
+                                         pet['photo']['downloadURL'],
                                           fit: BoxFit.cover,
                                         ) : const Image(
                               image: AssetImage("assets/images/pet_default.jpg"),)

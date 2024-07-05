@@ -12,6 +12,13 @@ namespace HappyPaws.Application.Validators
     {
         public ProductValidator()
         {
+            RuleFor(x => x.Name).NotNull().NotEmpty();
+            RuleFor(x => x.UPC).NotNull().NotEmpty();
+            RuleFor(x => x.Description).NotNull().NotEmpty();
+            RuleFor(x => x.InStock).NotNull();
+            RuleFor(x => x.Price).NotNull();
+            RuleFor(x => x.BrandId).NotNull();
+            RuleFor(x => x.ProductCategorySubcategoryId).NotNull();
 
         }
     }

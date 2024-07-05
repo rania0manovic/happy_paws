@@ -26,6 +26,7 @@ namespace HappyPaws.Infrastructure.Configurations
             builder.Property(e => e.MyPawNumber).IsRequired(false).HasMaxLength(16);
             builder.Property(e => e.EmployeePosition).IsRequired(false); 
             builder.Property(e => e.IsVerified).IsRequired().HasDefaultValue(false);
+            builder.Property(e => e.IsSubscribed).IsRequired().HasDefaultValue(false);
 
             builder.HasOne(x => x.ProfilePhoto).WithMany(x => x.Users).HasForeignKey(x => x.ProfilePhotoId).IsRequired(false);
 
