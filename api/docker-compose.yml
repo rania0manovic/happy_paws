@@ -1,4 +1,4 @@
-version: '3'
+
 services:
   broker:
     image: confluentinc/cp-kafka:7.6.1
@@ -80,7 +80,6 @@ services:
 
   kafka-consumer-api:
     image: kafka
-    restart: unless-stopped
     build:
       context: .
       dockerfile: HappyPaws.Consumer/Dockerfile
@@ -94,8 +93,9 @@ services:
       - happypawsnet
     depends_on:
       - broker
-
-
+    restart: always
+    entrypoint: ["/bin/sh", "-c", "sleep 60 && dotnet HappyPaws.Consumer.dll"]
+    
 
 networks:
   happypawsnet:

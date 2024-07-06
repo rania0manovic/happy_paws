@@ -18,8 +18,9 @@ namespace HappyPaws.Consumer.HostedServices.Kafka
             _consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = Environment.GetEnvironmentVariable("KAFKA_BROKER_URL"),
-                GroupId = "my-consumer-group",
-                AutoOffsetReset = AutoOffsetReset.Earliest
+                GroupId = "subscribers",
+                AutoOffsetReset = AutoOffsetReset.Earliest,
+                EnableAutoCommit=true
             };
 
             _consumer = new ConsumerBuilder<Null, string>(_consumerConfig).Build();
