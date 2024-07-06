@@ -11,7 +11,10 @@ namespace HappyPaws.Core.Entities
         public int Review { get; set; }
         public string? Note { get; set; }
 
-        public required Product Product { get; set; }
+        public Product Product { get; set; } = null!;
         public int ProductId { get; set; }
+
+        public User Reviewer { get; set; } = null!;
+        public int ReviewerId { get; set; }
     }
 }

@@ -16,14 +16,12 @@ namespace HappyPaws.Infrastructure.Configurations
         {
             base.Configure(builder);
 
-            builder.Property(x => x.OrderDate).IsRequired();
             builder.Property(x => x.Status).IsRequired().HasDefaultValue(OrderStatus.Pending);
             builder.Property(x => x.PaymentMethod).IsRequired();
             builder.Property(x => x.Shipping).IsRequired(false);
             builder.Property(x => x.Total).IsRequired();
 
-            builder.HasOne(x=>x.ShippingAddress).WithMany(x=>x.Orders).HasForeignKey(x=>x.ShippingAddressId).IsRequired();
-            builder.HasOne(x=>x.User).WithMany(x=>x.Orders).HasForeignKey(x=>x.UserId).IsRequired();
+            builder.HasOne(x=>x.ShippingAddress).WithMany(x=>x.Orders).HasForeignKey(x=>x.ShippingAddressId).IsRequired(false);
         }
     }
 }

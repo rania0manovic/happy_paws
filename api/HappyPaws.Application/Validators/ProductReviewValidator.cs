@@ -12,6 +12,9 @@ namespace HappyPaws.Application.Validators
     {
         public ProductReviewValidator()
         {
+            RuleFor(x => x.Review).NotNull();
+            RuleFor(x => x.ProductId).NotNull();
+            RuleFor(x => x.ReviewerId).NotNull();
 
         }
     }

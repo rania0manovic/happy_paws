@@ -8,12 +8,12 @@ namespace HappyPaws.Core.Enums
 {
     public enum EmployeePosition
     {
-        Vet,
-        VetTech,
-        VetAssistant,
+        Veterinarian,
+        VeterinarianTechnician,
+        VeterinarianAssistant,
         Groomer,
         PharmacyStaff,
         MaintenanceStaff,
-        RetailStaf
+        RetailStaff
     }
 }

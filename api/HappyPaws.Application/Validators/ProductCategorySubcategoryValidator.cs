@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Validators
 {
-    public class ProductCategorySubcategoryValidator:AbstractValidator<ProductCategorySubcategoryDto>
+    public class ProductCategorySubcategoryValidator : AbstractValidator<ProductCategorySubcategoryDto>
     {
         public ProductCategorySubcategoryValidator()
         {
-            
+            RuleFor(x => x.ProductSubcategoryId).NotNull();
+            RuleFor(x => x.ProductCategoryId).NotNull();
+
         }
     }
 }

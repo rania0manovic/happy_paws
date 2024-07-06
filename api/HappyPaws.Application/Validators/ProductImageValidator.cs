@@ -12,6 +12,8 @@ namespace HappyPaws.Application.Validators
     {
         public ProductImageValidator()
         {
+            RuleFor(x => x.ProductId).NotNull();
+            RuleFor(x => x.ImageId).NotNull();
 
         }
     }

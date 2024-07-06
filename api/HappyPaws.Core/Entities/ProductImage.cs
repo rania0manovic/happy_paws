@@ -8,10 +8,10 @@ namespace HappyPaws.Core.Entities
 {
     public class ProductImage : BaseEntity
     {
-        public required Product Product { get; set; }
+        public Product Product { get; set; } = null!;
         public int ProductId { get; set; }
 
-        public required Image Image { get; set; }
+        public Image Image { get; set; } = null!;
         public int ImageId { get; set; }
     }
 }

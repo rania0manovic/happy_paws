@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.Dtos.UserFavourite
 {
-    public class UserFavouriteDto:BaseDto
+    public class UserFavouriteDto : BaseDto
     {
-        public required UserDto User { get; set; }
+        public UserDto? User { get; set; }
         public int UserId { get; set; }
 
-        public required ProductDto Product { get; set; }
+        public ProductDto? Product { get; set; }
         public int ProductId { get; set; }
     }
 }

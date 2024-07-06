@@ -8,7 +8,7 @@ namespace HappyPaws.Core.Dtos.Brand
 {
     public class BrandDto:BaseDto
     {
-        public required string Name { get; set; }
+        public string Name { get; set; } = null!;
 
     }
 }

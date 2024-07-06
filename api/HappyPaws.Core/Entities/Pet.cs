@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HappyPaws.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,18 +12,20 @@ namespace HappyPaws.Core.Entities
         public required string Name { get; set; }
         public DateTime BirthDate { get; set; }
         public double Weight { get; set; }
+        public Gender Gender { get; set; }
 
-        public required User Owner { get; set; }
+        public User Owner { get; set; } = null!;
         public int OwnerId { get; set; }
 
-        public required PetBreed PetBreed { get; set; }
+        public PetBreed PetBreed { get; set; } = null!;
         public int PetBreedId { get; set; }
 
         public Image? Photo { get; set; }
         public int? PhotoId { get; set; }
 
-        public required ICollection<Appointment> Appointments { get; set; }
-        public required ICollection<PetAllergy> PetAllergies { get; set; }
+        public  ICollection<Appointment>? Appointments { get; set; }
+        public  ICollection<PetAllergy>? PetAllergies { get; set; }
+        public  ICollection<PetMedication>? PetMedications { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using FluentValidation;
 using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductSubcategory;
 using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
 using System;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Services
 {
-    public class ProductSubcategoriesService : BaseService<ProductSubcategory, ProductSubcategoryDto, IProductSubcategoriesRepository>, IProductSubcategoriesService
+    public class ProductSubcategoriesService : BaseService<ProductSubcategory, ProductSubcategoryDto, IProductSubcategoriesRepository, ProductSubcategorySearchObject>, IProductSubcategoriesService
     {
         public ProductSubcategoriesService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<ProductSubcategoryDto> validator) : base(mapper, unitOfWork, validator)
         {
@@ -25,15 +26,16 @@ namespace HappyPaws.Application.Services
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
                 var memoryStream = new MemoryStream();
-                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                var photo = new Image()
+                if (dto.DownloadURL != null)
                 {
-                    ContentType = dto.PhotoFile.ContentType,
-                    Data = memoryStream.ToArray(),
-                };
-                await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
-                await UnitOfWork.SaveChangesAsync(cancellationToken);
-                dto.PhotoId = photo.Id;
+                    var photo = new Image()
+                    {
+                        DownloadURL = dto.DownloadURL,
+                    };
+                    await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
+                    await UnitOfWork.SaveChangesAsync(cancellationToken);
+                    dto.PhotoId = photo.Id;
+                }
                 await base.AddAsync(dto, cancellationToken);
                 await UnitOfWork.CommitTransactionAsync(cancellationToken);
                 return dto;
@@ -51,16 +53,25 @@ namespace HappyPaws.Application.Services
             try
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
-                if (dto.PhotoFile != null)
+                if (dto.DownloadURL != null)
                 {
-                    var memoryStream = new MemoryStream();
-                    await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
+                    dynamic photo;
+                    if (dto.PhotoId != null && dto.Photo!=null)
+                    {
+                        dto.Photo.DownloadURL = dto.DownloadURL;
+                    }
+                    else
+                    {
+                        photo = new Image()
+                        {
+                            DownloadURL = dto.DownloadURL,
+                        };
+                        await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
+                        await UnitOfWork.SaveChangesAsync(cancellationToken);
+                        dto.PhotoId = photo.Id;
+                        dto.Photo = photo;
 
-                    var photo = await UnitOfWork.ImagesRepository.GetByIdAsync(dto.PhotoId, cancellationToken);
-                    photo!.ContentType = dto.PhotoFile.ContentType;
-                    photo.Data = memoryStream.ToArray();
-                    UnitOfWork.ImagesRepository.Update(photo);
-
+                    }
                 }
                 await base.UpdateAsync(dto, cancellationToken);
                 await UnitOfWork.SaveChangesAsync(cancellationToken);

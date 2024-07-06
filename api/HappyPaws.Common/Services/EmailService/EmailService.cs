@@ -32,12 +32,12 @@ namespace HappyPaws.Common.Services.EmailService
             _fromAddress = configuration["SMTP:MailMessage:FromAddress"]!;
         }
 
-        public async Task Send(string subject, string body, string toAddress, Attachment? attachment = null)
+        public async Task SendAsync(string subject, string body, string toAddress, Attachment? attachment = null)
         {
-            await Send(subject, body, new[] { toAddress }, attachment);
+            await SendGroupAsync(subject, body, new[] { toAddress }, attachment);
         }
 
-        public async Task Send(string subject, string body, string[] toAddresses, Attachment? attachment = null)
+        public async Task SendGroupAsync(string subject, string body, string[] toAddresses, Attachment? attachment = null)
         {
             try
             {

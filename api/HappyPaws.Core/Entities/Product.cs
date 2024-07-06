@@ -9,20 +9,22 @@ namespace HappyPaws.Core.Entities
     public class Product : BaseEntity
     {
         public required string Name { get; set; }
+        public required string UPC { get; set; }
         public double Price { get; set; }
         public required string Description { get; set; }
         public int InStock { get; set; }
+        public bool? IsActive { get; set; }
 
-        public required Brand Brand { get; set; }
+        public Brand Brand { get; set; } = null!;
         public int BrandId { get; set; }
 
-        public required ProductCategorySubcategory ProductCategorySubcategory { get; set; }
-        public required int ProductCategorySubcategoryId { get; set; }
+        public ProductCategorySubcategory ProductCategorySubcategory { get; set; } = null!;
+        public int ProductCategorySubcategoryId { get; set; }
 
-
-        public required ICollection<ProductImage> ProductImages { get; set; }
-        public required ICollection<ProductReview> ProductReviews { get; set; }
-        public required ICollection<UserCart> UserCartItems { get; set; }
-        public required ICollection<UserFavourite> UserFavouriteItems { get; set; }
+        public ICollection<ProductImage> ProductImages { get; set; } = null!;
+        public ICollection<OrderDetail> OrderDetails { get; set; } = null!;
+        public ICollection<ProductReview> ProductReviews { get; set; } = null!;
+        public ICollection<UserCart> UserCartItems { get; set; } = null!;
+        public ICollection<UserFavourite> UserFavouriteItems { get; set; } = null!;
     }
 }

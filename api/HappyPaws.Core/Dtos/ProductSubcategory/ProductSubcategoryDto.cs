@@ -14,8 +14,8 @@ namespace HappyPaws.Core.Dtos.ProductSubcategory
         public required string Name { get; set; }
 
         public ImageDto? Photo { get; set; }
-        public int PhotoId { get; set; }
+        public int? PhotoId { get; set; }
+        public string? DownloadURL { get; set; }
 
-        public IFormFile? PhotoFile { get; set; }
     }
 }

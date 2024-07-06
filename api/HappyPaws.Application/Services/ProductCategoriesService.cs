@@ -4,13 +4,14 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.Image;
 using HappyPaws.Core.Dtos.ProductCategory;
 using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
 using HappyPaws.Infrastructure;
 using HappyPaws.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HappyPaws.Application.Services
 {
-    public class ProductCategoriesService : BaseService<ProductCategory, ProductCategoryDto, IProductCategoriesRepository>, IProductCategoriesService
+    public class ProductCategoriesService : BaseService<ProductCategory, ProductCategoryDto, IProductCategoriesRepository, ProductCategorySearchObject>, IProductCategoriesService
     {
         public ProductCategoriesService(IMapper mapper, IUnitOfWork unitOfWork, IValidator<ProductCategoryDto> validator) : base(mapper, unitOfWork, validator)
         {
@@ -20,18 +21,27 @@ namespace HappyPaws.Application.Services
             try
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
-                if (dto.PhotoFile != null)
+                if (dto.DownloadURL != null)
                 {
-                    var memoryStream = new MemoryStream();
-                    await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
+                    dynamic photo;
+                    if (dto.PhotoId != null && dto.Photo != null)
+                    {
+                        dto.Photo.DownloadURL = dto.DownloadURL;
+                    }
+                    else
+                    {
+                        photo = new Image()
+                        {
+                            DownloadURL = dto.DownloadURL,
+                        };
+                        await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
+                        await UnitOfWork.SaveChangesAsync(cancellationToken);
+                        dto.PhotoId = photo.Id;
+                        dto.Photo = photo;
 
-                    var photo = await UnitOfWork.ImagesRepository.GetByIdAsync(dto.PhotoId, cancellationToken);
-                    photo!.ContentType = dto.PhotoFile.ContentType;
-                    photo.Data = memoryStream.ToArray();
-                    UnitOfWork.ImagesRepository.Update(photo);
-
+                    }
                 }
-                var subcategoriesIds = await UnitOfWork.ProductCategorySubcategoriesRepository.GetSubcategoryIdsForCategory(dto.Id, cancellationToken, true);
+                var subcategoriesIds = await UnitOfWork.ProductCategorySubcategoriesRepository.GetSubcategoryIdsForCategoryAsync(dto.Id, cancellationToken, true);
                 if (dto.RemovedSubcategoryIds != null)
                 {
                     foreach (var subcategoryId in dto.RemovedSubcategoryIds)
@@ -49,7 +59,7 @@ namespace HappyPaws.Application.Services
                         }
                         else
                         {
-                            ProductCategorySubcategory entity = new ProductCategorySubcategory()
+                            ProductCategorySubcategory entity = new()
                             {
                                 ProductCategoryId = dto.Id,
                                 ProductSubcategoryId = subcategoryId,
@@ -76,29 +86,29 @@ namespace HappyPaws.Application.Services
             try
             {
                 await UnitOfWork.BeginTransactionAsync(cancellationToken);
-                var memoryStream = new MemoryStream();
-                await dto.PhotoFile.CopyToAsync(memoryStream, cancellationToken);
-                var photo = new Image()
+                if (dto.DownloadURL != null)
                 {
-                    ContentType = dto.PhotoFile.ContentType,
-                    Data = memoryStream.ToArray(),
-                };
-                await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
-                await UnitOfWork.SaveChangesAsync(cancellationToken);
-                dto.PhotoId = photo.Id;
+                    var photo = new Image()
+                    {
+                        DownloadURL = dto.DownloadURL,
+                    };
+                    await UnitOfWork.ImagesRepository.AddAsync(photo, cancellationToken);
+                    await UnitOfWork.SaveChangesAsync(cancellationToken);
+                    dto.PhotoId = photo.Id;
+                }
                 var productCategory = await base.AddAsync(dto, cancellationToken);
                 await UnitOfWork.SaveChangesAsync(cancellationToken);
                 if (dto.AddedSubcategoryIds != null)
                 {
                     foreach (var subcategoryId in dto.AddedSubcategoryIds)
                     {
-                        
-                            ProductCategorySubcategory entity = new ProductCategorySubcategory()
-                            {
-                                ProductCategoryId = productCategory.Id,
-                                ProductSubcategoryId = subcategoryId,
-                            };
-                            await UnitOfWork.ProductCategorySubcategoriesRepository.AddAsync(entity, cancellationToken);
+
+                        ProductCategorySubcategory entity = new()
+                        {
+                            ProductCategoryId = productCategory.Id,
+                            ProductSubcategoryId = subcategoryId,
+                        };
+                        await UnitOfWork.ProductCategorySubcategoriesRepository.AddAsync(entity, cancellationToken);
                     }
                 }
                 await UnitOfWork.SaveChangesAsync(cancellationToken);

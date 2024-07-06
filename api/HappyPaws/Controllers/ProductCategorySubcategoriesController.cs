@@ -1,17 +1,43 @@
 ﻿using HappyPaws.Application.Interfaces;
+using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.ProductCategorySubcategory;
+using HappyPaws.Core.Entities;
+using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.OpenApi.Validations.Rules;
 
 namespace HappyPaws.Api.Controllers
 {
-
-    public class ProductCategorySubcategoriesController : BaseCrudController<ProductCategorySubcategoryDto, IProductCategorySubcategoriesService>
+    [Authorize(Policy = "AllVerified")]
+    public class ProductCategorySubcategoriesController : BaseCrudController<ProductCategorySubcategoryDto, IProductCategorySubcategoriesService, ProductCategorySubcategorySearchObject>
     {
-        public ProductCategorySubcategoriesController(IProductCategorySubcategoriesService service, ILogger<BaseController> logger) : base(service, logger)
+        private readonly IMemoryCache _memoryCache;
+        public ProductCategorySubcategoriesController(IProductCategorySubcategoriesService service, ILogger<BaseController> logger, IMemoryCache memoryCache) : base(service, logger)
         {
+            _memoryCache = memoryCache;
         }
+
+        [Authorize]
+        public override Task<IActionResult> Post([FromBody] ProductCategorySubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Post(upsertDto, cancellationToken);
+        }
+
+        [Authorize]
+        public override Task<IActionResult> Put([FromBody] ProductCategorySubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+        {
+            return base.Put(upsertDto, cancellationToken);
+        }
+
+        [Authorize]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
+        }
+
         [HttpGet("GetSubcategoryIdsForCategory")]
         public async Task<IActionResult> GetSubcategoryIdsForCategory(int categoryId, CancellationToken cancellationToken = default)
         {
@@ -22,7 +48,29 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with categoryID {0}", categoryId);
+                Logger.LogError(e, "Problem when getting resource with categoryID {CategoryId}", categoryId);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("GetSubcategoriesForCategory")]
+        public async Task<IActionResult> GetSubcategoriesForCategory(int categoryId, bool includePhotos = false, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                string cacheKey = $"SubcategoriesForCategory_{categoryId}_includePhotos_{includePhotos}";
+                if (_memoryCache.TryGetValue<List<ProductCategorySubcategoryDto>>(cacheKey, out var subcategories))
+                {
+                    return Ok(subcategories);
+                }
+
+                var response = await Service.GetSubcategoriesForCategoryAsync(categoryId, includePhotos, cancellationToken);
+                _memoryCache.Set(cacheKey, response, TimeSpan.FromDays(1));
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "Problem when getting resource with categoryID {CategoryId}", categoryId);
                 return BadRequest();
             }
         }

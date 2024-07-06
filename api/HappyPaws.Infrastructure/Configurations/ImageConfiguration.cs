@@ -14,8 +14,7 @@ namespace HappyPaws.Infrastructure.Configurations
         {
             base.Configure(builder);
 
-            builder.Property(x => x.Data).IsRequired();
-            builder.Property(x => x.ContentType).IsRequired().HasMaxLength(10);
+            builder.Property(x => x.DownloadURL).IsRequired().HasMaxLength(256);
         }
     }
 }

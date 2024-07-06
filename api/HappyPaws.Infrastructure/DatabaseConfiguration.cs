@@ -8,6 +8,7 @@ namespace HappyPaws.Infrastructure
     {
         public override int SaveChanges()
         {
+
             ModifyTimestamps();
 
             return base.SaveChanges();
@@ -15,11 +16,15 @@ namespace HappyPaws.Infrastructure
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+
             ModifyTimestamps();
 
             return base.SaveChangesAsync(cancellationToken);
         }
-
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.EnableSensitiveDataLogging();
+        }
         private void ModifyTimestamps()
         {
             foreach (var entry in ChangeTracker.Entries())
@@ -31,7 +36,7 @@ namespace HappyPaws.Infrastructure
             }
         }
 
-        private void ApplyConfigurations(ModelBuilder modelBuilder)
+        private static void ApplyConfigurations(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaseConfiguration<>).Assembly);
         }

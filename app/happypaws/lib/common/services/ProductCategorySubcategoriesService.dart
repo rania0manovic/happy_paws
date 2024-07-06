@@ -8,5 +8,9 @@ class ProductCategorySubcategoriesService extends BaseService {
     final response = await get('/GetSubcategoryIdsForCategory?categoryId=$categoryId');
     return response;
   }
+   Future<dynamic> getSubcategories(String? categoryId, {bool includePhotos=false}) async {
+    final response = await get('/GetSubcategoriesForCategory?categoryId=$categoryId&includePhotos=$includePhotos');
+    return response;
+  }
  
 }

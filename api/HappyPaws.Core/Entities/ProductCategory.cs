@@ -11,10 +11,10 @@ namespace HappyPaws.Core.Entities
     {
         public required string Name { get; set; }
 
-        public required Image Photo { get; set; }
+        public Image Photo { get; set; } = null!;
         public int PhotoId { get; set; }
 
-        public required ICollection<ProductCategorySubcategory> ProductCategorySubcategories { get; set; }
+        public ICollection<ProductCategorySubcategory>? ProductCategorySubcategories { get; set; }
 
 
     }

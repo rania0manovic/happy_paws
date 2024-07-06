@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:happypaws/common/components/text/RegularText.dart';
-import 'package:happypaws/common/utilities/colors.dart';
+import 'package:happypaws/common/components/text/regular_text.dart';
+import 'package:happypaws/common/utilities/Colors.dart';
 
 class Spinner extends StatelessWidget {
   const Spinner({super.key});
@@ -12,15 +12,16 @@ class Spinner extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CircularProgressIndicator(
-            color: AppColors.primaryColor,
+            color: AppColors.primary,
           ),
           SizedBox(
             height: 16,
           ),
           RegularText(
             label: "Please wait...",
-            fontSize: 14,
-            color: AppColors.primaryColor,
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: AppColors.primary,
           )
         ],
       ),

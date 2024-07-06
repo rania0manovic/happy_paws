@@ -3,18 +3,18 @@ using HappyPaws.Application.Interfaces;
 using HappyPaws.Application.Services;
 using HappyPaws.Application.Validators;
 using HappyPaws.Core.Dtos.Address;
-using HappyPaws.Core.Dtos.Allergy;
 using HappyPaws.Core.Dtos.Appointment;
 using HappyPaws.Core.Dtos.Brand;
-using HappyPaws.Core.Dtos.City;
-using HappyPaws.Core.Dtos.Country;
+using HappyPaws.Core.Dtos.Donation;
 using HappyPaws.Core.Dtos.EmailVerificationRequest;
-using HappyPaws.Core.Dtos.Employee;
 using HappyPaws.Core.Dtos.Image;
+using HappyPaws.Core.Dtos.Notification;
 using HappyPaws.Core.Dtos.Order;
+using HappyPaws.Core.Dtos.OrderDetail;
 using HappyPaws.Core.Dtos.Pet;
 using HappyPaws.Core.Dtos.PetAllergy;
 using HappyPaws.Core.Dtos.PetBreed;
+using HappyPaws.Core.Dtos.PetMedication;
 using HappyPaws.Core.Dtos.PetType;
 using HappyPaws.Core.Dtos.Product;
 using HappyPaws.Core.Dtos.ProductCategory;
@@ -22,6 +22,7 @@ using HappyPaws.Core.Dtos.ProductCategorySubcategory;
 using HappyPaws.Core.Dtos.ProductImage;
 using HappyPaws.Core.Dtos.ProductReview;
 using HappyPaws.Core.Dtos.ProductSubcategory;
+using HappyPaws.Core.Dtos.SystemConfig;
 using HappyPaws.Core.Dtos.User;
 using HappyPaws.Core.Dtos.UserCart;
 using HappyPaws.Core.Dtos.UserFavourite;
@@ -33,16 +34,14 @@ namespace HappyPaws.Application
     {
         public static void AddApplication(this IServiceCollection services)
         {
-            services.AddScoped<IAddressesService, AddressesService>();
-            services.AddScoped<IAllergiesService, AllergiesService>();
+            services.AddScoped<IUserAddressesService, UserAddressesService>();
             services.AddScoped<IAppointmentsService, AppointmentsService>();
             services.AddScoped<IBrandsService, BrandsService>();
-            services.AddScoped<ICitiesService, CitiesService>();
-            services.AddScoped<ICountriesService, CountriesService>();
-            services.AddScoped<IEmployeesService, EmployeesService>();
             services.AddScoped<IImagesService, ImagesService>();
             services.AddScoped<IOrdersService, OrdersService>();
+            services.AddScoped<IOrderDetailsService, OrderDetailsService>();
             services.AddScoped<IPetAllergiesService, PetAllergiesService>();
+            services.AddScoped<IPetMedicationsService, PetMedicationsService>();
             services.AddScoped<IPetBreedsService, PetsBreedsService>();
             services.AddScoped<IPetsService, PetsService>();
             services.AddScoped<IPetTypesService, PetTypesService>();
@@ -56,20 +55,21 @@ namespace HappyPaws.Application
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IEmailVerificationRequestsService, EmailVerificationRequestsService>();
             services.AddScoped<IProductCategorySubcategoriesService, ProductCategorySubcategoriesService>();
+            services.AddScoped<INotificationsService, NotificationsService>();
+            services.AddScoped<IDonationsService, DonationsService>();
+            services.AddScoped<ISystemConfigsService, SystemConfigsService>();
         }
 
         public static void AddValidators(this IServiceCollection services)
         {
-            services.AddScoped<IValidator<AddressDto>, AddressValidator>();
-            services.AddScoped<IValidator<AllergyDto>, AllergyValidator>();
+            services.AddScoped<IValidator<UserAddressDto>, UserAddressValidator>();
             services.AddScoped<IValidator<AppointmentDto>, AppointmentValidator>();
             services.AddScoped<IValidator<BrandDto>, BrandValidator>();
-            services.AddScoped<IValidator<CityDto>, CityValidator>();
-            services.AddScoped<IValidator<CountryDto>, CountryValidator>();
-            services.AddScoped<IValidator<EmployeeDto>, EmployeeValidator>();
             services.AddScoped<IValidator<ImageDto>, ImageValidator>();
             services.AddScoped<IValidator<OrderDto>, OrderValidator>();
+            services.AddScoped<IValidator<OrderDetailDto>, OrderDetailValidator>();
             services.AddScoped<IValidator<PetAllergyDto>, PetAllergyValidator>();
+            services.AddScoped<IValidator<PetMedicationDto>, PetMedicationValidator>();
             services.AddScoped<IValidator<PetBreedDto>, PetBreedValidator>();
             services.AddScoped<IValidator<PetDto>, PetValidator>();
             services.AddScoped<IValidator<PetTypeDto>, PetTypeValidator>();
@@ -83,6 +83,9 @@ namespace HappyPaws.Application
             services.AddScoped<IValidator<UserDto>, UserValidator>();
             services.AddScoped<IValidator<EmailVerificationRequestDto>, EmailVerificationRequestValidator>();
             services.AddScoped<IValidator<ProductCategorySubcategoryDto>, ProductCategorySubcategoryValidator>();
+            services.AddScoped<IValidator<NotificationDto>, NotificationValidator>();
+            services.AddScoped<IValidator<DonationDto>, DonationValidator>();
+            services.AddScoped<IValidator<SystemConfigDto>, SystemConfigValidator>();
         }
     }
 }

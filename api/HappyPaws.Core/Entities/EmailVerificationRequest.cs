@@ -11,7 +11,5 @@ namespace HappyPaws.Core.Entities
         public int Code { get; set; }
         public bool IsExpired { get; set; }
         public required string Email { get; set; }
-
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HappyPaws.Core.Dtos.UserCart;
+using HappyPaws.Core.SearchObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IUserCartsService : IBaseService<int, UserCartDto>
+    public interface IUserCartsService : IBaseService<int, UserCartDto, UserCartSearchObject>
     {
+        Task<bool> AlreadyInCartAsync(int productId, int userId, CancellationToken cancellationToken = default);
     }
 }

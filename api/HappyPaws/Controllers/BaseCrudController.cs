@@ -1,15 +1,16 @@
-﻿using HappyPaws.Application.Interfaces;
+﻿using FluentValidation;
+using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos;
-using HappyPaws.Core.Models;
+using HappyPaws.Core.SearchObjects;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace HappyPaws.Api.Controllers
 {
 
-    public abstract class BaseCrudController<TDto, TService> : BaseController
+    public abstract class BaseCrudController<TDto, TService, TSearchObject> : BaseController
         where TDto : BaseDto
-        where TService : IBaseService<int, TDto>
+        where TService : IBaseService<int, TDto, TSearchObject>
+        where TSearchObject : BaseSearchObject
     {
         protected readonly TService Service;
 
@@ -29,13 +30,13 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting resource with ID {0}", id);
+                Logger.LogError(e, "Problem when getting resource with ID {Id}", id);
                 return BadRequest();
             }
         }
 
         [HttpGet("GetPaged")]
-        public virtual async Task<IActionResult> GetPaged([FromQuery] BaseSearchObject searchObject, CancellationToken cancellationToken = default)
+        public virtual async Task<IActionResult> GetPaged([FromQuery] TSearchObject searchObject, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -44,7 +45,7 @@ namespace HappyPaws.Api.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(e, "Problem when getting paged resources for page number {0}, with page size {1}", searchObject.PageNumber, searchObject.PageSize);
+                Logger.LogError(e, "Problem when getting paged resources for page number {PageNumber}, with page size {PageSize}", searchObject.PageNumber, searchObject.PageSize);
                 return BadRequest();
             }
         }
@@ -60,7 +61,7 @@ namespace HappyPaws.Api.Controllers
             catch (ValidationException e)
             {
                 Logger.LogError(e, "Problem when updating resource");
-                return BadRequest();
+                return StatusCode(403);
             }
             catch (Exception e)
             {
@@ -80,7 +81,7 @@ namespace HappyPaws.Api.Controllers
             catch (ValidationException e)
             {
                 Logger.LogError(e, "Problem when updating resource");
-                return BadRequest();
+                return StatusCode(403);
             }
             catch (Exception e)
             {

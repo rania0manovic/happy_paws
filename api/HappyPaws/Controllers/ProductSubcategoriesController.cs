@@ -1,21 +1,33 @@
 ﻿using HappyPaws.Application.Interfaces;
 using HappyPaws.Core.Dtos.ProductSubcategory;
+using HappyPaws.Core.SearchObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HappyPaws.Api.Controllers
 {
-    public class ProductSubcategoriesController : BaseCrudController<ProductSubcategoryDto, IProductSubcategoriesService>
+    [Authorize(Policy = "AllVerified")]
+    public class ProductSubcategoriesController : BaseCrudController<ProductSubcategoryDto, IProductSubcategoriesService, ProductSubcategorySearchObject>
     {
         public ProductSubcategoriesController(IProductSubcategoriesService service, ILogger<BaseController> logger) : base(service, logger)
         {
         }
-        public override Task<IActionResult> Post([FromForm] ProductSubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Post([FromBody] ProductSubcategoryDto upsertDto, CancellationToken cancellationToken = default)
         {
             return base.Post(upsertDto, cancellationToken);
         }
-        public override Task<IActionResult> Put([FromForm] ProductSubcategoryDto upsertDto, CancellationToken cancellationToken = default)
+
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Put([FromBody] ProductSubcategoryDto upsertDto, CancellationToken cancellationToken = default)
         {
             return base.Put(upsertDto, cancellationToken);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public override Task<IActionResult> Delete(int id, CancellationToken cancellationToken = default)
+        {
+            return base.Delete(id, cancellationToken);
         }
     }
 }

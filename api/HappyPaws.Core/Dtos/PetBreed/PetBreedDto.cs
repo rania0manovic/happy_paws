@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace HappyPaws.Core.Dtos.PetBreed
 {
-    public class PetBreedDto:BaseDto
+    public class PetBreedDto : BaseDto
     {
         public required string Name { get; set; }
 
-        public required PetTypeDto PetType { get; set; }
+        public PetTypeDto? PetType { get; set; }
         public int PetTypeId { get; set; }
     }
 }

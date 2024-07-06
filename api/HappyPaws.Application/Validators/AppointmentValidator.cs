@@ -12,7 +12,8 @@ namespace HappyPaws.Application.Validators
     {
         public AppointmentValidator()
         {
-
+            RuleFor(x=>x.Reason).NotEmpty().NotNull();
+            RuleFor(x=>x.PetId).NotNull();
         }
     }
 }

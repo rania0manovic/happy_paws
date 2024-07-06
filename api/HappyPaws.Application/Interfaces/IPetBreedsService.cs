@@ -1,13 +1,11 @@
 ﻿using HappyPaws.Core.Dtos.PetBreed;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using HappyPaws.Core.SearchObjects;
 
 namespace HappyPaws.Application.Interfaces
 {
-    public interface IPetBreedsService : IBaseService<int, PetBreedDto>
+    public interface IPetBreedsService : IBaseService<int, PetBreedDto, PetBreedSearchObject>
     {
+        Task<List<PetBreedDto>> GetBreedsForPetTypeAsync(int petTypeId, CancellationToken cancellationToken = default, bool isDeletedIncluded = false);
+
     }
 }

@@ -14,10 +14,12 @@ namespace HappyPaws.Infrastructure.Configurations
         public override void Configure(EntityTypeBuilder<Product> builder)
         {
             base.Configure(builder);
-
             builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
-            builder.Property(x => x.Description).IsRequired().HasMaxLength(512);
+            builder.Property(x => x.Description).IsRequired().HasMaxLength(1024);
+            builder.HasIndex(p => p.UPC).IsUnique();
+            builder.Property(x => x.UPC).IsRequired().HasMaxLength(13);
             builder.Property(x => x.Price).IsRequired();
+            builder.Property(x => x.IsActive).HasDefaultValue(true);
             builder.Property(x => x.InStock).IsRequired().HasDefaultValue(0);
 
             builder.HasOne(x => x.Brand).WithMany(x => x.Products).HasForeignKey(x => x.BrandId).IsRequired();
