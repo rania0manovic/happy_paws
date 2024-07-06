@@ -13,9 +13,19 @@ namespace HappyPaws.Api.Controllers
         {
         }
         [Authorize(Policy = "ClinicPolicy")]
-        public override Task<IActionResult> Post([FromBody] PetDto upsertDto, CancellationToken cancellationToken = default)
+        public override async Task<IActionResult> Post([FromBody] PetDto upsertDto, CancellationToken cancellationToken = default)
         {
-            return base.Post(upsertDto, cancellationToken);
+            var dto = await Service.AddAsync(upsertDto, cancellationToken);
+            if (dto != null)
+            {
+                dto = await Service.GetByIdAsync(dto.Id, cancellationToken);
+                if (dto != null)
+                {
+                    return Ok(dto);
+                }
+                else throw new Exception();
+            }
+            else throw new Exception();
         }
         [Authorize(Policy = "ClinicPolicy")]
         public override async Task<IActionResult> Put([FromBody] PetDto upsertDto, CancellationToken cancellationToken = default)

@@ -89,7 +89,9 @@ class _PetBreedsPageState extends State<PetBreedsPage> {
     try {
       var response = await PetBreedsService().delete('/$id');
       if (response.statusCode == 200) {
-        fetchBreeds();
+        setState(() {
+          petBreeds!['items'].removeWhere((x) => x['id'] == id);
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully deleted the selected pet breed!");
@@ -115,10 +117,17 @@ class _PetBreedsPageState extends State<PetBreedsPage> {
               onClose: () {
                 Navigator.of(context).pop();
               },
-              fetchData: () {
-                if (petBreeds!['totalCount'] < 10) {
-                  fetchBreeds();
-                }
+              onAdd: (value) {
+                if (petBreeds!['hasNextPage']) return;
+                setState(() {
+                  petBreeds!['items'].add(value);
+                });
+              },
+              onEdit: (value) {
+                setState(() {
+                  petBreeds!['items'][petBreeds!['items']
+                      .indexWhere((x) => x['id'] == value['id'])] = value;
+                });
               },
               data: data,
             ),

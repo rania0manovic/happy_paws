@@ -17,7 +17,9 @@ class AddEditPetTypeMenu extends StatefulWidget {
     Key? key,
     required this.onClose,
     this.data,
-    this.allPetTypes, required this.onAdd, required this.onEdit,
+    this.allPetTypes,
+    required this.onAdd,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -66,8 +68,8 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
   Future<void> editPetType() async {
     try {
       setState(() {
-          disabledButton = true;
-        });
+        disabledButton = true;
+      });
       final response = await PetTypesService().put("", data);
       if (response.statusCode == 200) {
         setState(() {
@@ -85,7 +87,6 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
         if (!mounted) return;
         ToastHelper.showToastError(
             context, "An error occured! Please try again later.");
-      
       }
     } catch (e) {
       rethrow;
@@ -142,24 +143,22 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
                           InputField(
                             label: "Type name:",
                             customValidation: () {
-                                    if (widget.allPetTypes != null) {
-                                      bool hasSameName = widget
-                                              .allPetTypes!['items']
-                                              .any((category) =>
-                                                  category['name'] ==
-                                                      data['name']) ??
-                                          false;
-                                      if (hasSameName) {
-                                        return false;
-                                      } else {
-                                        return true;
-                                      }
-                                    } else {
-                                      return true;
-                                    }
-                                  },
-                                  customMessage:
-                                      'Pet type with the same name already exists or no changes have been detected!',
+                              if (widget.allPetTypes != null) {
+                                bool hasSameName = widget.allPetTypes!['items']
+                                        .any((category) =>
+                                            category['name'] == data['name']) ??
+                                    false;
+                                if (hasSameName) {
+                                  return false;
+                                } else {
+                                  return true;
+                                }
+                              } else {
+                                return true;
+                              }
+                            },
+                            customMessage:
+                                'Pet type with the same name already exists or no changes have been detected!',
                             value:
                                 widget.data != null ? widget.data!['name'] : '',
                             onChanged: (value) => setState(() {
@@ -170,7 +169,7 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
                             height: 32,
                           ),
                           PrimaryButton(
-                            isDisabled: disabledButton,
+                              isDisabled: disabledButton,
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   widget.data != null

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
+import 'package:happypaws/common/utilities/constants.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
 import 'package:happypaws/desktop/components/api_data_dropdown_menu.dart';
@@ -10,14 +11,16 @@ import 'package:happypaws/desktop/components/spinner.dart';
 
 class AddEditPetBreedMenu extends StatefulWidget {
   final VoidCallback onClose;
-  final VoidCallback fetchData;
+   final MyVoidCallback onAdd;
+  final MyVoidCallback onEdit;
   final Map<String, dynamic>? data;
   final Map<String, dynamic>? allbreeds;
 
   const AddEditPetBreedMenu({
     Key? key,
     required this.onClose,
-    required this.fetchData,
+    required this.onAdd,
+    required this.onEdit,
     this.data,
     this.allbreeds,
   }) : super(key: key);
@@ -58,7 +61,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
       final response = await PetBreedsService().post("", data);
       if (response.statusCode == 200) {
         widget.onClose();
-        widget.fetchData();
+        widget.onAdd(response.data);
         setState(() {
           disabledButton = false;
         });
@@ -87,7 +90,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
       final response = await PetBreedsService().put("", widget.data);
       if (response.statusCode == 200) {
         widget.onClose();
-        widget.fetchData();
+        widget.onEdit(response.data);
          setState(() {
           disabledButton = false;
         });

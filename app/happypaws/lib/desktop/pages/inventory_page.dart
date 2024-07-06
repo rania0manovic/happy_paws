@@ -65,6 +65,7 @@ class _InventoryPageState extends State<InventoryPage> {
     }
     } on DioException catch (e) {
       if (e.response != null && e.response!.statusCode == 403) {
+        if(!mounted)return;
         ToastHelper.showToastError(
             context, "You do not have permission for this action!");
       }

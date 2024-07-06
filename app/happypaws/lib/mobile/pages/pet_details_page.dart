@@ -463,7 +463,7 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 final value = formatter.format(args.value!);
                 setState(() {
                   selectedDate = value;
-                  data!['birthDate'] = value;
+                  data!['birthDate'] = DateFormat('yyyy-MM-dd').format(args.value);
                 });
                 Navigator.of(context).pop();
               },

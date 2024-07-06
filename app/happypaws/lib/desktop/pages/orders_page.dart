@@ -90,17 +90,16 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Future<void> changeStatus(String? newValue) async {
     if (newValue == null) return;
-    setState(() {
-      selectedOrder['status'] = newValue;
-      orders!['items'][orders!['items']
-              .indexWhere((x) => x['id'] == selectedOrder['id'])]['status'] =
-          newValue;
-    });
+    
     try {
       var response = await OrdersService().put(
           "/${selectedOrder['id']}/$newValue/${selectedOrder['userId']}", null);
       if (response.statusCode == 200) {
         setState(() {
+          selectedOrder['status'] = newValue;
+      orders!['items'][orders!['items']
+              .indexWhere((x) => x['id'] == selectedOrder['id'])]['status'] =
+          newValue;
           selectedStatus = newValue;
         });
         if (!mounted) return;

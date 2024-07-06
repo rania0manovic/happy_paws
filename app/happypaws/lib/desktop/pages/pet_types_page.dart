@@ -76,8 +76,8 @@ class _PetTypesPageState extends State<PetTypesPage> {
               onEdit: (value) {
                 setState(() {
                   petTypes!['items'][petTypes!['items']
-                          .indexWhere((x) => x['id'] == value['value']['id'])] =
-                      value['value'];
+                          .indexWhere((x) => x['id'] == value['id'])] =
+                      value;
                 });
               },
               data: data,

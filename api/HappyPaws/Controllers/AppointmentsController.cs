@@ -43,7 +43,7 @@ namespace HappyPaws.Api.Controllers
         {
             return base.Get(id, cancellationToken);
         }
-        [Authorize(Roles = "User")]
+        [Authorize(Policy = "VetsOnly")]
         [HttpGet("BookAppointment")]
         public virtual async Task<IActionResult> BookAppointment([FromQuery] AppointmentSearchObject searchObject, CancellationToken cancellationToken = default)
         {
