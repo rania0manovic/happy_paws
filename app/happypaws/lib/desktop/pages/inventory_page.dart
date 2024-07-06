@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,8 @@ class _InventoryPageState extends State<InventoryPage> {
   }
 
   Future<void> updateStock(int id, int newStockValue) async {
-    var response =
+    try {
+      var response =
         await ProductsService().put('/$id/$newStockValue', null);
     if (response.statusCode == 200) {
       setState(() {
@@ -60,6 +62,12 @@ class _InventoryPageState extends State<InventoryPage> {
         ToastHelper.showToastSuccess(context,
             "You have successfully updates stock value for product with id $id!");
       });
+    }
+    } on DioException catch (e) {
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
     }
   }
 
