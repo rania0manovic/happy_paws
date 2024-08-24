@@ -25,7 +25,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await NotificationService().init();
   await dotenv.load(fileName: ".env.testing");
   getIt.registerSingleton<AppRouter>(AppRouter());
   if (platformInfo.isAppOS()) {

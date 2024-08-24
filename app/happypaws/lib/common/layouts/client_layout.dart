@@ -40,14 +40,15 @@ class _ClientLayoutState extends State<ClientLayout>
     _animationController.dispose();
     super.dispose();
   }
-void launchDialer(String phoneNumber) async {
-  final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
-  if (await canLaunch(telUri.toString())) {
-    await launch(telUri.toString());
-  } else {
-    throw 'Could not launch $telUri';
+
+  void launchDialer(String phoneNumber) async {
+    final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunch(telUri.toString())) {
+      await launch(telUri.toString());
+    } else {
+      throw 'Could not launch $telUri';
+    }
   }
-}
 
   Future<void> search() async {
     if (searchInput == "") {
@@ -95,20 +96,45 @@ void launchDialer(String phoneNumber) async {
       backgroundColor: const Color(0xffF2F2F2),
       currentIndex: tabsRouter.activeIndex,
       onTap: (index) {
-           if (index == tabsRouter.activeIndex) {
-                tabsRouter.stackRouterOfIndex(index)!.popUntilRoot();
-              } else {
-                tabsRouter.setActiveIndex(index);
-              }
+        if (index == tabsRouter.activeIndex) {
+          tabsRouter.stackRouterOfIndex(index)!.popUntilRoot();
+        } else {
+          tabsRouter.setActiveIndex(index);
+        }
       },
       items: [
         SalomonBottomBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/home.svg",
-              height: 30,
-              width: 30,
-              color:
-                  tabsRouter.activeIndex == 0 ? AppColors.primary : Colors.grey,
+          icon: Stack(
+              children: [
+                Icon(
+                  Icons.home_outlined,
+                  size: 30,
+                  color: tabsRouter.activeIndex == 0 ? AppColors.primary : Colors.grey,
+                ),
+               
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Consumer<NotificationStatus>(
+                    builder: (context, value, child) {
+                      return value.hasNewNotification
+                          ? FadeTransition(
+                              opacity: _animationController,
+                              child: Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color:
+                                      AppColors.error, 
+                                ),
+                              ),
+                            )
+                          : const SizedBox();
+                    },
+                  ),
+                ),
+              ],
             ),
             title: const Text("Home"),
             selectedColor: AppColors.primary),
@@ -243,8 +269,7 @@ void launchDialer(String phoneNumber) async {
                                 height: 10,
                                 decoration: const BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color:
-                                      AppColors.error, 
+                                  color: AppColors.error,
                                 ),
                               ),
                             )
