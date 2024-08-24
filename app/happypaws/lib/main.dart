@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:happypaws/common/utilities/platform_info.dart';
 import 'package:happypaws/routes/app_router.dart';
@@ -25,7 +24,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await dotenv.load(fileName: ".env.testing");
   getIt.registerSingleton<AppRouter>(AppRouter());
   if (platformInfo.isAppOS()) {
     runApp(const MyAppMobile());
