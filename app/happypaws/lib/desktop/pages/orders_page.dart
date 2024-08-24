@@ -48,7 +48,15 @@ class _OrdersPageState extends State<OrdersPage> {
           orders = response.data;
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

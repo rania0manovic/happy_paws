@@ -60,6 +60,7 @@ class _InputFieldState extends State<InputField> {
         SizedBox(
           width: double.infinity,
           child: TextFormField(
+            textInputAction: TextInputAction.next,
             initialValue: widget.value,
             onChanged: (newValue) {
               if (widget.onChanged != null) {

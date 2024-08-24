@@ -141,7 +141,7 @@ class AuthGuardMobile extends AutoRouteGuard {
   Future<void> onNavigation(
       NavigationResolver resolver, StackRouter router) async {
     var user = await AuthService().getCurrentUser();
-    if (user != null) {
+    if (user != null && user["Role"] == 'User') {
       resolver.next(true);
     } else {
       resolver.redirect(const LoginRoute());

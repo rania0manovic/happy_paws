@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
@@ -152,7 +153,15 @@ class _ProductsPageState extends State<ProductsPage> {
         ToastHelper.showToastSuccess(
             context, "You have successfully deleted selected product!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -171,7 +180,15 @@ class _ProductsPageState extends State<ProductsPage> {
         ToastHelper.showToastSuccess(context,
             "You have successfully ${!data['isActive'] == false ? "activated" : " deactivated"} selected product!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

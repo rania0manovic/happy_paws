@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/NotificationsService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
@@ -10,8 +10,10 @@ import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/message_notifier.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
+import 'package:happypaws/main.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signalr_netcore/http_connection_options.dart';
 import 'package:signalr_netcore/hub_connection_builder.dart';
 
@@ -27,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   Map<String, dynamic>? notifications;
   final ScrollController _scrollController = ScrollController();
   double currentPosition = 0;
+  Map<String, dynamic>? currentUser;
 
   @override
   void initState() {
@@ -51,6 +54,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future fetchdata() async {
+    var user = await AuthService().getCurrentUser();
+    setState(() {
+      currentUser = user;
+    });
     var response = await NotificationsService().getPaged('', 1, 999);
     if (response.statusCode == 200) {
       setState(() {
@@ -75,22 +82,36 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future subscribe() async {
-   try {
-      var response = await UsersService().subscribeToNewsletter();
-    if (response.statusCode == 200) {
+    try {
+      currentUser!['IsSubscribed'] = true;
+      var response = await UsersService().put('', currentUser);
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('token', response.data['token'].toString());
+        var user = await AuthService().getCurrentUser();
+        setState(() {
+          currentUser = user;
+        });
+        if (!mounted) return;
+        ToastHelper.showToastSuccess(
+            context, "You have successfully subscribed to our newsletter! :)");
+      }
+    } on DioException catch (e) {
       if (!mounted) return;
-     ToastHelper.showToastSuccess(context, "You have successfully subscribed to our newsletter! :)");
-      
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
+      rethrow;
     }
-   } catch (e) {
-     rethrow;
-   }
   }
 
   Future startConnection() async {
     var token = await AuthService().getToken();
-    String? apiUrl = dotenv.env['API_URL'];
-    if (apiUrl != null && token != null) {
+    if (token != null) {
       final connection = HubConnectionBuilder()
           .withUrl('$apiUrl/messageHub',
               options: HttpConnectionOptions(
@@ -126,172 +147,178 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      controller: _scrollController,
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: () => Provider.of<NotificationStatus>(context, listen: false)
-                .setIsShowingNotifications(false),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const CircularPhotoLayout(),
-                  Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 45, right: 45),
-                        child: Text(
-                          "Our primary goal is to help as many animals as we can by providing top quality care.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      _cheritySection(context),
-                      qAndA(context),
-                      Container(
-                        color: AppColors.fill,
-                        child: Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Column(
-                            children: [
-                              const Text(
-                                "JOIN OUR COMMUNITY",
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w700),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "Join our newsletter to get offers about new arrivals in the shop and more!",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width / 2,
-                                child: TextButton(
-                                  style: IconButton.styleFrom(
-                                      backgroundColor:
-                                          AppColors.primaryMediumLight),
-                                  onPressed: () {
-                                    subscribe();
-                                  },
-                                  child: const Row(
-                                    children: [
-                                      Text(
-                                        "Subscribe",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: AppColors.dimWhite),
-                                      ),
-                                      Spacer(),
-                                      Icon(
-                                        Icons
-                                            .keyboard_double_arrow_right_rounded,
-                                        color: AppColors.dimWhite,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
+    return RefreshIndicator(
+      onRefresh: () async => await fetchdata(),
+      child: ListView(controller: _scrollController, children: [
+        Stack(
+          children: [
+            GestureDetector(
+              onTap: () =>
+                  Provider.of<NotificationStatus>(context, listen: false)
+                      .setIsShowingNotifications(false),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CircularPhotoLayout(),
+                    Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 45, right: 45),
+                          child: Text(
+                            "Our primary goal is to help as many animals as we can by providing top quality care.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                         ),
-                      )
-                    ],
-                  )
-                ]),
-          ),
-          Positioned(
-              top: currentPosition,
-              right: 10,
-              child: Consumer<NotificationStatus>(
-                builder: (context, value, child) {
-                  if (value.isShowingNotifications) {
-                    updateStatus();
-                  }
-                  return value.isShowingNotifications
-                      ? Container(
-                          width: MediaQuery.of(context).size.width - 100,
-                          decoration: BoxDecoration(
-                              color: AppColors.dimWhite,
-                              borderRadius: BorderRadius.circular(10)),
-                          height: 300,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "Notifications history",
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  Container(
-                                    margin:
-                                        const EdgeInsets.symmetric(vertical: 5),
-                                    color: Colors.grey.withOpacity(0.3),
-                                    height: 1,
-                                  ),
-                                  if (notifications != null)
-                                    for (var notif in notifications!['items'])
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                notif['title'],
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                              const SizedBox(
-                                                width: 10,
-                                              ),
-                                              Text(
-                                                getTimeAgo(notif['createdAt']),
-                                                style: const TextStyle(
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.w400,
-                                                    color: Colors.grey),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            notif['message'],
-                                            style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                        ],
-                                      ),
-                                  if (notifications != null &&
-                                      notifications!['items'].isEmpty)
-                                    const Center(
-                                      child:
-                                          Text('You have no notifications yet'),
-                                    )
-                                ],
+                        _cheritySection(context),
+                        qAndA(context),
+                        if (currentUser != null &&
+                            currentUser!['IsSubscribed'] == "False")
+                          subscribeSection(context)
+                      ],
+                    )
+                  ]),
+            ),
+            Positioned(
+                top: currentPosition,
+                right: 10,
+                child: Consumer<NotificationStatus>(
+                  builder: (context, value, child) {
+                    if (value.isShowingNotifications) {
+                      updateStatus();
+                    }
+                    return value.isShowingNotifications
+                        ? Container(
+                            width: MediaQuery.of(context).size.width - 100,
+                            decoration: BoxDecoration(
+                                color: AppColors.dimWhite,
+                                borderRadius: BorderRadius.circular(10)),
+                            height: 300,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Notifications history",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 5),
+                                      color: Colors.grey.withOpacity(0.3),
+                                      height: 1,
+                                    ),
+                                    if (notifications != null)
+                                      for (var notif in notifications!['items'])
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  notif['title'],
+                                                  style: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                const SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Text(
+                                                  getTimeAgo(
+                                                      notif['createdAt']),
+                                                  style: const TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: Colors.grey),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              notif['message'],
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ],
+                                        ),
+                                    if (notifications != null &&
+                                        notifications!['items'].isEmpty)
+                                      const Center(
+                                        child: Text(
+                                            'You have no notifications yet'),
+                                      )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                      : const SizedBox();
+                          )
+                        : const SizedBox();
+                  },
+                )),
+          ],
+        ),
+      ]),
+    );
+  }
+
+  Container subscribeSection(BuildContext context) {
+    return Container(
+      color: AppColors.fill,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const Text(
+              "JOIN OUR COMMUNITY",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              "Join our newsletter to get offers about new arrivals in the shop and more!",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 2,
+              child: TextButton(
+                style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primaryMediumLight),
+                onPressed: () {
+                  subscribe();
                 },
-              )),
-        ],
+                child: const Row(
+                  children: [
+                    Text(
+                      "Subscribe",
+                      style: TextStyle(fontSize: 16, color: AppColors.dimWhite),
+                    ),
+                    Spacer(),
+                    Icon(
+                      Icons.keyboard_double_arrow_right_rounded,
+                      color: AppColors.dimWhite,
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

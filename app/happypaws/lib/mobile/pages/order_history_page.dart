@@ -73,109 +73,112 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return orders == null || isLoadingOrder
         ? const Spinner()
-        : SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      const GoBackButton(),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            newFirst = !newFirst;
-                          });
-                          sortData();
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              newFirst ? 'Oldest first' : 'Newest first',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 16),
-                            ),
-                            const Icon(
-                              Icons.sort,
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                for (var order in orders!['items'])
-                  GestureDetector(
-                    onTap: () => fetchOrder(order['id']),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                          border: Border.symmetric(
-                              horizontal: BorderSide(
-                                  width: 2, color: AppColors.dimWhite))),
-                      child: Row(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        : RefreshIndicator(
+          onRefresh: () async => await fetchData(),
+          child: ListView(
+              children:[ Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        const GoBackButton(),
+                        const Spacer(),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              newFirst = !newFirst;
+                            });
+                            sortData();
+                          },
+                          child: Row(
                             children: [
                               Text(
-                                "ID ${order['id']}",
+                                newFirst ? 'Oldest first' : 'Newest first',
                                 style: const TextStyle(
-                                    fontSize: 22, fontWeight: FontWeight.w600),
+                                    fontWeight: FontWeight.w500, fontSize: 16),
                               ),
-                              Text(
-                                DateFormat('dd.MM.yyyy')
-                                    .format(DateTime.parse(order['createdAt'])),
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.gray),
-                              ),
+                              const Icon(
+                                Icons.sort,
+                              )
                             ],
                           ),
-                          const Spacer(),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                "\$${order['total']}",
-                                style: const TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600),
-                              ),
-                              Text(
-                                  order['status'][0] +
-                                      order['status']
-                                          .split(RegExp(r'(?=[A-Z])'))
-                                          .join(' ')
-                                          .toLowerCase()
-                                          .substring(1),
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                    color: (order['status'] == 'Pending' ||
-                                            order['status'] == 'Processing' ||
-                                            order['status'] == 'OnHold')
-                                        ? AppColors.info
-                                        : (order['status'] == 'ReadyToPickUp' ||
-                                                order['status'] ==
-                                                    'Dispatched' ||
-                                                order['status'] ==
-                                                    'Confirmed' ||
-                                                order['status'] == 'Delivered')
-                                            ? AppColors.success
-                                            : AppColors.error,
-                                  )),
-                            ],
-                          ),
-                        ],
-                      ),
+                        )
+                      ],
                     ),
                   ),
-              ],
-            ),
-          );
+                  for (var order in orders!['items'])
+                    GestureDetector(
+                      onTap: () => fetchOrder(order['id']),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: const BoxDecoration(
+                            border: Border.symmetric(
+                                horizontal: BorderSide(
+                                    width: 2, color: AppColors.dimWhite))),
+                        child: Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  "ID ${order['id']}",
+                                  style: const TextStyle(
+                                      fontSize: 22, fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  DateFormat('dd.MM.yyyy')
+                                      .format(DateTime.parse(order['createdAt'])),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.gray),
+                                ),
+                              ],
+                            ),
+                            const Spacer(),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  "\$${order['total']}",
+                                  style: const TextStyle(
+                                      fontSize: 20, fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                    order['status'][0] +
+                                        order['status']
+                                            .split(RegExp(r'(?=[A-Z])'))
+                                            .join(' ')
+                                            .toLowerCase()
+                                            .substring(1),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: (order['status'] == 'Pending' ||
+                                              order['status'] == 'Processing' ||
+                                              order['status'] == 'OnHold')
+                                          ? AppColors.info
+                                          : (order['status'] == 'ReadyToPickUp' ||
+                                                  order['status'] ==
+                                                      'Dispatched' ||
+                                                  order['status'] ==
+                                                      'Confirmed' ||
+                                                  order['status'] == 'Delivered')
+                                              ? AppColors.success
+                                              : AppColors.error,
+                                    )),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+           ] ),
+        );
   }
 }

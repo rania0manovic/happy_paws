@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:happypaws/common/services/ProductReviewsService.dart';
@@ -39,10 +40,16 @@ class _LeaveReviewMenuState extends State<LeaveReviewMenu> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have successfully left review for the selected product!");
+      } 
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
       } else {
-        throw Exception('Error occured');
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
       }
-    } catch (e) {
       rethrow;
     }
   }

@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/dialogs/change_password_dialog.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ImagesService.dart';
 import 'package:happypaws/common/services/UsersService.dart';
+import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/firebase_storage.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
@@ -26,6 +28,7 @@ class PersonalInformationPage extends StatefulWidget {
 class _PersonalInformationPageState extends State<PersonalInformationPage> {
   String selectedValue = 'Unknown';
   late dynamic user = Null;
+  bool isSubscribed = false;
   late dynamic formatedCardNumber = Null;
   File? _selectedImage;
   Map<String, dynamic>? profilePhoto;
@@ -40,6 +43,11 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
 
   Future<void> fetchUser() async {
     var fetchedUser = await AuthService().getCurrentUser();
+    if (fetchedUser != null && fetchedUser['IsSubscribed'] == "True") {
+      setState(() {
+        isSubscribed = true;
+      });
+    }
     if (fetchedUser != null &&
         fetchedUser['ProfilePhotoId'] != null &&
         fetchedUser['ProfilePhotoId'] != "") {
@@ -76,6 +84,11 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
           });
         }
       }
+      if (isSubscribed == true) {
+        user!['IsSubscribed'] = true;
+      } else {
+        user!['IsSubscribed'] = false;
+      }
       var response = await UsersService().put('', user);
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -89,12 +102,18 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
       } else {
         throw Exception();
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
-          isDisabeledButton = false;
-        });
-      ToastHelper.showToastError(
-          context, "An error has occured! Please try again later.");
+        isDisabeledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -201,8 +220,30 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                               initialValue: user["Email"],
                             ),
                             dropdownMenu("Gender"),
-                            const SizedBox(
-                              height: 20,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 5),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Checkbox(
+                                    activeColor: AppColors.primary,
+                                    value: isSubscribed,
+                                    visualDensity: VisualDensity.compact,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        isSubscribed = !isSubscribed;
+                                      });
+                                    },
+                                  ),
+                                  const Text(
+                                    "Subscribed to newsletter",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             GestureDetector(
                               onTap: () {

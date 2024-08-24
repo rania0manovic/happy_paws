@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
@@ -11,7 +12,7 @@ import 'package:happypaws/desktop/components/spinner.dart';
 
 class AddEditPetBreedMenu extends StatefulWidget {
   final VoidCallback onClose;
-   final MyVoidCallback onAdd;
+  final MyVoidCallback onAdd;
   final MyVoidCallback onEdit;
   final Map<String, dynamic>? data;
   final Map<String, dynamic>? allbreeds;
@@ -71,27 +72,31 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         disabledButton = false;
       });
-      if (!mounted) return;
-      ToastHelper.showToastError(
-          context, "An error has occured! Please try again later.");
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
 
   Future<void> editPetBreed() async {
     try {
-       setState(() {
-          disabledButton = true;
-        });
+      setState(() {
+        disabledButton = true;
+      });
       final response = await PetBreedsService().put("", widget.data);
       if (response.statusCode == 200) {
         widget.onClose();
         widget.onEdit(response.data);
-         setState(() {
+        setState(() {
           disabledButton = false;
         });
         if (!mounted) return;
@@ -100,13 +105,17 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
-       setState(() {
-          disabledButton = false;
-        });
-      if (!mounted) return;
-      ToastHelper.showToastError(
-          context, "An error has occured! Please try again later.");
+    } on DioException catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -189,7 +198,7 @@ class _AddEditPetBreedMenuState extends State<AddEditPetBreedMenu> {
                                   height: 32,
                                 ),
                                 PrimaryButton(
-                                  isDisabled: disabledButton,
+                                    isDisabled: disabledButton,
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
                                         widget.data != null

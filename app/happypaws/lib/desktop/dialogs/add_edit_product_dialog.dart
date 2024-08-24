@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/BrandsService.dart';
@@ -139,20 +140,21 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         widget.onClose();
         widget.onAdd(response.data);
         if (!mounted) return;
-        ToastHelper.showToastSuccess(
-            context, "You have successfully added a new product! Make sure to activate it once it's ready for selling!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
+        ToastHelper.showToastSuccess(context,
+            "You have successfully added a new product! Make sure to activate it once it's ready for selling!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         disabledButton = false;
       });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -184,18 +186,19 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have successfully updated product information!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         disabledButton = false;
       });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -218,7 +221,16 @@ class _AddEditProductMenuState extends State<AddEditProductMenu> {
         _selectedImages.removeWhere((x) => x == element['image']['file']);
         productImages.removeAt(activeImageIndex);
       });
-    } catch (e) {
+    } 
+    on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

@@ -139,6 +139,7 @@ namespace HappyPaws.Api.Auth.AuthService
                     new Claim(type : ClaimNames.Email, value : user.Email),
                     new Claim(type : ClaimNames.Role, value: user.Role.ToString()),
                     new Claim(type : ClaimNames.Gender, value: user.Gender.ToString()),
+                    new Claim(type : ClaimNames.IsSubscribed, value: user.IsSubscribed.ToString()),
                 }),
                     SigningCredentials = new SigningCredentials(
                         new SymmetricSecurityKey(secretKey),

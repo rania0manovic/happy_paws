@@ -49,6 +49,7 @@ class _InputFieldState extends State<InputField> {
         SizedBox(
           height: isErrorShowing ? 75 : 50,
           child: TextFormField(
+            textInputAction: TextInputAction.next,
             onChanged: (value) {
               widget.onChanged(value);
             },

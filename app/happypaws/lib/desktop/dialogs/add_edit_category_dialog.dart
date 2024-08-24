@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ProductCategoriesService.dart';
@@ -102,10 +103,14 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
         ToastHelper.showToastError(
             context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         disabledButton = false;
       });
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }
@@ -169,10 +174,14 @@ class _AddEditCategoryOverlayState extends State<AddEditCategoryOverlay> {
         ToastHelper.showToastError(
             context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         disabledButton = false;
       });
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
       rethrow;
     }
   }

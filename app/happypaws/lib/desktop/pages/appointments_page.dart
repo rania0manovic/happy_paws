@@ -1,10 +1,12 @@
 import 'dart:math';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_week_view/flutter_week_view.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +24,7 @@ class AppointmentsPage extends StatefulWidget {
 
 class _AppointmentsPageState extends State<AppointmentsPage> {
   Map<String, dynamic>? appointments;
-  Map<String, dynamic> params = {'isCancelled':false};
+  Map<String, dynamic> params = {'isCancelled': false};
   List<dynamic> appointmentsByDate = [];
   bool newFirst = true;
   DateTime date = DateTime.now();
@@ -48,7 +50,15 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           appointments = response.data;
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -132,7 +142,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                 const Text(
                                   "Appointments history",
                                   style: TextStyle(
-                                      fontSize: 20, fontWeight: FontWeight.w700),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700),
                                 ),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -144,7 +155,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                           context: context,
                                           builder: (context) {
                                             var params = {};
-                    
+
                                             return AlertDialog(
                                               content: SizedBox(
                                                 height: 300,
@@ -160,31 +171,32 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                                         selectionMode:
                                                             DateRangePickerSelectionMode
                                                                 .range,
-                                                        showNavigationArrow: true,
+                                                        showNavigationArrow:
+                                                            true,
                                                         selectionColor:
                                                             AppColors.primary,
-                                                        headerStyle:
-                                                            const DateRangePickerHeaderStyle(
-                                                                backgroundColor:
-                                                                    AppColors
-                                                                        .dimWhite,
-                                                                textAlign:
-                                                                    TextAlign.center,
-                                                                textStyle: TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700)),
+                                                        headerStyle: const DateRangePickerHeaderStyle(
+                                                            backgroundColor:
+                                                                AppColors
+                                                                    .dimWhite,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            textStyle: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700)),
                                                         todayHighlightColor:
                                                             AppColors.primary,
                                                         onSelectionChanged:
                                                             (DateRangePickerSelectionChangedArgs
                                                                 args) {
-                                                          PickerDateRange range =
-                                                              args.value
+                                                          PickerDateRange
+                                                              range = args.value
                                                                   as PickerDateRange;
                                                           setState(() {
                                                             params['startDate'] =
-                                                                range.startDate!;
+                                                                range
+                                                                    .startDate!;
                                                             if (range.endDate !=
                                                                 null) {
                                                               params['endDate'] =
@@ -200,14 +212,18 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                                         setState(() {
                                                           this.params[
                                                                   'startDateTime'] =
-                                                              params['startDate'];
-                                                          this.params['endDateTime'] =
+                                                              params[
+                                                                  'startDate'];
+                                                          this.params[
+                                                                  'endDateTime'] =
                                                               params['endDate'];
                                                         });
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                         fetchAppointments();
                                                       },
-                                                      label: 'Confirm selection',
+                                                      label:
+                                                          'Confirm selection',
                                                       width: double.infinity,
                                                     )
                                                   ],
@@ -221,10 +237,14 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                         children: [
                                           Text(
                                             (params['startDateTime'] != null ||
-                                                    params['endDateTime'] != null
-                                                ? (formatter.format(params['startDateTime'])
+                                                    params['endDateTime'] !=
+                                                        null
+                                                ? (formatter
+                                                        .format(params[
+                                                            'startDateTime'])
                                                         .toString() +
-                                                    (params['endDateTime'] != null
+                                                    (params['endDateTime'] !=
+                                                            null
                                                         ? ' - ${formatter.format(params['endDateTime'])}'
                                                         : ''))
                                                 : 'Pick date'),
@@ -232,7 +252,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                                 fontWeight: FontWeight.w500,
                                                 color: params['startDateTime'] !=
                                                             null ||
-                                                        params['endDateTime'] != null
+                                                        params['endDateTime'] !=
+                                                            null
                                                     ? AppColors.primary
                                                     : Colors.black,
                                                 fontSize: 14),
@@ -281,33 +302,33 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                                         ],
                                       ),
                                     ),
-                                     Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          const Text(
-                                            "Show new only",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                            ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          "Show new only",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14,
                                           ),
-                                          Transform.scale(
-                                            scale: 0.8,
-                                            child: Checkbox(
-                                              activeColor: AppColors.primary,
-                                              value: showNewOnly,
-                                              visualDensity:
-                                                  VisualDensity.compact,
-                                              onChanged: (bool? value) {
-                                                setState(() {
-                                                  showNewOnly = value!;
-                                                });
-                                              },
-                                            ),
+                                        ),
+                                        Transform.scale(
+                                          scale: 0.8,
+                                          child: Checkbox(
+                                            activeColor: AppColors.primary,
+                                            value: showNewOnly,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            onChanged: (bool? value) {
+                                              setState(() {
+                                                showNewOnly = value!;
+                                              });
+                                            },
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
+                                    ),
                                   ],
                                 )
                               ],
@@ -328,82 +349,98 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                             itemBuilder: (context, index) {
                               var appointment = appointments!['items'][index];
                               return GestureDetector(
-                                onTap: () {
-                                  if (appointment['startDateTime'] == null) {
-                                    return;
-                                  }
-                                  showAppointmentDetails(context, appointment);
-                                },
-                                child:
-                               !showNewOnly || (showNewOnly && appointment['startDateTime']==null) ?
-                                 Container(
-                                  decoration: BoxDecoration(
-                                    color: appointment['startDateTime'] == null
-                                        ? AppColors.dimWhite
-                                        : Colors.transparent,
-                                    border: Border(
-                                      top: BorderSide(color: Colors.grey.shade300),
-                                      bottom: BorderSide(color: Colors.grey.shade300),
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.all(10),
-                                  width: double.infinity,
-                                  height: 100,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        appointment['pet']['owner']['fullName'],
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      Text(
-                                        DateFormat('dd/MM/yyyy HH:mm').format(
-                                          DateTime.parse(appointment['createdAt']),
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                "Reason: ${appointment['reason']}",
+                                  onTap: () {
+                                    if (appointment['startDateTime'] == null) {
+                                      return;
+                                    }
+                                    showAppointmentDetails(
+                                        context, appointment);
+                                  },
+                                  child: !showNewOnly ||
+                                          (showNewOnly &&
+                                              appointment['startDateTime'] ==
+                                                  null)
+                                      ? Container(
+                                          decoration: BoxDecoration(
+                                            color:
+                                                appointment['startDateTime'] ==
+                                                        null
+                                                    ? AppColors.dimWhite
+                                                    : Colors.transparent,
+                                            border: Border(
+                                              top: BorderSide(
+                                                  color: Colors.grey.shade300),
+                                              bottom: BorderSide(
+                                                  color: Colors.grey.shade300),
+                                            ),
+                                          ),
+                                          padding: const EdgeInsets.all(10),
+                                          width: double.infinity,
+                                          height: 100,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                appointment['pet']['owner']
+                                                    ['fullName'],
                                                 style: const TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w700,
                                                 ),
                                               ),
-                                            ),
-                                            appointment['startDateTime'] == null
-                                                ? PrimaryButton(
-                                                    onPressed: () =>
-                                                        showAppointmentDetails(
-                                                            context, appointment),
-                                                    label: "View",
-                                                    width: 80,
-                                                  )
-                                                : const Align(
-                                                    alignment: Alignment.bottomRight,
-                                                    child: LightText(
-                                                      label: "Appointment booked",
-                                                      color: AppColors.primary,
-                                                      fontSize: 14,
+                                              Text(
+                                                DateFormat('dd/MM/yyyy HH:mm')
+                                                    .format(
+                                                  DateTime.parse(
+                                                      appointment['createdAt']),
+                                                ),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Text(
+                                                        "Reason: ${appointment['reason']}",
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
                                                     ),
-                                                  ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              : const SizedBox()
-                              );
+                                                    appointment['startDateTime'] ==
+                                                            null
+                                                        ? PrimaryButton(
+                                                            onPressed: () =>
+                                                                showAppointmentDetails(
+                                                                    context,
+                                                                    appointment),
+                                                            label: "View",
+                                                            width: 80,
+                                                          )
+                                                        : const Align(
+                                                            alignment: Alignment
+                                                                .bottomRight,
+                                                            child: LightText(
+                                                              label:
+                                                                  "Appointment booked",
+                                                              color: AppColors
+                                                                  .primary,
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : const SizedBox());
                             },
                           )
                         ],

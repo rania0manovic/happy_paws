@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
@@ -9,6 +10,7 @@ import 'package:happypaws/desktop/components/buttons/go_back_button.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/confirmationDialog.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
+import 'package:happypaws/routes/app_router.gr.dart';
 
 @RoutePage()
 class MakeAppointmentPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class MakeAppointmentPage extends StatefulWidget {
 class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
   Map<String, dynamic>? userPets;
   Map<String, dynamic> data = {};
+  bool isDisabledButton = false;
   String? selectedValue;
   final _formKey = GlobalKey<FormState>();
 
@@ -45,9 +48,10 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
         .getPaged('', 1, 999, searchObject: {'userId': user?['Id']});
     if (response.statusCode == 200) {
       if (response.data['items'].length == 0) {
-        if(!mounted)return;
+        if (!mounted) return;
         Navigator.of(context).pop();
-        ToastHelper.showToastError(context, "You must have at least one pet added before booking an appointment!");
+        ToastHelper.showToastError(context,
+            "You must have at least one pet added before booking an appointment!");
       }
       setState(() {
         userPets = response.data;
@@ -59,13 +63,31 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
 
   Future<void> bookAppointment() async {
     try {
+      setState(() {
+        isDisabledButton = true;
+      });
       var response = await AppointmentsService().post('', data);
       if (response.statusCode == 200) {
+        setState(() {
+          isDisabledButton = false;
+        });
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "Your request for the appointment has been successfully made! You will get notified once it gets approved.");
+        context.router.push(const UserAppointmentsRoute());
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      setState(() {
+        isDisabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -191,6 +213,7 @@ class _MakeAppointmentPageState extends State<MakeAppointmentPage> {
                     ),
                     if (widget.data == null)
                       PrimaryButton(
+                        isDisabled: isDisabledButton,
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             showDialog(

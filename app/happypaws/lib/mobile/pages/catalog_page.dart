@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
@@ -160,15 +161,16 @@ class _CatalogPageState extends State<CatalogPage> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "Successfully added product into the cart!");
-      } else {
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "Something went wrong! Please try again.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       if (!mounted) return;
-      ToastHelper.showToastError(
-          context, "An error has occured! Please try again later.");
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

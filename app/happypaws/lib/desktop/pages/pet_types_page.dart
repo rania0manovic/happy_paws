@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/services/PetsService.dart';
@@ -41,9 +42,17 @@ class _PetTypesPageState extends State<PetTypesPage> {
         petTypes = response.data;
       });
     }
-   } catch (e) {
-     rethrow;
-   }
+   } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
+      rethrow;
+    }
   }
 
   Future<void> deletePetType(int id) async {
@@ -52,7 +61,15 @@ class _PetTypesPageState extends State<PetTypesPage> {
       if (response.statusCode == 200) {
         fetchData();
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

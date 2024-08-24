@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
 import 'package:happypaws/common/utilities/constants.dart';
@@ -52,15 +53,19 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have succesfully added a new pet type!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -80,15 +85,19 @@ class _AddEditPetTypeMenuState extends State<AddEditPetTypeMenu> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(
             context, "You have succesfully edited the selected pet type!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

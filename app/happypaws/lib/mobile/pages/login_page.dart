@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -35,17 +36,14 @@ class _LoginPageState extends State<LoginPage> {
         if (mounted) {
           context.router.push(const ClientLayout());
         }
-      } else if (response.statusCode == 403) {
-        setState(() {
-          error = true;
-        });
       }
-    } catch (e) {
+    } on DioException {
       setState(() {
         error = true;
         isDisabledButton = false;
       });
-      throw Exception(e);
+
+      rethrow;
     }
   }
 
@@ -171,6 +169,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         SizedBox(
           child: TextFormField(
+            textInputAction: TextInputAction.next,
             onChanged: (value) {
               setState(() {
                 data[key] = value;

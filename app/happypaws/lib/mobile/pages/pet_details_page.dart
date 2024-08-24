@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/PetBreedsService.dart';
 import 'package:happypaws/common/services/PetTypesService.dart';
@@ -112,12 +113,18 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         isDisabledButton = false;
       });
-      ToastHelper.showToastError(
-          context, "An error occured! Please try again later.");
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -156,12 +163,18 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
+    } on DioException catch (e) {
       setState(() {
         isDisabledButton = false;
       });
-      ToastHelper.showToastError(
-          context, "An error occured! Please try again later.");
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -178,9 +191,15 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
       } else {
         throw Exception('Error occured');
       }
-    } catch (e) {
-      ToastHelper.showToastError(
-          context, "An error occured! Please try again later.");
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -463,7 +482,8 @@ class _PetDetailsPageState extends State<PetDetailsPage> {
                 final value = formatter.format(args.value!);
                 setState(() {
                   selectedDate = value;
-                  data!['birthDate'] = DateFormat('yyyy-MM-dd').format(args.value);
+                  data!['birthDate'] =
+                      DateFormat('yyyy-MM-dd').format(args.value);
                 });
                 Navigator.of(context).pop();
               },

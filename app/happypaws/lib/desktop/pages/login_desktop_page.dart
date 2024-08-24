@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/utilities/Colors.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
 import 'package:happypaws/desktop/components/input_field.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
@@ -19,7 +21,7 @@ class LoginDesktopPage extends StatefulWidget {
 
 class _LoginDesktopPageState extends State<LoginDesktopPage> {
   bool error = false;
-  Map<String, dynamic> data = {'adminPanel':true};
+  Map<String, dynamic> data = {'adminPanel': true};
   bool isLoading = true;
   bool isDisabledButton = false;
 
@@ -44,7 +46,7 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
   Future<void> login() async {
     try {
       setState(() {
-        isDisabledButton=true;
+        isDisabledButton = true;
       });
       final response = await AuthService().signIn(data);
       if (response.statusCode == 200) {
@@ -53,24 +55,28 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
         if (decoded['Role'] == 'Admin' || decoded['Role'] == 'Employee') {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString('token', response.data['token'].toString());
-            setState(() {
-        isDisabledButton=false;
-      });
+          setState(() {
+            isDisabledButton = false;
+          });
           if (mounted) {
             context.router.push(const AdminLayout());
           }
         }
-      } else  {
-         setState(() {
+      } else {
+        setState(() {
           error = true;
-          isDisabledButton=false;
+          isDisabledButton = false;
         });
       }
-    } catch (e) {
-       setState(() {
-          error = true;
-          isDisabledButton=false;
-        });
+    } on DioException {
+      setState(() {
+        error = true;
+        isDisabledButton = false;
+      });
+      if (!mounted) return;
+      ToastHelper.showToastError(
+          context, "An error has occured! Please try again later.");
+      rethrow;
     }
   }
 
@@ -133,7 +139,6 @@ class _LoginDesktopPageState extends State<LoginDesktopPage> {
                                 labelColor: AppColors.dimWhite,
                                 isObscure: true,
                                 fillColor: AppColors.dimWhite,
-                                
                               ),
                               const SizedBox(
                                 height: 20,

@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/DonationsService.dart';
@@ -54,7 +54,15 @@ class _DonatePageState extends State<DonatePage> {
               context, "Your donation has been succesfully made!");
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -131,9 +139,9 @@ class _DonatePageState extends State<DonatePage> {
                                   builder: (BuildContext context) => UsePaypal(
                                       sandboxMode: true,
                                       clientId:
-                                          dotenv.env['DONATIONS_CLIENT_ID']!,
+                                         const String.fromEnvironment("DONATIONS_CLIENT_ID", defaultValue: "AZBGOkwWpWvpU0lloi3WB5D4Nh2X42Bedbjy3ZeS03aTWeg4uk3t_Y6p2-olAWkyrQm8qnhc4ZDA9liD"),
                                       secretKey:
-                                          dotenv.env['DONATIONS_SECRET_KEY']!,
+                                         const String.fromEnvironment("DONATIONS_SECRET_KEY", defaultValue: "EBZdGI4rH9DVgOkpAAHHidsQ8MDof_bNgLUQpXy8xxsNY4Sz3_MRTzkqVLyZ2r2EAeO1GcnSBL5RtzCp"),
                                       returnURL:
                                           "https://samplesite.com/return",
                                       cancelURL:

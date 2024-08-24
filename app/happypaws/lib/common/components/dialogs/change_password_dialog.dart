@@ -45,16 +45,15 @@ class _ChangePasswordMenuState extends State<ChangePasswordMenu> {
         if (!mounted) return;
         ToastHelper.showToastSuccess(context,
             "You have successfully updated your password! Please login with your new password.");
-      } else if (response.statusCode == 403) {
-        if (!mounted) return;
-        ToastHelper.showToastSuccess(
-            context, "Wrong email or current password! Please try again.");
-      } else {
-        throw Exception('Error occured');
       }
-    } on DioException catch ( e) {
-      if(e.response?.statusCode==403) {
-        ToastHelper.showToastError(context, "Incorrect current password. Please try again!");
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response?.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "Wrong email or current password! Please try again!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
@@ -81,7 +82,15 @@ class _DashboardPageState extends State<DashboardPage> {
           this.configData = configData.data;
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     } finally {
       setState(() {
@@ -102,7 +111,15 @@ class _DashboardPageState extends State<DashboardPage> {
           products = response.data;
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -117,7 +134,15 @@ class _DashboardPageState extends State<DashboardPage> {
         ToastHelper.showToastSuccess(context,
             "You have succesfully sent a newsletter for new arrivals!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!context.mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -132,10 +157,15 @@ class _DashboardPageState extends State<DashboardPage> {
         ToastHelper.showToastSuccess(
             context, "You have succesfully updated your donations goal!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
       if (!context.mounted) return;
-      ToastHelper.showToastError(
-          context, "An error occured, please try again later.");
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

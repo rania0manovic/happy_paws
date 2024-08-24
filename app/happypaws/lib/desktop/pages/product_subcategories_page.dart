@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
 import 'package:happypaws/common/services/ProductsService.dart';
@@ -53,10 +54,15 @@ class _ProductsPageState extends State<SubcategoriesPage> {
           productSubcategories!['items'].removeWhere((x) => x['id'] == id);
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
       if (!mounted) return;
-      ToastHelper.showToastError(
-          context, "An error occured! Please try again later.");
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

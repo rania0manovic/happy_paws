@@ -49,58 +49,60 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            user != Null ? myPawCard() : const Spinner(),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(25),
-              child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      height: 1,
-                      color: AppColors.gray.withOpacity(0.2),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () => context.router
-                            .push(const PersonalInformationRoute()),
-                        child: const Text(
-                          "Personal Information",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
+        RefreshIndicator(
+          onRefresh: () async => await fetchUser(),
+          child: ListView(children: [
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              user != Null ? myPawCard() : const Spinner(),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        height: 1,
+                        color: AppColors.gray.withOpacity(0.2),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: GestureDetector(
+                          onTap: () => context.router
+                              .push(const PersonalInformationRoute()),
+                          child: const Text(
+                            "Personal Information",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 20),
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      height: 1,
-                      color: AppColors.gray.withOpacity(0.2),
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      child: GestureDetector(
-                        onTap: () => context.router
-                            .push(MyPetsRoute(userId: user?['Id'])),
-                        child: const Text(
-                          "My Pets",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 20),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        height: 1,
+                        color: AppColors.gray.withOpacity(0.2),
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        child: GestureDetector(
+                          onTap: () => context.router
+                              .push(MyPetsRoute(userId: user?['Id'])),
+                          child: const Text(
+                            "My Pets",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500, fontSize: 20),
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
-                      height: 1,
-                      color: AppColors.gray.withOpacity(0.2),
-                    ),
-                  ]),
-            )
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 20),
+                        height: 1,
+                        color: AppColors.gray.withOpacity(0.2),
+                      ),
+                    ]),
+              )
+            ]),
           ]),
         ),
         logOutButton()

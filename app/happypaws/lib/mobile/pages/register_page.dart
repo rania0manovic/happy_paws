@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
@@ -15,7 +16,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  Map<String, dynamic> user={};
+  Map<String, dynamic> user = {};
   bool isDisabledButton = false;
 
   Future<void> sendEmailVerificationCode() async {
@@ -24,20 +25,32 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {
         isDisabledButton = true;
       });
-       response = await AuthService().sendEmailVerification(user);
+      response = await AuthService().sendEmailVerification(user);
       if (response.statusCode == 200) {
         setState(() {
           isDisabledButton = false;
         });
         if (!mounted) return;
         context.router.push(RegisterVerificationRoute(user: user));
-      } 
-    } catch (e) {
-         setState(() {
-          isDisabledButton = false;
-        });
-        if(!mounted)return;
-        ToastHelper.showToastError(context, "User with the same email already exists!");
+      }
+    } on DioException catch (e) {
+      setState(() {
+        isDisabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      }
+      else if (e.response != null && e.response!.statusCode == 409) {
+        ToastHelper.showToastError(
+            context, "User with the same email already exists!");
+      }
+       else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
+      rethrow;
     }
   }
 
@@ -95,21 +108,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         inputField('Surname', 'lastName'),
                         inputField('Email', 'email'),
                         inputField('Password', 'password', isObscure: true),
-                         Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 30),
-                            child: PrimaryButton(
-                            disabledWithoutSpinner: isDisabledButton,
-                                onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                sendEmailVerificationCode();
-                              }
-                                },
-                               width: double.infinity,
-                               fontSize: 20,
-                                label: "Next  ➜"),
-                          )),
+                        Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 30),
+                              child: PrimaryButton(
+                                  disabledWithoutSpinner: isDisabledButton,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      sendEmailVerificationCode();
+                                    }
+                                  },
+                                  width: double.infinity,
+                                  fontSize: 20,
+                                  label: "Next  ➜"),
+                            )),
                       ],
                     ),
                   ),
@@ -117,7 +130,10 @@ class _RegisterPageState extends State<RegisterPage> {
             GestureDetector(
               onTap: () => context.router.push(const LoginRoute()),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20,),
+                padding: const EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                ),
                 child: Text(
                   "Already a member? Login here.",
                   textAlign: TextAlign.center,
@@ -153,6 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
         SizedBox(
           child: TextFormField(
+        textInputAction: TextInputAction.next,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 setState(() {
@@ -161,7 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 return 'This field is required';
               } else if (isObscure) {
                 RegExp passwordRegex = RegExp(
-                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~.]).{8,}$');
                 if (!passwordRegex.hasMatch(value)) {
                   setState(() {
                     errorStates[key] = true;

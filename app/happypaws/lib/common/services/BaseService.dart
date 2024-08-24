@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:happypaws/common/utilities/platform_info.dart';
+import 'package:happypaws/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 PlatformInfo platformInfo = PlatformInfo();
@@ -9,12 +9,8 @@ class BaseService {
   late Dio _dio;
   late String baseUrl;
 
-  String? apiUrl = platformInfo.isDesktopOS()
-      ? dotenv.env['API_URL_DESKTOP']
-      : dotenv.env['API_URL_MOBILE'];
   BaseService(String controllerName) {
-    baseUrl = apiUrl != null ? "$apiUrl/$controllerName" : '';
-
+    baseUrl = "$apiUrl/$controllerName";
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
       contentType: 'application/json',
@@ -30,7 +26,7 @@ class BaseService {
         return handler.next(options);
       },
       onError: (error, handler) {
-          return handler.next(error);
+        return handler.next(error);
       },
     ));
   }
@@ -101,5 +97,4 @@ class BaseService {
     );
     return response;
   }
- 
 }

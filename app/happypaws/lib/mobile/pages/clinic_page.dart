@@ -1,10 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/AppointmentsService.dart';
 import 'package:happypaws/common/services/AuthService.dart';
 import 'package:happypaws/common/services/PetMedicationsService.dart';
+import 'package:happypaws/common/utilities/Toast.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/desktop/components/spinner.dart';
 import 'package:happypaws/routes/app_router.gr.dart';
@@ -54,7 +56,15 @@ class _ClinicPageState extends State<ClinicPage> {
           });
         }
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -66,95 +76,101 @@ class _ClinicPageState extends State<ClinicPage> {
         : Stack(
             alignment: Alignment.topCenter,
             children: [
-              SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Upcoming appointments",
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.w700),
-                          ),
-                          GestureDetector(
-                            onTap: () => {
-                              context.router.push(const UserAppointmentsRoute())
-                            },
-                            child: const Text(
-                              "See all",
+              RefreshIndicator(
+                onRefresh: () async {
+                  await fetchData();
+                },
+                child: ListView(children: [
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              "Upcoming appointments",
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                  fontSize: 25, fontWeight: FontWeight.w700),
+                            ),
+                            GestureDetector(
+                              onTap: () => {
+                                context.router
+                                    .push(const UserAppointmentsRoute())
+                              },
+                              child: const Text(
+                                "See all",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      for (var appointment in upcomingAppointments!['items'])
-                        Column(
-                          children: [
-                            appointmentContainer(
-                                appointment['startDateTime'],
-                                appointment['pet']['name'],
-                                appointment['reason']),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      if (upcomingAppointments!['items'].isEmpty)
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LightText(
-                                label: "You have no upcoming appointments!"),
-                            SizedBox(
-                              height: 20,
                             )
                           ],
                         ),
-                      const Text(
-                        "Medication reminders",
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      if (medicationReminders!['items'].isEmpty)
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            LightText(
-                                label: "You have no medication reminders!"),
-                            SizedBox(
-                              height: 20,
-                            )
-                          ],
+                        const SizedBox(
+                          height: 20,
                         ),
-                      for (var medication in medicationReminders!["items"])
-                        Column(
-                          children: [
-                            medicationContainer(
-                                "${medication['medicationName']} ${medication['dosage']} mg",
-                                "Every ${medication['dosageFrequency']} hours",
-                                medication['pet']['name'],
-                                "After Breakfast"),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                          ],
+                        for (var appointment in upcomingAppointments!['items'])
+                          Column(
+                            children: [
+                              appointmentContainer(
+                                  appointment['startDateTime'],
+                                  appointment['pet']['name'],
+                                  appointment['reason']),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        if (upcomingAppointments!['items'].isEmpty)
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              LightText(
+                                  label: "You have no upcoming appointments!"),
+                              SizedBox(
+                                height: 20,
+                              )
+                            ],
+                          ),
+                        const Text(
+                          "Medication reminders",
+                          style: TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.w700),
                         ),
-                    ],
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        if (medicationReminders!['items'].isEmpty)
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              LightText(
+                                  label: "You have no medication reminders!"),
+                              SizedBox(
+                                height: 20,
+                              )
+                            ],
+                          ),
+                        for (var medication in medicationReminders!["items"])
+                          Column(
+                            children: [
+                              medicationContainer(
+                                  "${medication['medicationName']} ${medication['dosage']} mg",
+                                  "Every ${medication['dosageFrequency']} hours",
+                                  medication['pet']['name'],
+                                  "After Breakfast"),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
                   ),
-                ),
+                ]),
               ),
               addAppointmentButton(context)
             ],

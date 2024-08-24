@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:happypaws/common/services/OrdersService.dart';
 import 'package:happypaws/common/services/UserAdressesService.dart';
@@ -49,7 +48,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
           saveAsInitialAddress = data['isInitialUserAddress'];
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -74,7 +81,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
         if (!mounted) return;
         context.router.push(const OrderHistoryRoute());
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -97,7 +112,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
           context.router.push(const OrderHistoryRoute());
         });
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -422,8 +445,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 MaterialPageRoute(
                                   builder: (BuildContext context) => UsePaypal(
                                       sandboxMode: true,
-                                      clientId: dotenv.env['SHOP_CLIENT_ID']!,
-                                      secretKey: dotenv.env['SHOP_SECRET_KEY']!,
+                                      clientId: const String.fromEnvironment("SHOP_CLIENT_ID", defaultValue: "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r"),
+                                      secretKey: const String.fromEnvironment("SHOP_SECRET_KEY", defaultValue: "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW"),
                                       returnURL:
                                           "https://samplesite.com/return",
                                       cancelURL:

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:happypaws/common/components/text/light_text.dart';
 import 'package:happypaws/common/services/ProductSubcategoriesService.dart';
@@ -71,17 +72,21 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
         widget.onClose();
         widget.fetchData();
         if (!mounted) return;
-        ToastHelper.showToastSuccess(context,
-            "You have succesfully added a new subcategory!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
+        ToastHelper.showToastSuccess(
+            context, "You have succesfully added a new subcategory!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }
@@ -113,17 +118,21 @@ class _AddEditSubcategoryMenuState extends State<AddEditSubcategoryMenu> {
         widget.onClose();
         widget.fetchData();
         if (!mounted) return;
-        ToastHelper.showToastSuccess(context,
-            "You have succesfully updated subcategory information!");
-      } else {
-        setState(() {
-          disabledButton = false;
-        });
-        if (!mounted) return;
-        ToastHelper.showToastError(
-            context, "An error occured! Please try again later.");
+        ToastHelper.showToastSuccess(
+            context, "You have succesfully updated subcategory information!");
       }
-    } catch (e) {
+    } on DioException catch (e) {
+      setState(() {
+        disabledButton = false;
+      });
+      if (!mounted) return;
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
       rethrow;
     }
   }

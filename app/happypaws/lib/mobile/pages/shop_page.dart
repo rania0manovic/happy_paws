@@ -55,69 +55,74 @@ class _ShopPageState extends State<ShopPage> {
             recommendedProducts == null ||
             bestsellers == null
         ? const Spinner()
-        : SingleChildScrollView(
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 14.0, top: 8),
-                    child: GestureDetector(
-                        onTap: () =>
-                            context.router.push(const OrderHistoryRoute()),
-                        child: const Text(
-                          'Order history',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.primary,
-                              fontSize: 16),
-                        )),
-                  ),
-                ),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    child: Text(
-                      "Categories",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ),
-                categoriesSection(context),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.all(14),
-                    child: Text(
-                      "Bestsellers",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                ),
-                bestsellersSection(),
-                if (recommendedProducts!.isNotEmpty)
-                  Column(
-                    children: [
-                      const Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: EdgeInsets.all(14),
-                          child: Text(
-                            "For you",
+        : RefreshIndicator(
+          onRefresh: () async {
+            await fetchData();
+          },
+          child: ListView(children: [
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 14.0, top: 8),
+                      child: GestureDetector(
+                          onTap: () =>
+                              context.router.push(const OrderHistoryRoute()),
+                          child: const Text(
+                            'Order history',
                             style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.w700),
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.primary,
+                                fontSize: 16),
+                          )),
+                    ),
+                  ),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      child: Text(
+                        "Categories",
+                        style:
+                            TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  categoriesSection(context),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(14),
+                      child: Text(
+                        "Bestsellers",
+                        style:
+                            TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                  bestsellersSection(),
+                  if (recommendedProducts!.isNotEmpty)
+                    Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: EdgeInsets.all(14),
+                            child: Text(
+                              "For you",
+                              style: TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.w700),
+                            ),
                           ),
                         ),
-                      ),
-                      forYouSection(),
-                    ],
-                  ),
-              ],
-            ),
-          );
+                        forYouSection(),
+                      ],
+                    ),
+                ],
+              ),
+            ]),
+        );
   }
 
   Container forYouSection() {

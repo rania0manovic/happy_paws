@@ -28,7 +28,7 @@ namespace HappyPaws.Api.Controllers
         {
             return base.Post(upsertDto, cancellationToken);
         }
-        [Authorize(Policy = "VetsOnly")]
+        [Authorize(Policy = "ClinicPolicy")]
         public override Task<IActionResult> Put([FromBody] AppointmentDto upsertDto, CancellationToken cancellationToken = default)
         {
             return base.Put(upsertDto, cancellationToken);

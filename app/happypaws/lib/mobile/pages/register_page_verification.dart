@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:happypaws/common/utilities/colors.dart';
 import 'package:happypaws/common/utilities/toast.dart';
 import 'package:happypaws/desktop/components/buttons/primary_button.dart';
@@ -29,6 +31,7 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
 
   @override
   void initState() {
+    super.initState();
     Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         setState(() {
@@ -40,9 +43,10 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
         });
       }
     });
-    super.initState();
+
     _focusNodes = List.generate(4, (index) => FocusNode());
     _controllers = List.generate(4, (index) => TextEditingController());
+
     for (int i = 0; i < _controllers.length; i++) {
       _controllers[i].addListener(() {
         if (_controllers[i].text.length == 1 && i < _controllers.length - 1) {
@@ -63,10 +67,16 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
         ToastHelper.showToastSuccess(
             context, "Code was successfully sent again.");
       } else {}
-    } catch (e) {
+    } on DioException catch (e) {
       if (!mounted) return;
-      ToastHelper.showToastSuccess(
-          context, "An error occured! Please try again later.");
+      if (e.response != null && e.response!.statusCode == 403) {
+        ToastHelper.showToastError(
+            context, "You do not have permission for this action!");
+      } else {
+        ToastHelper.showToastError(
+            context, "An error has occured! Please try again later.");
+      }
+      rethrow;
     }
   }
 
@@ -83,17 +93,13 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
           success = true;
           isDisabledButton = false;
         });
-      } else {
-        setState(() {
-          error = true;
-          isDisabledButton = false;
-        });
-      }
-    } catch (e) {
+      } 
+    } on DioException {
       setState(() {
         error = true;
         isDisabledButton = false;
       });
+      rethrow;
     }
   }
 
@@ -275,29 +281,28 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                                     verifyCode();
                                   },
                                   width: double.infinity,
-                                  fontSize: 20,
-                                  label: "Next  ➜"),
+                                  fontSize: 18,
+                                  label: "Verify"),
                             )),
-                      ),
+                      )
                     ],
                   ),
           ]),
     ));
   }
 
-  SizedBox inputField(int index) {
+  Widget inputField(int index) {
     return SizedBox(
-      height: 50,
       width: 50,
+      height: 50,
       child: TextField(
-        controller: _controllers[index],
         focusNode: _focusNodes[index],
+        controller: _controllers[index],
         textAlign: TextAlign.center,
-        maxLines: 1,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+        keyboardType: TextInputType.number,
         maxLength: 1,
-        style: TextStyle(
-            fontSize: 26,
-            color: error ? const Color(0xffBA1A36) : const Color(0xff3f0d81)),
+        inputFormatters: [BackspaceTextInputFormatter()],
         decoration: InputDecoration(
             counterText: '',
             filled: true,
@@ -316,7 +321,25 @@ class _RegisterVerificationPageState extends State<RegisterVerificationPage> {
                   width: 5.0,
                 ),
                 borderRadius: BorderRadius.circular(5))),
+        onChanged: (value) {
+          if (value.isNotEmpty && index < _focusNodes.length - 1) {
+            FocusScope.of(context).requestFocus(_focusNodes[index + 1]);
+          }
+        },
       ),
     );
+  }
+}
+
+class BackspaceTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (oldValue.text.isNotEmpty && newValue.text.isEmpty) {
+      // Handle backspace by moving focus to the previous field
+      final currentFocus = FocusScope.of(FocusScopeNode().context!);
+      currentFocus.previousFocus();
+    }
+    return newValue;
   }
 }
