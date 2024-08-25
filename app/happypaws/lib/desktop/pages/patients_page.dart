@@ -90,6 +90,8 @@ class _PatientsPageState extends State<PatientsPage> {
           contentPadding: const EdgeInsets.all(8),
           content: AddEditPatientMenu(
             onAdd: (value) {
+              if(patients!['hasNextPage']) return;
+
               setState(() {
                 patients!['items'].add(value);
               });

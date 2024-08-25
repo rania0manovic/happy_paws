@@ -98,25 +98,6 @@ namespace HappyPaws.Api.Controllers
             }
         }
 
-        [Authorize(Roles = "User")]
-        [HttpPatch("SubscribeToNewsletter")]
-        public virtual async Task<IActionResult> SubscribeToNewsletter(CancellationToken cancellationToken = default)
-        {
-            var userId = _currentUser.Id;
-            try
-            {
-                if (!userId.HasValue) return StatusCode(403);
-                var result = await Service.GetByIdAsync((int)userId, cancellationToken) ?? throw new EntryNotFoundException();
-                result.IsSubscribed = true;
-                await Service.UpdateAsync(result, cancellationToken);
-                return Ok();
-
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Problem when getting resources with {userId}!", userId);
-                return BadRequest();
-            }
-        }
+        
     }
 }

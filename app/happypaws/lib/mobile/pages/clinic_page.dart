@@ -158,10 +158,10 @@ class _ClinicPageState extends State<ClinicPage> {
                           Column(
                             children: [
                               medicationContainer(
-                                  "${medication['medicationName']} ${medication['dosage']} mg",
+                                  "${medication['medicationName']}",
                                   "Every ${medication['dosageFrequency']} hours",
-                                  medication['pet']['name'],
-                                  "After Breakfast"),
+                                  medication['pet']['name'], medication['dosage'].toString()
+                                  ),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -202,7 +202,7 @@ class _ClinicPageState extends State<ClinicPage> {
   }
 
   Container medicationContainer(
-      String medication, String time, String petName, String note) {
+      String medication, String time, String petName, String dosage) {
     return Container(
         height: 140,
         width: double.infinity,
@@ -256,7 +256,7 @@ class _ClinicPageState extends State<ClinicPage> {
                           fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     Text(
-                      "Note: $note",
+                      "Dosage: $dosage",
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w500),
