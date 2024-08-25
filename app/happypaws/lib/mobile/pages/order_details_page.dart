@@ -48,9 +48,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                           FractionallySizedBox(
                               widthFactor: 0.4,
                               child: Image.network(
-                                item['product']['productImages']
-                                        [0]['image']['downloadURL']
-                                    ,
+                                item['product']['productImages'][0]['image']
+                                    ['downloadURL'],
                                 height: 100,
                               )),
                           FractionallySizedBox(
@@ -114,7 +113,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                                                   onClosed: () {
                                                     Navigator.of(context).pop();
                                                   },
-                                                  onAdd: (value) {},
+                                                  onAdd: (value) {
+                                                    setState(() {
+                                                      item['product']
+                                                          ['hasReview'] = true;
+                                                    });
+                                                  },
                                                   data: item['product'],
                                                 );
                                               },
