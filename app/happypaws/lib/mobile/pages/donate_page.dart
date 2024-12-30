@@ -139,9 +139,9 @@ class _DonatePageState extends State<DonatePage> {
                                   builder: (BuildContext context) => UsePaypal(
                                       sandboxMode: true,
                                       clientId:
-                                         const String.fromEnvironment("DONATIONS_CLIENT_ID", defaultValue: "AZBGOkwWpWvpU0lloi3WB5D4Nh2X42Bedbjy3ZeS03aTWeg4uk3t_Y6p2-olAWkyrQm8qnhc4ZDA9liD"),
+                                         const String.fromEnvironment("DONATIONS_CLIENT_ID", defaultValue: ""),
                                       secretKey:
-                                         const String.fromEnvironment("DONATIONS_SECRET_KEY", defaultValue: "EBZdGI4rH9DVgOkpAAHHidsQ8MDof_bNgLUQpXy8xxsNY4Sz3_MRTzkqVLyZ2r2EAeO1GcnSBL5RtzCp"),
+                                         const String.fromEnvironment("DONATIONS_SECRET_KEY", defaultValue: ""),
                                       returnURL:
                                           "https://samplesite.com/return",
                                       cancelURL:

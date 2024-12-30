@@ -445,8 +445,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 MaterialPageRoute(
                                   builder: (BuildContext context) => UsePaypal(
                                       sandboxMode: true,
-                                      clientId: const String.fromEnvironment("SHOP_CLIENT_ID", defaultValue: "AUdRuKmxdwt_O1PPfnFp1kan3Cpgo0M5L8ngrto9FnEL4qH17_YyscwRtyeqOEZS6Iks5T5p6BpgyL6r"),
-                                      secretKey: const String.fromEnvironment("SHOP_SECRET_KEY", defaultValue: "EIx9tBEJjPWxzG3d4PhXGfgPfkObJH79EkxCMoTWZ-xCHQmpEsiEgBz5BJVnWlqD-CpdRhn2om20O8hW"),
+                                      clientId: const String.fromEnvironment("SHOP_CLIENT_ID", defaultValue: ""),
+                                      secretKey: const String.fromEnvironment("SHOP_SECRET_KEY", defaultValue: ""),
                                       returnURL:
                                           "https://samplesite.com/return",
                                       cancelURL:
